@@ -10,7 +10,7 @@ from services.google_sheets import (
     buscar_na_memoria
 )
 from services.scraping import extrair_texto
-from services.audio_transcriber import gravar_reuniao, transcrever_reuniao
+#from services.audio_transcriber import gravar_reuniao, transcrever_reuniao
 from services.relatorio_generator import gerar_relatorio
 from components.file_upload import file_upload_component
 from services.google_calendar import verificar_eventos, criar_evento
