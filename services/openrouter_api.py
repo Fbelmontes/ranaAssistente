@@ -1,13 +1,15 @@
-import openai
-from config import OPENROUTER_API_KEY, OPENROUTER_API_BASE
+from openai import OpenAI
+import streamlit as st
+import json
 
-openai.api_key = OPENROUTER_API_KEY
-openai.api_base = OPENROUTER_API_BASE
-
-openai.default_headers = {
-    "HTTP-Referer": "https://openrouter.ai",
-    "X-Title": "RANA Assistant"
-}
+client = OpenAI(
+    api_key=st.secrets["OPENROUTER_API_KEY"],
+    base_url="https://openrouter.ai/api/v1",
+    default_headers={
+        "HTTP-Referer": "https://openrouter.ai",
+        "X-Title": "RANA Assistant"
+    }
+)
 
 def responder_pergunta(pergunta, contexto):
     prompt = f"""Com base nas informações a seguir, responda a pergunta de forma clara e objetiva.
@@ -16,16 +18,15 @@ Contexto:
 
 Pergunta: {pergunta}
 """
-
-    resposta = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="openai/gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "Você é uma assistente especializada em Web Analytics e CRM HubSpot."},
             {"role": "user", "content": prompt}
         ]
     )
+    return response.choices[0].message.content.strip()
 
-    return resposta.choices[0].message.content.strip()
 
 def interpretar_comando_geral(comando):
     prompt = f"""
@@ -44,14 +45,15 @@ Sua função é:
 
 Comando: "{comando}"
 """
-    resposta = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="openai/gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "Você é uma assistente que entende e executa comandos humanos."},
             {"role": "user", "content": prompt}
         ]
     )
-    return resposta.choices[0].message.content.strip()
+    return response.choices[0].message.content.strip()
+
 
 def interpretar_criacao_de_reuniao(comando):
     prompt = f"""
@@ -67,20 +69,18 @@ Interprete o comando abaixo e retorne um dicionário com os campos:
 Comando do usuário: "{comando}"
 Responda apenas com o dicionário JSON, sem explicações.
 """
-
-    resposta = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="openai/gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "Você é uma IA que entende e executa agendamentos de reuniões."},
             {"role": "user", "content": prompt}
         ]
     )
-
-    import json
     try:
-        return json.loads(resposta.choices[0].message.content.strip())
+        return json.loads(response.choices[0].message.content.strip())
     except Exception:
         return None
+
 
 def resumir_resultados_web(resultados):
     conteudo = "\n\n".join([f"{r['title']} — {r['body']}" for r in resultados])
@@ -96,8 +96,7 @@ Conteúdo encontrado:
 {conteudo}
 """
 
-
-    resposta = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="openai/gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "Você resume informações com clareza e precisão."},
@@ -105,4 +104,4 @@ Conteúdo encontrado:
         ]
     )
 
-    return resposta.choices[0].message.content.strip()
+    return response.choices[0].message.content.strip()
