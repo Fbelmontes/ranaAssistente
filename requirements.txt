@@ -1,6 +1,6 @@
 streamlit
 openai
-pyaudio
+beautifulsoup4
 gspread
 oauth2client
 duckduckgo-search
