@@ -1,9 +1,14 @@
 streamlit
 openai
-pandas
+pyaudio
 gspread
 oauth2client
+duckduckgo-search
+matplotlib
+pandas
+requests
 python-dotenv
+pyjwt
 google-auth
 google-auth-oauthlib
 google-api-python-client
