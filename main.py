@@ -68,7 +68,7 @@ with col_menu:
     st.markdown("## 🧭 Menu", unsafe_allow_html=True)
     escolha = st.radio(
         "",
-        ["📚 Aprender sobre um site","🌐 Pesquisar na Web"], #,"📁 Enviar Arquivo","🗣️ Falar com a RANA", "🤖 Fazer uma pergunta","📆 Google Calendar", "🎤 Observar Reunião","📲 Criar post para redes", "🎨 Alternar tema"],
+        ["📚 Aprender sobre um site","🌐 Pesquisar na Web","📤 Importar Leads"], #,"📁 Enviar Arquivo","🗣️ Falar com a RANA", "🤖 Fazer uma pergunta","📆 Google Calendar", "🎤 Observar Reunião","📲 Criar post para redes", "🎨 Alternar tema"],
         index=1
     )
 
@@ -136,6 +136,9 @@ with col_content:
                 for r in resultados:
                     st.markdown(f"- [{r['title']}]({r['href']})")
 
+    elif escolha == "📤 Importar Leads":
+        from components.csv_upload import upload_csv_para_make
+        upload_csv_para_make()
 
     elif escolha == "🗣️ Falar com a RANA":
         st.subheader("Comando por voz")
