@@ -4,7 +4,7 @@ import os
 TEMA_PADRAO_ESCURO = False
 
 # API do OpenRouter
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 OPENROUTER_API_BASE = "https://openrouter.ai/api/v1"
 
 # Google Sheets
