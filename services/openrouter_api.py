@@ -1,4 +1,6 @@
 from openai import OpenAI
+from services.google_sheets import obter_conteudo_salvo, obter_ultimas_interacoes
+from services.web_search import buscar_web
 import streamlit as st
 import json
 
@@ -12,20 +14,38 @@ client = OpenAI(
 )
 
 def responder_pergunta(pergunta, contexto):
+    # Primeiro, vamos buscar os dados do Web Summit
+    dados = obter_conteudo_salvo()  # Dados que a RANA aprendeu sobre o Web Summit
+    historico = obter_ultimas_interacoes()  # Histórico de interações
+
+    # Construindo o contexto a partir da memória e da base de dados (Google Sheets)
+    contexto_dados = "\n".join([f"URL: {d.get('URL', '')}\nConteúdo: {d.get('Conteudo', '')}" for d in dados])
+    memoria = "\n".join([f"Pergunta: {h['Pergunta']}\nResposta: {h['Resposta']}" for h in historico])
+
+    # Combina a memória com os dados do Web Summit
+    contexto_completo = f"{memoria}\n\n{contexto_dados}\n\n{contexto}"
+
+    # Agora, o prompt que será enviado para a OpenAI
     prompt = f"""Com base nas informações a seguir, responda a pergunta de forma clara e objetiva.
 Contexto:
-{contexto}
+{contexto_completo}
 
 Pergunta: {pergunta}
 """
-    response = client.chat.completions.create(
-        model="openai/gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "Você é uma assistente especializada em Web Analytics e CRM HubSpot."},
-            {"role": "user", "content": prompt}
-        ]
-    )
-    return response.choices[0].message.content.strip()
+
+    # Usando a API OpenAI para gerar a resposta
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Você é uma assistente especializada em Web Analytics e CRM HubSpot."},
+                {"role": "user", "content": prompt}
+            ]
+        )
+        resposta = response.choices[0].message.content.strip()
+        return resposta
+    except Exception as e:
+        return f"Erro ao processar a pergunta: {str(e)}"
 
 
 def interpretar_comando_geral(comando):
@@ -83,6 +103,7 @@ Responda apenas com o dicionário JSON, sem explicações.
 
 
 def resumir_resultados_web(resultados):
+
     conteudo = "\n\n".join([f"{r['title']} — {r['body']}" for r in resultados])
 
     prompt = f"""
@@ -105,3 +126,4 @@ Conteúdo encontrado:
     )
 
     return response.choices[0].message.content.strip()
+

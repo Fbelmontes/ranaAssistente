@@ -2,6 +2,7 @@
 import streamlit as st
 import base64
 import pandas as pd
+import json
 from styles import css_claro, css_escuro
 from services.openrouter_api import responder_pergunta
 from services.google_sheets import (
@@ -19,6 +20,10 @@ from services.google_sheets import salvar_historico
 from services.google_sheets import obter_ultimas_interacoes
 from services.image_generator import gerar_imagem
 from components.webscraping import start_scraping
+from services.openrouter_api import responder_pergunta
+from services.google_sheets import obter_conteudo_salvo, salvar_historico, obter_ultimas_interacoes
+from services.web_search import buscar_web  # Caso precise de buscas adicionais
+from services.openrouter_api import resumir_resultados_web  # Caso precise usar OpenRouter para responder
 
 
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
@@ -207,27 +212,41 @@ with col_content:
 
         if st.button("Perguntar"):
             with st.spinner("RANA está pensando..."):
-                 # 🔁 Dados principais (base de aprendizado)
-                dados = obter_conteudo_salvo()
-                contexto_dados = "\n".join([
-                    f"URL: {d.get('URL', '')}\nConteúdo: {d.get('Conteudo', '')}" for d in dados
-                ])
+
+                # 🔁 Dados principais (base de aprendizado)
+                dados = obter_conteudo_salvo()  # Dados que a RANA aprendeu sobre o Web Summit
+                resposta = "Desculpe, não consegui entender sua pergunta. Tente novamente."
 
                 # 🧠 Histórico recente (memória curta)
                 historico = obter_ultimas_interacoes()
-                memoria = "\n".join([
-                    f"Pergunta: {h['Pergunta']}\nResposta: {h['Resposta']}" for h in historico
-                ])
+                memoria = "\n".join([f"Pergunta: {h['Pergunta']}\nResposta: {h['Resposta']}" for h in historico])
 
-                # 🧬 Contexto total: memória + base de dados
+                # 🧬 Contexto total: memória + base de dados (Web Summit)
+                contexto_dados = "\n".join([
+                    f"URL: {d.get('URL', '')}\nConteúdo: {d.get('Conteudo', '')}" for d in dados
+                ])
                 contexto = f"{memoria}\n\n{contexto_dados}"
 
-                # 🤖 Chamada para responder
-                resposta = responder_pergunta(pergunta, contexto)
+                # Verificar se a pergunta envolve Web Summit (horários, palestrantes, locais)
+                if "web summit" in pergunta.lower():
+                    evento = [d for d in dados if d['Título'] and d['Título'].lower() in pergunta.lower()]
+                    if evento:
+                        evento = evento[0]
+                        resposta = f"A palestra sobre '{evento['Título']}' será no horário {evento['Horário']} em {evento['Local']}."
+                    else:
+                        # Se não encontrar na planilha, buscar na web
+                        st.spinner("Consultando a web para mais informações...")
+                        resultados = buscar_web(pergunta)
+                        resumo = resumir_resultados_web(resultados)
+
+                        resposta = f"Eu encontrei algumas informações relevantes:\n\n{resumo}"
+
+                # Armazenar a interação
+                salvar_historico(pergunta, resposta)
+                
+                # Exibir a resposta
                 st.success("Resposta da RANA:")
                 st.markdown(f"**RANA:** {resposta}")
-
-                salvar_historico(pergunta, resposta)
 
 
     elif escolha == "🔍 Buscar Aprendizado":
