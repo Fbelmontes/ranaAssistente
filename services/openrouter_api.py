@@ -6,7 +6,8 @@ import streamlit as st
 import openrouter
 import json
 
-client = OpenAI(
+# Autenticação da API do OpenRouter
+client = openrouter.OpenRouter(
     api_key=st.secrets["OPENROUTER_API_KEY"],
     base_url="https://openrouter.ai/api/v1",
     default_headers={
@@ -101,11 +102,10 @@ Contexto:
 
 Pergunta: {pergunta}
 """
-
     try:
-        # Chamando a API OpenRouter com a função ChatCompletion
-        response = openrouter.ChatCompletion.create(
-            model="openrouter-gpt-3.5-turbo",  # Altere o modelo se necessário
+        # Chamada para o OpenRouter (ajustado com o modelo correto)
+        response = client.chat.completions.create(
+            model="openrouter-gpt-3.5-turbo",  # Substitua com o modelo correto do OpenRouter
             messages=[
                 {"role": "system", "content": "Você é uma assistente especializada em Web Analytics e CRM HubSpot."},
                 {"role": "user", "content": prompt}
@@ -113,9 +113,9 @@ Pergunta: {pergunta}
         )
         return response.choices[0].message.content.strip()
 
-    except openrouter.AuthenticationError:  # Caso de falha na autenticação
+    except openrouter.AuthenticationError:  # Tentando capturar erros de autenticação (caso esse erro exista)
         st.error("Erro de autenticação com a API do OpenRouter. Verifique sua chave de API.")
-    except Exception as e:  # Outros erros, como de rede
+    except Exception as e:  # Captura de outros erros, como de rede, resposta inesperada, etc
         st.error(f"Ocorreu um erro ao chamar a API do OpenRouter: {e}")
         return None
 
