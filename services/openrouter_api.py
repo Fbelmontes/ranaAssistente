@@ -110,7 +110,7 @@ Pergunta: {pergunta}
             ]
         )
         return response.choices[0].message.content.strip()
-    except openrouter.error.AuthenticationError:
+    except openrouter.errors.AuthenticationError:  # Aqui ajustamos para capturar a exceção certa
         st.error("Erro de autenticação com a API do OpenRouter. Verifique sua chave de API.")
     except Exception as e:
         st.error(f"Ocorreu um erro ao chamar a API do OpenRouter: {e}")
