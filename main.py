@@ -7,7 +7,6 @@ from styles import css_claro, css_escuro
 from services.google_sheets import (
     obter_conteudo_salvo,
     salvar_na_planilha,
-    salvar_transcricao,
     buscar_na_memoria
 )
 #from services.scraping import extrair_texto
