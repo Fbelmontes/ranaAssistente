@@ -4,6 +4,9 @@ import base64
 import pandas as pd
 import json
 
+# Chamadas de arquivos 
+from services.webscraping import buscar_informacoes
+
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
 
 if "tema_escuro" not in st.session_state:
@@ -54,7 +57,7 @@ with col_menu:
     st.markdown("## 🧭 Menu", unsafe_allow_html=True)
     escolha = st.radio(
         "",
-        ["🤖 Fazer uma pergunta","📚 Aprender sobre um site","🌐 Pesquisar na Web","📤 Importar Leads","🌍 Web Scraping Web Summit"],        
+        ["🔍 Buscar Empresa ou Site","📤 Importar Leads","🌍 Web Scraping Web Summit"],        
         index=0
     )
 
@@ -155,3 +158,16 @@ with col_content:
                     st.markdown(f"**RANA:** {resposta}")
                 else:
                     st.error("Desculpe, não consegui processar sua pergunta.")
+
+    elif escolha == "🔍 Buscar Empresa ou Site":
+        st.subheader("Buscar informações sobre uma empresa ou site")
+        termo = st.text_input("Digite o link do site ou o nome da empresa:")
+
+        if st.button("Buscar Informações"):
+            with st.spinner("RANA está buscando informações..."):
+                dados = buscar_informacoes(termo)
+                st.success("Informações encontradas:")
+                st.json(dados)  # Exibe os dados coletados no formato JSON
+
+                # Salvar as informações coletadas na Google Sheets
+                salvar_na_planilha_busca_sobre(termo, dados)

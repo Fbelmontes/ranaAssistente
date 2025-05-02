@@ -47,3 +47,25 @@ def salvar_historico(pergunta, resposta):
     data_hora = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     aba.append_row([data_hora, pergunta, resposta])
 
+    # Função para salvar informações na Google Sheets
+
+def salvar_na_planilha_busca_sobre(nome_empresa_ou_site, dados):
+    """
+    Salva as informações coletadas sobre o site/empresa na planilha.
+    """
+    # Conectar à planilha
+    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(st.secrets["GOOGLE_SHEETS_CREDENTIALS"]), scope)
+    client = gspread.authorize(creds)
+    planilha = client.open_by_url(st.secrets["SPREADSHEET_URL"])
+
+    # Definir a aba onde os dados serão salvos
+    try:
+        aba = planilha.worksheet("Dados Site/Empresa")
+    except gspread.exceptions.WorksheetNotFound:
+        aba = planilha.add_worksheet(title="Dados Site/Empresa", rows="1000", cols="5")
+        aba.append_row(["Tipo", "URL/Nome", "Título", "Descrição", "Contato"])
+
+    # Salvar os dados
+    aba.append_row([dados["tipo"], nome_empresa_ou_site, dados.get("titulo", "N/A"), dados.get("descricao", "N/A"), dados.get("contato", "N/A")])
+    return True
