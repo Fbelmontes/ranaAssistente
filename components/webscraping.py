@@ -5,7 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import re
-from streamlit import st
+
 
 # ============ Configuração do navegador ============ 
 def setup_driver():
@@ -94,13 +94,14 @@ def gerar_hiperlink(row):
     return f'=HYPERLINK("{link}", "{titulo}")'
 
 # ============ Função principal (sem GUI) ============ 
-def start_scraping(progress_var):
+def start_scraping(progress_var=None):
     driver = setup_driver()
     all_events = []
     page = 1
     try:
         while True:
-            progress_var.set(page * 5)
+            if progress_var:
+                progress_var.set(page * 5)
             print(f"Processando página {page}...")
             page_events = extract_page_data(driver, page)
             if not page_events:
@@ -114,7 +115,7 @@ def start_scraping(progress_var):
             df['Título com Link'] = df.apply(gerar_hiperlink, axis=1)
             cols = ['Título com Link', 'Horário', 'Local', 'Tag', 'Descrição', 'Palestrantes']
             df = df[cols]
-            return df
+            return df  # Retorna o dataframe com os dados coletados
         else:
             print("Nenhum evento encontrado.")
             return None
