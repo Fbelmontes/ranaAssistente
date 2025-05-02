@@ -19,10 +19,9 @@ from services.google_sheets import salvar_historico
 from services.google_sheets import obter_ultimas_interacoes
 from services.image_generator import gerar_imagem
 from components.webscraping import start_scraping
-
 from services.google_sheets import obter_conteudo_salvo, salvar_historico, obter_ultimas_interacoes
 from services.web_search import buscar_web  # Caso precise de buscas adicionais
-
+from services.openrouter_api import responder_com_contexto
 
 
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
@@ -75,8 +74,8 @@ with col_menu:
     st.markdown("## 🧭 Menu", unsafe_allow_html=True)
     escolha = st.radio(
         "",
-        ["📚 Aprender sobre um site","🌐 Pesquisar na Web","📤 Importar Leads","🌍 Web Scraping Web Summit"],        
-        index=1
+        ["🤖 Fazer uma pergunta","📚 Aprender sobre um site","🌐 Pesquisar na Web","📤 Importar Leads","🌍 Web Scraping Web Summit"],        
+        index=0
     )
 
 # ========== AVATAR CENTRAL ==========
@@ -164,4 +163,12 @@ with col_content:
         from components.csv_upload import upload_csv_para_make
         upload_csv_para_make()
 
-   
+    elif escolha == "🤖 Fazer uma pergunta":
+        st.subheader("Fazer uma pergunta para a RANA")
+        pergunta = st.text_input("Digite sua pergunta:")
+
+        if st.button("Perguntar"):
+            with st.spinner("RANA está pensando..."):
+                resposta = responder_com_contexto(pergunta)
+                st.success("Resposta da RANA:")
+                st.markdown(f"**RANA:** {resposta}")
