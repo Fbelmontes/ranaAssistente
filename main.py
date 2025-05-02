@@ -25,7 +25,7 @@ video_base64 = video_to_base64("assets/videos/rana_avatar.mp4")
 
 #gif_base64 = image_to_base64("assets/icons/rana_avatar2.gif")
 
-st.markdown(css_escuro if st.session_state.tema_escuro else css_claro, unsafe_allow_html=True)
+#st.markdown(css_escuro if st.session_state.tema_escuro else css_claro, unsafe_allow_html=True)
 
 #st.markdown("<h1 style='color:#003366; text-align: center;'> RANA - Assistente de Web Analytics</h1>", unsafe_allow_html=True)
 #st.caption("Powered by você, Fe 💖")
