@@ -113,7 +113,7 @@ with col_content:
 
         if st.button("Coletar Dados do Web Summit"):
             with st.spinner("Coletando dados..."):
-                eventos = start_scraping(progress_var)  # Função de scraping
+                eventos = start_scraping()  # Função de scraping
                 
                 if eventos is not None:
                     df = eventos
