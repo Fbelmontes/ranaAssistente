@@ -49,23 +49,21 @@ def salvar_historico(pergunta, resposta):
 
     # Função para salvar informações na Google Sheets
 
-def salvar_na_planilha_busca_sobre(nome_empresa_ou_site, dados):
+def salvar_na_planilha_busca_sobre(termo, dados):
     """
-    Salva as informações coletadas sobre o site/empresa na planilha.
+    Função para salvar informações sobre uma empresa ou site na planilha Google Sheets.
+    :param termo: o nome da empresa ou link do site
+    :param dados: os dados coletados relacionados ao termo
     """
-    # Conectar à planilha
-    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(st.secrets["GOOGLE_SHEETS_CREDENTIALS"]), scope)
-    client = gspread.authorize(creds)
-    planilha = client.open_by_url(st.secrets["SPREADSHEET_URL"])
-
-    # Definir a aba onde os dados serão salvos
+    sheet = conectar_sheets()
+    
+    # Verificar se as colunas já existem, caso contrário, criar novas
     try:
-        aba = planilha.worksheet("Dados Site/Empresa")
+        # Aqui você pode configurar a planilha de acordo com as colunas que você deseja
+        aba = sheet.spreadsheet.worksheet("Base")
     except gspread.exceptions.WorksheetNotFound:
-        aba = planilha.add_worksheet(title="Dados Site/Empresa", rows="1000", cols="5")
-        aba.append_row(["Tipo", "URL/Nome", "Título", "Descrição", "Contato"])
-
-    # Salvar os dados
-    aba.append_row([dados["tipo"], nome_empresa_ou_site, dados.get("titulo", "N/A"), dados.get("descricao", "N/A"), dados.get("contato", "N/A")])
-    return True
+        aba = sheet.spreadsheet.add_worksheet(title="Base", rows="1000", cols="2")
+        aba.append_row(["Termo", "Dados"])
+    
+    # Salvar as informações
+    aba.append_row([termo, json.dumps(dados)])  # Salvando os dados como JSON
