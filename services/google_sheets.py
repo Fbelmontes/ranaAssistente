@@ -87,7 +87,7 @@ def obter_conteudo_salvo():
         scopes=["https://www.googleapis.com/auth/spreadsheets"]
     )
     service = build('sheets', 'v4', credentials=creds)
-    spreadsheet_id = "YOUR_SPREADSHEET_ID"  # Substitua pelo ID da sua planilha
+    spreadsheet_id = "1YnX5Lg7eW6AXwSdo73SIwvlxc4fITwUw5mTPHlspSqA"  # Substitua pelo ID da sua planilha
     range_ = "WebSubmit!A1:F"  # O nome da aba com dados do Web Summit
 
     result = service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range=range_).execute()
