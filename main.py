@@ -76,7 +76,7 @@ with col_menu:
     st.markdown("## 🧭 Menu", unsafe_allow_html=True)
     escolha = st.radio(
         "",
-        ["📚 Aprender sobre um site","🌐 Pesquisar na Web","📤 Importar Leads","🌍 Web Scraping Web Summit"],        
+        ["📚 Aprender sobre um site","🌐 Pesquisar na Web","📤 Importar Leads","🌍 Web Scraping Web Summit","🤖 Fazer uma pergunta"],        
         index=1
     )
 
