@@ -10,7 +10,7 @@ def upload_csv_para_make():
         st.success("Arquivo carregado com sucesso.")
         
         if st.button("Importar Leads"):
-            with st.spinner("Enviando para o Make..."):
+            with st.spinner("Enviando para a HubSpot..."):
 
                 make_webhook_url = st.secrets["MAKE_WEBHOOK_URL"]
                 files = {"file": (csv_file.name, csv_file.getvalue())}
@@ -18,7 +18,7 @@ def upload_csv_para_make():
                 try:
                     response = requests.post(make_webhook_url, files=files)
                     if response.status_code == 200:
-                        st.success("Leads enviados com sucesso para o Make! ✅")
+                        st.success("Leads enviados com sucesso para a HubSpot! ✅")
                     else:
                         st.error(f"Erro ao enviar: {response.status_code} - {response.text}")
                 except Exception as e:
