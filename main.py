@@ -1,6 +1,7 @@
 # Execução python -m streamlit run .\main.py
 import streamlit as st
 import base64
+import pandas as pd
 from styles import css_claro, css_escuro
 from services.openrouter_api import responder_pergunta
 from services.google_sheets import (
@@ -17,6 +18,8 @@ from services.google_calendar import verificar_eventos, criar_evento
 from services.google_sheets import salvar_historico
 from services.google_sheets import obter_ultimas_interacoes
 from services.image_generator import gerar_imagem
+from components.webscraping import start_scraping
+
 
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
 
@@ -68,7 +71,7 @@ with col_menu:
     st.markdown("## 🧭 Menu", unsafe_allow_html=True)
     escolha = st.radio(
         "",
-        ["📚 Aprender sobre um site","🌐 Pesquisar na Web","📤 Importar Leads"], #,"📁 Enviar Arquivo","🗣️ Falar com a RANA", "🤖 Fazer uma pergunta","📆 Google Calendar", "🎤 Observar Reunião","📲 Criar post para redes", "🎨 Alternar tema"],
+        ["📚 Aprender sobre um site","🌐 Pesquisar na Web","📤 Importar Leads","🌍 Web Scraping Web Summit"], #,"📁 Enviar Arquivo","🗣️ Falar com a RANA", "🤖 Fazer uma pergunta","📆 Google Calendar", "🎤 Observar Reunião","📲 Criar post para redes", "🎨 Alternar tema"],
         index=1
     )
 
@@ -102,7 +105,27 @@ with col_avatar:
 with col_content:
     st.markdown("### Área de Interação")
 
-    if escolha == "📚 Aprender sobre um site":
+    # ############# Opção Web Scraping #############
+    if escolha == "🌍 Web Scraping Web Summit":
+        st.subheader("🕵️‍♂️ Coletando Palestras e Eventos do Web Summit")
+        
+        progress_var = st.progress(0)  # Barra de progresso para feedback ao usuário
+
+        if st.button("Coletar Dados do Web Summit"):
+            with st.spinner("Coletando dados..."):
+                eventos = start_scraping(progress_var)  # Função de scraping
+                
+                if eventos is not None:
+                    df = eventos
+                    st.dataframe(df)  # Exibe os dados no formato de tabela
+                    st.success("Dados coletados com sucesso!")
+                    
+                    # Optionally, save to Google Sheets (if needed)
+                    salvar_historico("Web Summit - Eventos", df.to_dict(orient='records'))
+                else:
+                    st.error("Erro ao coletar dados.")
+
+    elif escolha == "📚 Aprender sobre um site":
         st.subheader("Ensinar algo novo para a RANA")
         url = st.text_input("Insira o link do site:")
         if st.button("Aprender"):
