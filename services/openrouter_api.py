@@ -102,6 +102,7 @@ Contexto:
 Pergunta: {pergunta}
 """
     try:
+        # Chamada para o OpenRouter (ajustado com o modelo correto)
         response = openrouter.ChatCompletion.create(
             model="openrouter-gpt-3.5-turbo",  # Substitua com o modelo correto do OpenRouter
             messages=[
@@ -110,9 +111,10 @@ Pergunta: {pergunta}
             ]
         )
         return response.choices[0].message.content.strip()
-    except openrouter.errors.AuthenticationError:  # Aqui ajustamos para capturar a exceção certa
+
+    except openrouter.AuthenticationError:  # Tentando capturar erros de autenticação (caso esse erro exista)
         st.error("Erro de autenticação com a API do OpenRouter. Verifique sua chave de API.")
-    except Exception as e:
+    except Exception as e:  # Captura de outros erros, como de rede, resposta inesperada, etc
         st.error(f"Ocorreu um erro ao chamar a API do OpenRouter: {e}")
         return None
 
