@@ -5,12 +5,31 @@ import streamlit as st
 from oauth2client.service_account import ServiceAccountCredentials
 from config import SPREADSHEET_URL, CREDENTIALS_PATH
 
+#def conectar_sheets():
+#    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+#    cred_dict = json.loads(st.secrets["GOOGLE_SHEETS_CREDENTIALS"])
+#    creds = ServiceAccountCredentials.from_json_keyfile_dict(cred_dict, scope)
+#    client = gspread.authorize(creds)
+#    return client.open_by_url(SPREADSHEET_URL).sheet1
+
 def conectar_sheets():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    cred_dict = json.loads(st.secrets["GOOGLE_SHEETS_CREDENTIALS"])
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(cred_dict, scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(st.secrets["GOOGLE_SHEETS_CREDENTIALS"]), scope)
     client = gspread.authorize(creds)
-    return client.open_by_url(SPREADSHEET_URL).sheet1
+    
+    # Acessar as 4 páginas de dados
+    base_sheet = client.open_by_url(st.secrets["SPREADSHEET_URL"]).worksheet("Base")
+    arquivos_sheet = client.open_by_url(st.secrets["SPREADSHEET_URL"]).worksheet("Arquivos")
+    historico_sheet = client.open_by_url(st.secrets["SPREADSHEET_URL"]).worksheet("Historico")
+    websubmit_sheet = client.open_by_url(st.secrets["SPREADSHEET_URL"]).worksheet("WebSubmit")
+    
+    # Coletar todos os dados das 4 páginas
+    base_data = base_sheet.get_all_records()
+    arquivos_data = arquivos_sheet.get_all_records()
+    historico_data = historico_sheet.get_all_records()
+    websubmit_data = websubmit_sheet.get_all_records()
+
+    return base_data, arquivos_data, historico_data, websubmit_data
 
 def obter_conteudo_salvo():
     sheet = conectar_sheets()
