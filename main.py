@@ -171,5 +171,8 @@ with col_content:
         if st.button("Perguntar"):
             with st.spinner("RANA está pensando..."):
                 resposta = responder_com_contexto(pergunta)
-                st.success("Resposta da RANA:")
-                st.markdown(f"**RANA:** {resposta}")
+                if resposta:
+                    st.success("Resposta da RANA:")
+                    st.markdown(f"**RANA:** {resposta}")
+                else:
+                    st.error("Desculpe, não consegui processar sua pergunta.")

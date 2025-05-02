@@ -101,10 +101,11 @@ Contexto:
 
 Pergunta: {pergunta}
 """
+
     try:
-        # Chamada para o OpenRouter (ajustado com o modelo correto)
+        # Chamando a API OpenRouter com a função ChatCompletion
         response = openrouter.ChatCompletion.create(
-            model="openrouter-gpt-3.5-turbo",  # Substitua com o modelo correto do OpenRouter
+            model="openrouter-gpt-3.5-turbo",  # Altere o modelo se necessário
             messages=[
                 {"role": "system", "content": "Você é uma assistente especializada em Web Analytics e CRM HubSpot."},
                 {"role": "user", "content": prompt}
@@ -112,22 +113,40 @@ Pergunta: {pergunta}
         )
         return response.choices[0].message.content.strip()
 
-    except openrouter.AuthenticationError:  # Tentando capturar erros de autenticação (caso esse erro exista)
+    except openrouter.AuthenticationError:  # Caso de falha na autenticação
         st.error("Erro de autenticação com a API do OpenRouter. Verifique sua chave de API.")
-    except Exception as e:  # Captura de outros erros, como de rede, resposta inesperada, etc
+    except Exception as e:  # Outros erros, como de rede
         st.error(f"Ocorreu um erro ao chamar a API do OpenRouter: {e}")
         return None
+
 
 def responder_com_contexto(pergunta):
     # Coletando dados do Google Sheets
     from services.google_sheets import conectar_sheets
-    # Pegar as informações das abas da Google Sheets
-    base_data, arquivos_data, historico_data, websubmit_data = conectar_sheets()
+    
+    try:
+        # Coletando os dados de todas as planilhas
+        base_data, arquivos_data, historico_data, websubmit_data = conectar_sheets()
 
-    # Construir o contexto a partir dos dados
-    contexto = f"Base de dados: {base_data}\nArquivos: {arquivos_data}\nHistórico: {historico_data}\nWeb Summit: {websubmit_data}"
+        # Construindo o contexto a partir dos dados
+        contexto = f"""
+Base de dados:
+{base_data}
 
-    # Chamar a função responder_pergunta com a pergunta e o contexto
-    resposta = responder_pergunta(pergunta, contexto)
+Arquivos:
+{arquivos_data}
 
-    return resposta
+Histórico:
+{historico_data}
+
+Web Summit:
+{websubmit_data}
+"""
+        
+        # Chama a função responder_pergunta com a pergunta e o contexto
+        resposta = responder_pergunta(pergunta, contexto)
+        return resposta
+
+    except Exception as e:
+        st.error(f"Erro ao processar a pergunta: {e}")
+        return "Desculpe, houve um erro ao processar sua pergunta."
