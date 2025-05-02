@@ -2,6 +2,7 @@ from openai import OpenAI
 from services.google_sheets import obter_conteudo_salvo, obter_ultimas_interacoes
 from services.web_search import buscar_web
 from services.openrouter_api import responder_pergunta
+from services.google_sheets import conectar_sheets
 import streamlit as st
 import json
 
@@ -128,3 +129,19 @@ Conteúdo encontrado:
 
     return response.choices[0].message.content.strip()
 
+# Função para responder utilizando os dados da Google Sheets e OpenRouter
+def responder_com_contexto(pergunta):
+    # Obter dados das 4 páginas
+    base_data, arquivos_data, historico_data, websubmit_data = conectar_sheets()
+    
+    # Montar contexto com os dados das 4 páginas
+    contexto = ""
+    contexto += "\nBase Data:\n" + "\n".join([str(d) for d in base_data])  # Transformar dados em string
+    contexto += "\nArquivos Data:\n" + "\n".join([str(d) for d in arquivos_data])
+    contexto += "\nHistorico Data:\n" + "\n".join([str(d) for d in historico_data])
+    contexto += "\nWebSubmit Data:\n" + "\n".join([str(d) for d in websubmit_data])
+
+    # Enviar a pergunta e contexto para o OpenRouter
+    resposta = responder_pergunta(pergunta, contexto)
+    
+    return resposta
