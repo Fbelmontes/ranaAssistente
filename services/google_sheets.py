@@ -87,11 +87,15 @@ def obter_conteudo_salvo():
         scopes=["https://www.googleapis.com/auth/spreadsheets"]
     )
     service = build('sheets', 'v4', credentials=creds)
-    spreadsheet_id = "1YnX5Lg7eW6AXwSdo73SIwvlxc4fITwUw5mTPHlspSqA"  # Substitua pelo ID da sua planilha
+
+    # Substitua pelo ID da sua planilha
+    SPREADSHEET_ID = "1YnX5Lg7eW6AXwSdo73SIwvlxc4fITwUw5mTPHlspSqA"
     range_ = "WebSubmit!A1:F"  # O nome da aba com dados do Web Summit
 
-    result = service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range=range_).execute()
+    # Chama a API para acessar a planilha
+    result = service.spreadsheets().values().get(spreadsheetId=SPREADSHEET_ID, range=range_).execute()
     values = result.get('values', [])
+    return values
 
     if not values:
         print("Nenhum dado encontrado.")
