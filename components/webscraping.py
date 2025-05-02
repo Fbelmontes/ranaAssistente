@@ -58,7 +58,7 @@ def extract_page_data(page_number):
 def gerar_hiperlink(row):
     link = row["Link"]
     titulo = row["Título"].replace('"', '')
-    return f'=HYPERLINK("{link}", "{titulo}")'
+    return f'=HYPERLINK("{link}"; "{titulo}")'
 
 def start_scraping():
     all_events = []
