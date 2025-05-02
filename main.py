@@ -3,26 +3,6 @@ import streamlit as st
 import base64
 import pandas as pd
 import json
-from styles import css_claro, css_escuro
-from services.google_sheets import (
-    obter_conteudo_salvo,
-    salvar_na_planilha,
-    buscar_na_memoria
-)
-#from services.scraping import extrair_texto
-#from services.audio_transcriber import gravar_reuniao, transcrever_reuniao
-from services.relatorio_generator import gerar_relatorio
-#from components.file_upload import file_upload_component
-from services.google_calendar import verificar_eventos, criar_evento
-from services.google_sheets import salvar_historico
-from services.google_sheets import obter_ultimas_interacoes
-from services.image_generator import gerar_imagem
-from components.webscraping import start_scraping
-from services.google_sheets import obter_conteudo_salvo, salvar_historico, obter_ultimas_interacoes
-from services.web_search import buscar_web  # Caso precise de buscas adicionais
-from services.openrouter_api import responder_com_contexto
-
-
 
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
 
