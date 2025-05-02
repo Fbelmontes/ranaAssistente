@@ -79,9 +79,9 @@ def salvar_historico(pergunta, resposta):
 
     sheet = conectar_sheets()
     try:
-        aba = sheet.spreadsheet.worksheet("Histórico")
+        aba = sheet.spreadsheet.worksheet("Historico")
     except:
-        aba = sheet.spreadsheet.add_worksheet(title="Histórico", rows="1000", cols="3")
+        aba = sheet.spreadsheet.add_worksheet(title="Historico", rows="1000", cols="3")
         aba.append_row(["Data/Hora", "Pergunta", "Resposta"])
 
     data_hora = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
