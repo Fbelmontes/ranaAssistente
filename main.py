@@ -212,39 +212,39 @@ with col_content:
 
         if st.button("Perguntar"):
             with st.spinner("RANA está pensando..."):
+                resposta = ""
 
-                # 🔁 Dados principais (base de aprendizado)
-                dados = obter_conteudo_salvo()  # Dados que a RANA aprendeu sobre o Web Summit
-                resposta = "Desculpe, não consegui entender sua pergunta. Tente novamente."
+                # 1. Verificar se a pergunta é sobre o Web Summit (consultar a planilha)
+                dados = obter_conteudo_salvo()
+                contexto_dados = "\n".join([f"URL: {d.get('URL', '')}\nConteúdo: {d.get('Conteudo', '')}" for d in dados])
+                
+                if "web summit" in pergunta.lower():
+                    resposta = responder_pergunta(pergunta, contexto_dados)
+                    st.success("Resposta da RANA:")
+                    st.markdown(f"**RANA:** {resposta}")
 
-                # 🧠 Histórico recente (memória curta)
+                # 2. Caso não encontre na base de dados, buscar na Web
+                if not resposta:
+                    st.warning("Não encontrei na base de dados, realizando uma pesquisa na web...")
+                    tema = pergunta  # Usando a mesma pergunta como tema para pesquisa
+                    resultados = buscar_web(tema)
+                    resumo = resumir_resultados_web(resultados)
+
+                    st.success("Resumo encontrado:")
+                    st.markdown(resumo)
+
+                    st.markdown("### Fontes:")
+                    for r in resultados:
+                        st.markdown(f"- [{r['title']}]({r['href']})")
+
+                # 3. Consultar a memória (histórico de perguntas anteriores)
                 historico = obter_ultimas_interacoes()
                 memoria = "\n".join([f"Pergunta: {h['Pergunta']}\nResposta: {h['Resposta']}" for h in historico])
 
-                # 🧬 Contexto total: memória + base de dados (Web Summit)
-                contexto_dados = "\n".join([
-                    f"URL: {d.get('URL', '')}\nConteúdo: {d.get('Conteudo', '')}" for d in dados
-                ])
-                contexto = f"{memoria}\n\n{contexto_dados}"
+                # 4. Chamada para responder, levando em consideração o contexto de memória e dados
+                contexto_completo = f"{memoria}\n\n{contexto_dados}"
+                resposta = responder_pergunta(pergunta, contexto_completo)
 
-                # Verificar se a pergunta envolve Web Summit (horários, palestrantes, locais)
-                if "web summit" in pergunta.lower():
-                    evento = [d for d in dados if d['Título'] and d['Título'].lower() in pergunta.lower()]
-                    if evento:
-                        evento = evento[0]
-                        resposta = f"A palestra sobre '{evento['Título']}' será no horário {evento['Horário']} em {evento['Local']}."
-                    else:
-                        # Se não encontrar na planilha, buscar na web
-                        st.spinner("Consultando a web para mais informações...")
-                        resultados = buscar_web(pergunta)
-                        resumo = resumir_resultados_web(resultados)
-
-                        resposta = f"Eu encontrei algumas informações relevantes:\n\n{resumo}"
-
-                # Armazenar a interação
-                salvar_historico(pergunta, resposta)
-                
-                # Exibir a resposta
                 st.success("Resposta da RANA:")
                 st.markdown(f"**RANA:** {resposta}")
 
