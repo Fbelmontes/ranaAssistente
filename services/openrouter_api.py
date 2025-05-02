@@ -100,29 +100,31 @@ Contexto:
 
 Pergunta: {pergunta}
 """
-    response = openai.ChatCompletion.create(
-        model="openai/gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "Você é uma assistente especializada em Web Analytics e CRM HubSpot."},
-            {"role": "user", "content": prompt}
-        ]
-    )
-    return response.choices[0].message.content.strip()
+    try:
+        response = openrouter.ChatCompletion.create(
+            model="openrouter-gpt-3.5-turbo",  # Substitua com o modelo correto do OpenRouter
+            messages=[
+                {"role": "system", "content": "Você é uma assistente especializada em Web Analytics e CRM HubSpot."},
+                {"role": "user", "content": prompt}
+            ]
+        )
+        return response.choices[0].message.content.strip()
+    except openrouter.error.AuthenticationError:
+        st.error("Erro de autenticação com a API do OpenRouter. Verifique sua chave de API.")
+    except Exception as e:
+        st.error(f"Ocorreu um erro ao chamar a API do OpenRouter: {e}")
+        return None
 
 def responder_com_contexto(pergunta):
     # Coletando dados do Google Sheets
     from services.google_sheets import conectar_sheets
-
+    # Pegar as informações das abas da Google Sheets
     base_data, arquivos_data, historico_data, websubmit_data = conectar_sheets()
-    
-    # Montar contexto com os dados das 4 páginas
-    contexto = ""
-    contexto += "\nBase Data:\n" + "\n".join([str(d) for d in base_data])  # Transformar dados em string
-    contexto += "\nArquivos Data:\n" + "\n".join([str(d) for d in arquivos_data])
-    contexto += "\nHistorico Data:\n" + "\n".join([str(d) for d in historico_data])
-    contexto += "\nWebSubmit Data:\n" + "\n".join([str(d) for d in websubmit_data])
 
-    # Enviar a pergunta e contexto para o OpenRouter
+    # Construir o contexto a partir dos dados
+    contexto = f"Base de dados: {base_data}\nArquivos: {arquivos_data}\nHistórico: {historico_data}\nWeb Summit: {websubmit_data}"
+
+    # Chamar a função responder_pergunta com a pergunta e o contexto
     resposta = responder_pergunta(pergunta, contexto)
-    
+
     return resposta
