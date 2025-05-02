@@ -3,6 +3,7 @@ from services.google_sheets import obter_conteudo_salvo, obter_ultimas_interacoe
 from services.web_search import buscar_web
 from services.google_sheets import conectar_sheets
 import streamlit as st
+import openrouter
 import json
 
 client = OpenAI(
