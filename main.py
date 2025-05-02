@@ -164,15 +164,5 @@ with col_content:
     elif escolha == "📤 Importar Leads":
         from components.csv_upload import upload_csv_para_make
         upload_csv_para_make()
-    
-    elif escolha == "🤖 Fazer uma pergunta":
-        st.subheader("Fazer uma pergunta para a RANA")
-        pergunta = st.text_input("Digite sua pergunta:")
-
-        if st.button("Perguntar"):
-            with st.spinner("RANA está pensando..."):
-                resposta = responder_com_contexto(pergunta)
-                st.success("Resposta da RANA:")
-                st.markdown(f"**RANA:** {resposta}")
 
    
