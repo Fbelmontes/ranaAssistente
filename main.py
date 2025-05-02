@@ -23,7 +23,7 @@ from components.webscraping import start_scraping
 
 from services.google_sheets import obter_conteudo_salvo, salvar_historico, obter_ultimas_interacoes
 from services.web_search import buscar_web  # Caso precise de buscas adicionais
-from services.openrouter_api import resumir_resultados_web  # Caso precise usar OpenRouter para responder
+
 
 
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
