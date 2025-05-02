@@ -121,7 +121,7 @@ with col_content:
                     st.success("Dados coletados com sucesso!")
                     
                     # Optionally, save to Google Sheets (if needed)
-                    salvar_historico("Web Summit - Eventos", df.to_dict(orient='records'))
+                    #salvar_historico("Web Summit - Eventos", df.to_dict(orient='records'))
                 else:
                     st.error("Erro ao coletar dados.")
 
