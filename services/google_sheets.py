@@ -82,36 +82,43 @@ def obter_ultimas_interacoes(qtd=3):
         return []
 
 def obter_conteudo_salvo():
+    # Lê as credenciais do Google Sheets armazenadas no Streamlit Secrets
+    creds_info = json.loads(st.secrets["GOOGLE_SHEETS_CREDENTIALS"])
     creds = Credentials.from_service_account_info(
-        json.loads(st.secrets["GOOGLE_SHEETS_CREDENTIALS"]),
+        creds_info,
         scopes=["https://www.googleapis.com/auth/spreadsheets"]
     )
+    
+    # Cria o serviço da API Google Sheets
     service = build('sheets', 'v4', credentials=creds)
 
-    # Substitua pela URL completa da sua planilha
+    # URL completa da planilha
     SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1YnX5Lg7eW6AXwSdo73SIwvlxc4fITwUw5mTPHlspSqA/edit"
-
+    
     # Extrair o ID da planilha da URL
     SPREADSHEET_ID = re.search(r'/d/([a-zA-Z0-9-_]+)', SPREADSHEET_URL).group(1)
 
+    # Defina o intervalo de dados a ser lido
     range_ = "WebSubmit!A1:F"  # O nome da aba com dados do Web Summit
 
-    # Chama a API para acessar a planilha
+    # Chama a API para acessar os dados da planilha
     result = service.spreadsheets().values().get(spreadsheetId=SPREADSHEET_ID, range=range_).execute()
     values = result.get('values', [])
-    return values
 
     if not values:
         print("Nenhum dado encontrado.")
-    else:
-        dados = []
-        for row in values:
-            dados.append({
-                "Título": row[0],
-                "Horário": row[1],
-                "Local": row[2],
-                "Tag": row[3],
-                "Descrição": row[5],
-                "Palestrantes": row[6]
-            })
-        return dados
+        return []
+
+    dados = []
+    # Processa os dados da planilha
+    for row in values:
+        dados.append({
+            "Título": row[0],
+            "Horário": row[1],
+            "Local": row[2],
+            "Tag": row[3],
+            "Descrição": row[5],  # Correção de índice, coluna 5 para Descrição
+            "Palestrantes": row[6]  # Correção de índice, coluna 6 para Palestrantes
+        })
+    
+    return dados
