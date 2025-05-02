@@ -6,6 +6,7 @@ import json
 
 # Chamadas de arquivos 
 from services.webscraping import buscar_informacoes
+from services.google_sheets import salvar_na_planilha_busca_sobre, conectar_sheets
 
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
 
