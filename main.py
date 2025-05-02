@@ -4,7 +4,6 @@ import base64
 import pandas as pd
 import json
 from styles import css_claro, css_escuro
-
 from services.google_sheets import (
     obter_conteudo_salvo,
     salvar_na_planilha,
