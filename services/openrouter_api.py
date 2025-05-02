@@ -15,41 +15,6 @@ client = OpenAI(
     }
 )
 
-def responder_pergunta(pergunta, contexto):
-    # Primeiro, vamos buscar os dados do Web Summit
-    dados = obter_conteudo_salvo()  # Dados que a RANA aprendeu sobre o Web Summit
-    historico = obter_ultimas_interacoes()  # Histórico de interações
-
-    # Construindo o contexto a partir da memória e da base de dados (Google Sheets)
-    contexto_dados = "\n".join([f"URL: {d.get('URL', '')}\nConteúdo: {d.get('Conteudo', '')}" for d in dados])
-    memoria = "\n".join([f"Pergunta: {h['Pergunta']}\nResposta: {h['Resposta']}" for h in historico])
-
-    # Combina a memória com os dados do Web Summit
-    contexto_completo = f"{memoria}\n\n{contexto_dados}\n\n{contexto}"
-
-    # Agora, o prompt que será enviado para a OpenAI
-    prompt = f"""Com base nas informações a seguir, responda a pergunta de forma clara e objetiva.
-Contexto:
-{contexto_completo}
-
-Pergunta: {pergunta}
-"""
-
-    # Usando a API OpenAI para gerar a resposta
-    try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "Você é uma assistente especializada em Web Analytics e CRM HubSpot."},
-                {"role": "user", "content": prompt}
-            ]
-        )
-        resposta = response.choices[0].message.content.strip()
-        return resposta
-    except Exception as e:
-        return f"Erro ao processar a pergunta: {str(e)}"
-
-
 def interpretar_comando_geral(comando):
     prompt = f"""
 Você é uma assistente pessoal chamada RANA.
@@ -129,9 +94,26 @@ Conteúdo encontrado:
 
     return response.choices[0].message.content.strip()
 
-# Função para responder utilizando os dados da Google Sheets e OpenRouter
+def responder_pergunta(pergunta, contexto):
+    prompt = f"""Com base nas informações a seguir, responda a pergunta de forma clara e objetiva.
+Contexto:
+{contexto}
+
+Pergunta: {pergunta}
+"""
+    response = openai.ChatCompletion.create(
+        model="openai/gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "Você é uma assistente especializada em Web Analytics e CRM HubSpot."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    return response.choices[0].message.content.strip()
+
 def responder_com_contexto(pergunta):
-    # Obter dados das 4 páginas
+    # Coletando dados do Google Sheets
+    from services.google_sheets import conectar_sheets
+
     base_data, arquivos_data, historico_data, websubmit_data = conectar_sheets()
     
     # Montar contexto com os dados das 4 páginas

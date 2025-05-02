@@ -24,6 +24,7 @@ from services.web_search import buscar_web  # Caso precise de buscas adicionais
 from services.openrouter_api import responder_com_contexto
 
 
+
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
 
 if "tema_escuro" not in st.session_state:
