@@ -88,8 +88,12 @@ def obter_conteudo_salvo():
     )
     service = build('sheets', 'v4', credentials=creds)
 
-    # Substitua pelo ID da sua planilha
-    SPREADSHEET_ID = "1YnX5Lg7eW6AXwSdo73SIwvlxc4fITwUw5mTPHlspSqA"
+    # Substitua pela URL completa da sua planilha
+    SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1YnX5Lg7eW6AXwSdo73SIwvlxc4fITwUw5mTPHlspSqA/edit"
+
+    # Extrair o ID da planilha da URL
+    SPREADSHEET_ID = re.search(r'/d/([a-zA-Z0-9-_]+)', SPREADSHEET_URL).group(1)
+
     range_ = "WebSubmit!A1:F"  # O nome da aba com dados do Web Summit
 
     # Chama a API para acessar a planilha
