@@ -4,7 +4,7 @@ import base64
 import pandas as pd
 import json
 from styles import css_claro, css_escuro
-from services.openrouter_api import responder_pergunta
+
 from services.google_sheets import (
     obter_conteudo_salvo,
     salvar_na_planilha,
@@ -20,7 +20,7 @@ from services.google_sheets import salvar_historico
 from services.google_sheets import obter_ultimas_interacoes
 from services.image_generator import gerar_imagem
 from components.webscraping import start_scraping
-from services.openrouter_api import responder_pergunta
+
 from services.google_sheets import obter_conteudo_salvo, salvar_historico, obter_ultimas_interacoes
 from services.web_search import buscar_web  # Caso precise de buscas adicionais
 from services.openrouter_api import resumir_resultados_web  # Caso precise usar OpenRouter para responder
