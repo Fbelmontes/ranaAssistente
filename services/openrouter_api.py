@@ -1,8 +1,6 @@
 import requests
 import streamlit as st
 
-# Certifique-se de que sua chave da OpenRouter está salva nos segredos como:
-# st.secrets["OPENROUTER_API_KEY"]
 OPENROUTER_API_KEY = st.secrets["OPENROUTER_API_KEY"]
 
 def responder_pergunta(prompt):
@@ -11,17 +9,13 @@ def responder_pergunta(prompt):
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://ranaassistente.streamlit.app",
-        "X-Title": "RANA Assistente IA"
+        "HTTP-Referer": "https://ranaassistente.streamlit.app",  # obrigatório para Streamlit Cloud
+        "X-Title": "RANA Assistente"
     }
 
     body = {
-        "model": "openrouter/openchat-3.5",
+        "model": "openrouter/openchat-3.5",  # modelo gratuito e estável
         "messages": [
-            {
-                "role": "system",
-                "content": "Você é a RANA, uma assistente que responde com base em registros de empresas salvos em memória. Nunca invente nada. Seja objetiva."
-            },
             {
                 "role": "user",
                 "content": prompt
@@ -36,6 +30,7 @@ def responder_pergunta(prompt):
             return response.json()["choices"][0]["message"]["content"]
         else:
             st.error(f"Erro ao consultar OpenRouter: {response.status_code}")
+            st.text(response.text)  # mostra motivo detalhado do erro
             return None
     except Exception as e:
         st.error(f"Erro de conexão com OpenRouter: {str(e)}")
