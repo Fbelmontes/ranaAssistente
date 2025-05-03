@@ -6,7 +6,7 @@ import json
 
 # Chamadas de arquivos 
 from services.webscraping import buscar_informacoes
-from services.google_sheets import salvar_na_planilha_busca_sobre, conectar_sheets
+from services.google_sheets import salvar_na_planilha_2, conectar_sheets
 
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
 
@@ -169,6 +169,5 @@ with col_content:
                 dados = buscar_informacoes(termo)
                 st.success("Informações encontradas:")
                 st.json(dados)  # Exibe os dados coletados no formato JSON
-
                 # Salvar as informações coletadas na Google Sheets
-                salvar_na_planilha_busca_sobre(termo, dados)
+                salvar_na_planilha_2(termo, dados)

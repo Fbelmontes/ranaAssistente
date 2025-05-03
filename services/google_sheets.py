@@ -49,7 +49,7 @@ def salvar_historico(pergunta, resposta):
 
     # Função para salvar informações na Google Sheets
 
-def salvar_na_planilha_busca_sobre(termo, dados):
+def salvar_na_planilha_2(termo, dados):
     """
     Função para salvar informações sobre uma empresa ou site na planilha Google Sheets.
     :param termo: o nome da empresa ou link do site
