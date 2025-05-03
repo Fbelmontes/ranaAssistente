@@ -5,7 +5,6 @@ import streamlit as st
 from oauth2client.service_account import ServiceAccountCredentials
 from config import SPREADSHEET_URL, CREDENTIALS_PATH
 
-
 def conectar_sheets():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     cred_dict = json.loads(st.secrets["GOOGLE_SHEETS_CREDENTIALS"])
@@ -57,19 +56,20 @@ def salvar_na_planilha_2(termo, dados):
     :param dados: os dados coletados relacionados ao termo
     """
     sheet = conectar_sheets()
-
+    
+    # Verificar se as colunas já existem, caso contrário, criar novas
     try:
-        aba = sheet.worksheet("Base")  # Tenta acessar a aba "Base"
+        # Aqui você pode configurar a planilha de acordo com as colunas que você deseja
+        aba = sheet.spreadsheet.worksheet("Base")
     except gspread.exceptions.WorksheetNotFound:
-        # Se não encontrar a aba "Base", cria uma nova aba chamada "Base"
-        aba = sheet.add_worksheet(title="Base", rows="1000", cols="2")
-        aba.append_row(["Termo", "Dados"])  # Adiciona cabeçalhos
-
-    # Garantir que os dados sejam manipulados corretamente com UTF-8
-    termo = termo.strip().encode('utf-8').decode('utf-8')
-    dados = json.dumps(dados, ensure_ascii=False)
+        aba = sheet.spreadsheet.add_worksheet(title="Base", rows="1000", cols="2")
+        aba.append_row(["Termo", "Dados"])
+    
+    # Salvar as informações
+     # Corrigir a codificação para garantir que caracteres especiais sejam salvos corretamente
+    termo = termo.encode('utf-8').decode('utf-8')  # Garantir que o termo seja UTF-8
+    dados = json.dumps(dados, ensure_ascii=False)  # Garantir que os dados sejam salvos com UTF-8 corretamente
 
     # Salvar as informações coletadas
     aba.append_row([termo, dados])
-    st.success("Informações salvas com sucesso!")
     return True
