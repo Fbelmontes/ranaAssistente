@@ -35,3 +35,22 @@ def responder_pergunta(prompt):
     except Exception as e:
         st.error(f"Erro de conexão com OpenRouter: {str(e)}")
         return None
+
+def listar_modelos_disponiveis():
+    url = "https://openrouter.ai/api/v1/models"
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}"
+    }
+
+    try:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            modelos = response.json().get("data", [])
+            return [m["id"] for m in modelos]
+        else:
+            st.error(f"Erro ao consultar modelos: {response.status_code}")
+            st.text(response.text)
+            return []
+    except Exception as e:
+        st.error(f"Erro ao buscar modelos: {str(e)}")
+        return []

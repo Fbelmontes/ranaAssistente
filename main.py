@@ -165,3 +165,14 @@ with col_content:
     elif escolha == "🔍 Buscar Empresa ou Site":
         from components.interacao_aprendizado import interacao_aprendizado
         interacao_aprendizado()
+    
+    from services.openrouter_api import listar_modelos_disponiveis
+
+
+if st.button("📦 Ver modelos disponíveis na minha chave"):
+    modelos = listar_modelos_disponiveis()
+    if modelos:
+        st.markdown("### Modelos disponíveis:")
+        st.code("\n".join(modelos))
+    else:
+        st.warning("Nenhum modelo disponível encontrado.")
