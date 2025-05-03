@@ -16,7 +16,7 @@ def responder_pergunta(prompt):
     }
 
     body = {
-        "model": "openai/gpt-3.5-turbo",
+        "model": "openrouter/openchat-3.5",
         "messages": [
             {
                 "role": "system",
