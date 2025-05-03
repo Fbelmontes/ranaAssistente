@@ -58,7 +58,7 @@ with col_menu:
     st.markdown("## 🧭 Menu", unsafe_allow_html=True)
     escolha = st.radio(
         "",
-        ["🔍 Buscar Empresa ou Site","📤 Importar Leads","🌍 Web Scraping Web Summit"],        
+        ["🔍 Buscar Empresa ou Site","📤 Importar Leads","🌍 Web Scraping Web Summit","🤖 Fazer uma pergunta"],        
         index=0
     )
 
@@ -148,7 +148,9 @@ with col_content:
         upload_csv_para_make()
 
     elif escolha == "🤖 Fazer uma pergunta":
-        st.subheader("Fazer uma pergunta para a RANA")
+        from services.respostas import responder_com_contexto
+
+        st.subheader("Pergunte algo com base na memória da RANA")
         pergunta = st.text_input("Digite sua pergunta:")
 
         if st.button("Perguntar"):
@@ -158,7 +160,7 @@ with col_content:
                     st.success("Resposta da RANA:")
                     st.markdown(f"**RANA:** {resposta}")
                 else:
-                    st.error("Desculpe, não consegui processar sua pergunta.")
+                    st.error("Desculpe, não consegui encontrar nada.")
 
     elif escolha == "🔍 Buscar Empresa ou Site":
         from components.interacao_aprendizado import interacao_aprendizado

@@ -22,3 +22,13 @@ def recuperar_aprendizado(termo):
     except:
         pass
     return None
+
+def ler_toda_memoria():
+    sheet = conectar_arquivo_sheets()
+    try:
+        aba = sheet.worksheet("Memoria")
+        registros = aba.get_all_records()
+        memoria = {r["Termo"]: json.loads(r["Contexto"]) for r in registros}
+        return memoria
+    except:
+        return {}
