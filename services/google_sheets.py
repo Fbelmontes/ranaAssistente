@@ -58,19 +58,18 @@ def salvar_na_planilha_2(termo, dados):
     """
     sheet = conectar_sheets()
 
-    # Verificar se as colunas já existem, caso contrário, criar novas
     try:
-        aba = sheet.worksheet("Base")
+        aba = sheet.worksheet("Base")  # Tenta acessar a aba "Base"
     except gspread.exceptions.WorksheetNotFound:
+        # Se não encontrar a aba "Base", cria uma nova aba chamada "Base"
         aba = sheet.add_worksheet(title="Base", rows="1000", cols="2")
-        aba.append_row(["Termo", "Dados"])
+        aba.append_row(["Termo", "Dados"])  # Adiciona cabeçalhos
 
-    # Corrigir a codificação para garantir que caracteres especiais sejam salvos corretamente
-    termo = termo.strip().encode('utf-8').decode('utf-8')  # Garantir que o termo esteja corretamente codificado
-    dados = json.dumps(dados, ensure_ascii=False)  # Garantir que os dados sejam salvos corretamente com UTF-8
+    # Garantir que os dados sejam manipulados corretamente com UTF-8
+    termo = termo.strip().encode('utf-8').decode('utf-8')
+    dados = json.dumps(dados, ensure_ascii=False)
 
     # Salvar as informações coletadas
     aba.append_row([termo, dados])
-
     st.success("Informações salvas com sucesso!")
     return True
