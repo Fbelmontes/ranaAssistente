@@ -161,13 +161,5 @@ with col_content:
                     st.error("Desculpe, não consegui processar sua pergunta.")
 
     elif escolha == "🔍 Buscar Empresa ou Site":
-        st.subheader("Buscar informações sobre uma empresa ou site")
-        termo = st.text_input("Digite o link do site ou o nome da empresa:")
-
-        if st.button("Buscar Informações"):
-            with st.spinner("RANA está buscando informações..."):
-                dados = buscar_informacoes(termo)
-                st.success("Informações encontradas:")
-                st.json(dados)  # Exibe os dados coletados no formato JSON
-                # Salvar as informações coletadas na Google Sheets
-                salvar_na_planilha_2(termo, dados)
+        from components.interacao_aprendizado import interacao_aprendizado
+        interacao_aprendizado()
