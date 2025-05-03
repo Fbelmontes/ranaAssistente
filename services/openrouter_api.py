@@ -14,7 +14,7 @@ def responder_pergunta(prompt):
     }
 
     body = {
-        "model": "openchat/openchat-3.5",  # modelo gratuito e estável
+        "model": "openai/gpt-4o",  # modelo gratuito e estável
         "messages": [
             {
                 "role": "user",
