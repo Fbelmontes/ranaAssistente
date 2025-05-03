@@ -14,14 +14,18 @@ def responder_pergunta(prompt):
     }
 
     body = {
-        "model": "openai/gpt-4o",  # modelo gratuito e estável
+        "model": "mistralai/mistral-7b-instruct",  # substitua aqui por um dos que você viu funcionando
         "messages": [
+            {
+                "role": "system",
+                "content": "Você é a RANA, uma IA que responde apenas com base em conhecimento salvo na memória. Seja direta, clara e nunca invente dados."
+            },
             {
                 "role": "user",
                 "content": prompt
             }
         ],
-        "temperature": 0.2
+        "temperature": 0.3
     }
 
     try:
@@ -30,11 +34,12 @@ def responder_pergunta(prompt):
             return response.json()["choices"][0]["message"]["content"]
         else:
             st.error(f"Erro ao consultar OpenRouter: {response.status_code}")
-            st.text(response.text)  # mostra motivo detalhado do erro
+            st.text(response.text)  # exibe erro completo
             return None
     except Exception as e:
         st.error(f"Erro de conexão com OpenRouter: {str(e)}")
         return None
+
 
 def listar_modelos_disponiveis():
     url = "https://openrouter.ai/api/v1/models"
