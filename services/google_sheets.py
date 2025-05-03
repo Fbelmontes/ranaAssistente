@@ -7,10 +7,9 @@ from config import SPREADSHEET_URL, CREDENTIALS_PATH
 
 def conectar_sheets():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    cred_dict = json.loads(st.secrets["GOOGLE_SHEETS_CREDENTIALS"])
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(cred_dict, scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_PATH, scope)
     client = gspread.authorize(creds)
-    return client.open_by_url(SPREADSHEET_URL).sheet1
+    return client.open_by_url(SPREADSHEET_URL)
 
 def obter_conteudo_salvo():
     sheet = conectar_sheets()
