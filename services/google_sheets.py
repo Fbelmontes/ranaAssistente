@@ -57,13 +57,17 @@ def salvar_na_planilha_2(termo, dados):
     """
     sheet = conectar_sheets()
     
-    # Verificar se as colunas já existem, caso contrário, criar novas
+    # Verificar se a aba "Base" existe, caso contrário, criar nova aba
     try:
-        # Aqui você pode configurar a planilha de acordo com as colunas que você deseja
-        aba = sheet.spreadsheet.worksheet("Base")
+        aba = sheet.worksheet("Base")
     except gspread.exceptions.WorksheetNotFound:
-        aba = sheet.spreadsheet.add_worksheet(title="Base", rows="1000", cols="2")
+        aba = sheet.add_worksheet(title="Base", rows="1000", cols="2")
         aba.append_row(["Termo", "Dados"])
-    
-    # Salvar as informações
-    aba.append_row([termo, json.dumps(dados)])  # Salvando os dados como JSON
+
+    # Corrigir a codificação para garantir que caracteres especiais sejam salvos corretamente
+    termo = termo.encode('utf-8').decode('utf-8')  # Garantir que o termo seja UTF-8
+    dados = json.dumps(dados, ensure_ascii=False)  # Garantir que os dados sejam salvos com UTF-8 corretamente
+
+    # Salvar as informações coletadas
+    aba.append_row([termo, dados])
+    return True
