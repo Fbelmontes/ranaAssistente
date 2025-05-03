@@ -1,5 +1,6 @@
 import json
-from services.google_sheets import conectar_sheets
+from services.google_sheets import conectar_sheets, conectar_arquivo_sheets 
+
 
 def salvar_aprendizado(termo, contexto):
     sheet = conectar_sheets()
