@@ -144,8 +144,8 @@ with col_content:
                     st.markdown(f"- [{r['title']}]({r['href']})")
 
     elif escolha == "📤 Importar Leads":
-        from components.csv_upload import upload_csv_para_make
-        upload_csv_para_make()
+        from components.csv_upload import upload_csv_para_evento
+        upload_csv_para_evento()
 
     elif escolha == "🤖 Fazer uma pergunta":
         from services.respostas import responder_com_contexto
@@ -169,7 +169,7 @@ with col_content:
     elif escolha == "💬 Curtir e comentar post":
         from components.linkedin_interact import linkedin_interaction_component
         linkedin_interaction_component()
-        
+
     from services.openrouter_api import listar_modelos_disponiveis
 
 
