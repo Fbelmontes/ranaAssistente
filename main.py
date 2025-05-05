@@ -58,7 +58,7 @@ with col_menu:
     st.markdown("## 🧭 Menu", unsafe_allow_html=True)
     escolha = st.radio(
         "",
-        ["🔍 Buscar Empresa ou Site","📅 Criar Evento de Marketing","📤 Importar Leads","🌍 Web Scraping Web Summit","🤖 Fazer uma pergunta","💬 Curtir e comentar post","📚 Enviar Material para Aprendizado"],        
+        ["🔍 Buscar Empresa ou Site","📅 Criar Evento de Marketing","📤 Importar Leads","🌍 Web Scraping Web Summit","🤖 Fazer uma pergunta","💬 Curtir e comentar post","📚 Enviar Material para Aprendizado","🤖 Perguntar com base nos Aprendizados"],        
         index=0
     )
 
@@ -179,6 +179,9 @@ with col_content:
         upload_material_component()
         from services.openrouter_api import listar_modelos_disponiveis
 
+    elif escolha == "🤖 Perguntar com base nos Aprendizados":
+        from components.perguntas_aprendizado import perguntas_aprendizado_component
+        perguntas_aprendizado_component()
 
 if st.button("📦 Ver modelos disponíveis na minha chave"):
     modelos = listar_modelos_disponiveis()

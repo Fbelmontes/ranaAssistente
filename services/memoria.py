@@ -16,16 +16,6 @@ def recuperar_aprendizado(termo):
         pass
     return None
 
-def ler_toda_memoria():
-    sheet = conectar_arquivo_sheets()
-    try:
-        aba = sheet.worksheet("Memoria")
-        registros = aba.get_all_records()
-        memoria = {r["Termo"]: json.loads(r["Contexto"]) for r in registros}
-        return memoria
-    except:
-        return {}
-
 def salvar_aprendizado(titulo, conteudo):
     sheet = conectar_sheets()
 
@@ -36,3 +26,13 @@ def salvar_aprendizado(titulo, conteudo):
         aba.append_row(["titulo", "conteudo"])
 
     aba.append_row([titulo, conteudo])
+
+def ler_toda_memoria():
+    sheet = conectar_sheets()
+    try:
+        aba = sheet.worksheet("Memoria")
+    except:
+        return []
+
+    linhas = aba.get_all_records()
+    return [f"Título: {linha['titulo']}\nConteúdo: {linha['conteudo']}" for linha in linhas]
