@@ -167,7 +167,9 @@ with col_content:
         interacao_aprendizado()
     
     elif escolha == "💬 Curtir e comentar post":
-        print('EM DESENVOLVIMENTO')
+        from components.linkedin_interact import linkedin_interaction_component
+        linkedin_interaction_component()
+        
     from services.openrouter_api import listar_modelos_disponiveis
 
 
