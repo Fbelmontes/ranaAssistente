@@ -58,7 +58,7 @@ with col_menu:
     st.markdown("## 🧭 Menu", unsafe_allow_html=True)
     escolha = st.radio(
         "",
-        ["🔍 Buscar Empresa ou Site","📤 Importar Leads","🌍 Web Scraping Web Summit","🤖 Fazer uma pergunta"],        
+        ["🔍 Buscar Empresa ou Site","📤 Importar Leads","🌍 Web Scraping Web Summit","🤖 Fazer uma pergunta","💬 Curtir e comentar post"],        
         index=0
     )
 
@@ -166,6 +166,8 @@ with col_content:
         from components.interacao_aprendizado import interacao_aprendizado
         interacao_aprendizado()
     
+    elif escolha == "💬 Curtir e comentar post":
+        print('EM DESENVOLVIMENTO')
     from services.openrouter_api import listar_modelos_disponiveis
 
 
