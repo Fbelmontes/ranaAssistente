@@ -22,6 +22,7 @@ def criar_evento_component():
 
         evento_id = criar_evento(nome, tipo, dt_inicio, dt_fim)
 
-        if evento_id:
-            st.success(f"Evento criado com sucesso! ID: {evento_id}")
-            st.code(evento_id)
+    if evento_id:
+        st.success("🎉 Evento criado com sucesso!")
+        st.markdown(f"**🆔 ID do Evento:** `{evento_id}`")
+        st.caption("Use esse ID ao importar os leads para associá-los ao evento.")
