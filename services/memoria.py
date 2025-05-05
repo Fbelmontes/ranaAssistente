@@ -33,6 +33,6 @@ def salvar_aprendizado(titulo, conteudo):
         aba = sheet.worksheet("Memoria")
     except:
         aba = sheet.add_worksheet(title="Memoria", rows="1000", cols="2")
-        aba.append_row(["Título", "Conteúdo"])
+        aba.append_row(["titulo", "conteudo"])
 
     aba.append_row([titulo, conteudo])
