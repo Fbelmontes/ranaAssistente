@@ -7,8 +7,8 @@ def upload_leads_para_evento():
 
     # Opções visíveis com valores reais por trás
     eventos = {
-        "🧠 Web Summit Rio 2025": "12345678",
-        "🎤 Live MJV - AI para Negócios": "98765432",
+        "🚀 [BR] 2025.05.10 - Live - Websummit - Online - Linkedin": "422799073963",
+        "🚀 Live MJV - AI para Negócios": "98765432",
         "🚀 Demo Day MJV 2025": "45678901"
     }
 
