@@ -4,16 +4,6 @@ from services.google_sheets import conectar_arquivo_sheets
 
 
 
-def salvar_aprendizado(termo, contexto):
-    sheet = conectar_sheets()
-    try:
-        aba = sheet.worksheet("Memoria")
-    except:
-        aba = sheet.add_worksheet(title="Memoria", rows="1000", cols="2")
-        aba.append_row(["Termo", "Contexto"])
-
-    aba.append_row([termo, json.dumps(contexto, ensure_ascii=False)])
-
 def recuperar_aprendizado(termo):
     sheet = conectar_sheets()
     try:
@@ -35,3 +25,14 @@ def ler_toda_memoria():
         return memoria
     except:
         return {}
+
+def salvar_aprendizado(titulo, conteudo):
+    sheet = conectar_sheets()
+
+    try:
+        aba = sheet.worksheet("Memoria")
+    except:
+        aba = sheet.add_worksheet(title="Memoria", rows="1000", cols="2")
+        aba.append_row(["Título", "Conteúdo"])
+
+    aba.append_row([titulo, conteudo])
