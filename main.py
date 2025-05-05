@@ -144,8 +144,8 @@ with col_content:
                     st.markdown(f"- [{r['title']}]({r['href']})")
 
     elif escolha == "📤 Importar Leads":
-        from components.csv_upload import upload_csv_para_evento
-        upload_csv_para_evento()
+        from components.csv_upload import upload_leads_para_evento
+        upload_leads_para_evento()
 
     elif escolha == "🤖 Fazer uma pergunta":
         from services.respostas import responder_com_contexto
