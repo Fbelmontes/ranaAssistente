@@ -15,7 +15,9 @@ def criar_evento(nome_evento, tipo_evento, inicio, fim, external_id=None):
         "eventType": tipo_evento.upper(),  # Ex: WEBINAR, CONFERENCE
         "startDateTime": inicio,
         "endDateTime": fim,
-        "externalEventId": external_id or nome_evento.replace(" ", "_").lower()
+        "externalEventId": external_id or nome_evento.replace(" ", "_").lower(),
+        "eventOrganizer": "MJV Innovation",  # 👈 Aqui você pode personalizar
+        "externalAccountId": "rana-assistente"
     }
 
     response = requests.post(url, json=payload, headers=HEADERS)
