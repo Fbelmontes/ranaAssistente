@@ -58,7 +58,7 @@ with col_menu:
     st.markdown("## 🧭 Menu", unsafe_allow_html=True)
     escolha = st.radio(
         "",
-        ["🔍 Buscar Empresa ou Site","📤 Importar Leads","🌍 Web Scraping Web Summit","🤖 Fazer uma pergunta","💬 Curtir e comentar post"],        
+        ["🔍 Buscar Empresa ou Site","📅 Criar Evento de Marketing","📤 Importar Leads","🌍 Web Scraping Web Summit","🤖 Fazer uma pergunta","💬 Curtir e comentar post"],        
         index=0
     )
 
@@ -169,6 +169,10 @@ with col_content:
     elif escolha == "💬 Curtir e comentar post":
         from components.linkedin_interact import linkedin_interaction_component
         linkedin_interaction_component()
+
+    elif escolha == "📅 Criar Evento de Marketing":
+        from components.criar_evento import criar_evento_component
+        criar_evento_component()
 
     from services.openrouter_api import listar_modelos_disponiveis
 
