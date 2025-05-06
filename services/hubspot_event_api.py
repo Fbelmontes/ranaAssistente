@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 import streamlit as st
+import io
 
 HUBSPOT_TOKEN = st.secrets["HUBSPOT_API_TOKEN"]
 HEADERS = {
@@ -66,7 +67,9 @@ def registrar_participante(event_id, email, external_event_id):
         return False
 
 def importar_leads_para_evento(event_id, external_event_id, csv_file):
-    df = pd.read_csv(csv_file)
+    
+    df = pd.read_csv(io.StringIO(csv_file.getvalue().decode("utf-8")))
+
     resultados = []
 
     for _, row in df.iterrows():
