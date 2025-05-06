@@ -64,7 +64,7 @@ with st.sidebar:
             "📤 Importar Leads",
             "💬 Curtir e comentar post"
         ],
-        "📚 Aprendizado": [
+        "📚 Aprendizado / 🤖 Memória": [
             "📚 Enviar Material para Aprendizado",
             "🤖 Perguntar com base nos Aprendizados"
         ],
