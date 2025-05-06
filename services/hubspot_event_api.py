@@ -43,3 +43,37 @@ def listar_eventos():
         st.error("Erro ao listar eventos")
         st.text(response.text)
         return []
+
+def registrar_participante(event_id, email, external_event_id):
+    url = f"https://api.hubapi.com/marketing/v3/marketing-events/events/{event_id}/registrations"
+    
+    body = {
+        "email": email,
+        "registrationStatus": "REGISTERED",
+        "externalAccountId": "rana-assistente",
+        "externalContactId": email,
+        "externalEventId": external_event_id
+    }
+
+    response = requests.post(url, headers=HEADERS, json=body)
+
+    if response.status_code == 204:
+        return True
+    else:
+        st.error("Erro ao registrar participante no evento")
+        st.text(response.text)
+        return False
+
+def importar_leads_para_evento(event_id, external_event_id, csv_file):
+    df = pd.read_csv(csv_file)
+    resultados = []
+
+    for _, row in df.iterrows():
+        email = row.get("email")
+        if email:
+            sucesso = registrar_participante(event_id, email, external_event_id)
+            resultados.append((email, sucesso))
+
+    return resultados
+
+    
