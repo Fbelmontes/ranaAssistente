@@ -1,4 +1,5 @@
 import requests
+import pandas as pd
 import streamlit as st
 
 HUBSPOT_TOKEN = st.secrets["HUBSPOT_API_TOKEN"]
@@ -76,4 +77,3 @@ def importar_leads_para_evento(event_id, external_event_id, csv_file):
 
     return resultados
 
-    
