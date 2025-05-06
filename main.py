@@ -197,3 +197,5 @@ with col_content:
         from services.openrouter_api import listar_modelos_disponiveis
 
     elif escolha == "🤖 Perguntar com base nos Aprendizados":
+        from components.perguntas_aprendizado import perguntas_aprendizado_component
+        perguntas_aprendizado_component()
