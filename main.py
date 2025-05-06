@@ -62,7 +62,6 @@ with st.sidebar:
         "⚙️ Automação de Marketing": [
             "📅 Criar Evento de Marketing",
             "📤 Importar Leads",
-            "📥 Importar Leads para Evento",
             "📋 Listar Eventos Criados",
             "💬 Curtir e comentar post"
         ],
@@ -192,7 +191,6 @@ with col_content:
 
     elif escolha == "📅 Criar Evento de Marketing":
         from components.criar_evento import criar_evento_component
-        criar_evento_component()
 
     elif escolha == "📚 Enviar Material para Aprendizado":
         from components.upload_material import upload_material_component
@@ -213,6 +211,3 @@ with col_content:
         for evento in eventos:
             st.markdown(f"- **{evento['eventName']}** | ID: `{evento['id']}` | Status: `{evento.get('eventStatus', 'N/A')}`")
 
-    elif escolha == "📥 Importar Leads para Evento":
-        from components.importar_para_evento import importar_para_evento_component
-        importar_para_evento_component()
