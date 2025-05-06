@@ -8,7 +8,7 @@ def upload_leads_para_evento():
     # Opções visíveis com valores reais por trás
     eventos = {
         "🚀 [BR] 2025.05.10 - Live - Websummit - Online - Linkedin": "427754195285",
-        "🚀 Live MJV - AI para Negócios": "98765432",
+        "🚀 TESTE": "427763570755",
         "🚀 Demo Day MJV 2025": "45678901"
     }
 
