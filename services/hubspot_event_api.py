@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 import streamlit as st
 import io
+import time
 
 HUBSPOT_TOKEN = st.secrets["HUBSPOT_API_TOKEN"]
 HEADERS = {
@@ -15,21 +16,29 @@ def criar_evento_marketing(nome_evento, inicio, fim):
     body = {
         "eventName": nome_evento,
         "eventType": "WEBINAR",
-        "startDateTime": inicio,         # Ex: "2025-06-10T18:00:00Z"
-        "endDateTime": fim,              # Ex: "2025-06-10T20:00:00Z"
-        "eventOrganizer": "mjv",         # <- Obrigatório
-        "externalAccountId": "rana-assistente",   # <- Obrigatório e fixo
-        "externalEventId": nome_evento.lower().replace(" ", "-")  # opcional, mas bom para rastrear
+        "startDateTime": inicio,
+        "endDateTime": fim,
+        "eventOrganizer": "mjv",
+        "externalAccountId": "rana-assistente",
+        "externalEventId": nome_evento.lower().replace(" ", "-")
     }
 
     response = requests.post(url, headers=HEADERS, json=body)
 
     if response.status_code == 201:
         evento = response.json()
-        return {
-            "id": evento["id"],
-            "nome": evento["eventName"]
-        }
+        event_id = evento["id"]
+
+        st.info("Evento criado. Verificando se está ativo...")
+
+        if validar_evento_ativo(event_id):
+            return {
+                "id": event_id,
+                "nome": evento["eventName"]
+            }
+        else:
+            st.error("Evento criado, mas não ficou ativo a tempo.")
+            return None
     else:
         st.error("Erro ao criar evento")
         st.text(response.text)
@@ -79,4 +88,24 @@ def importar_leads_para_evento(event_id, external_event_id, csv_file):
             resultados.append((email, sucesso))
 
     return resultados
+
+def validar_evento_ativo(event_id):
+    url = f"https://api.hubapi.com/marketing/v3/marketing-events/events/{event_id}"
+    
+    for tentativa in range(5):  # tenta até 5 vezes
+        response = requests.get(url, headers=HEADERS)
+
+        if response.status_code == 200:
+            evento = response.json()
+            status = evento.get("eventStatus", "UNKNOWN")
+            if status == "ACTIVE":
+                return True
+            else:
+                time.sleep(2)  # espera 2 segundos e tenta de novo
+        else:
+            st.warning("Não consegui consultar o status do evento.")
+            st.text(response.text)
+            break
+
+    return False
 
