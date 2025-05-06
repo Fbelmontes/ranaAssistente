@@ -6,6 +6,7 @@ import json
 # Chamadas de arquivos 
 from services.webscraping import buscar_informacoes
 from services.google_sheets import salvar_na_planilha_2, conectar_sheets
+from components.enviar_evento_make import enviar_evento_make_component
 
 # Configuração da página
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
@@ -60,7 +61,7 @@ with st.sidebar:
             "🌐 Pesquisar na Web"
         ],
         "⚙️ Automação de Marketing": [
-            "📅 Criar Evento de Marketing",
+            "🧩 Criar Evento",
             "📤 Importar Leads",
             "📋 Listar Eventos Criados",
             "💬 Curtir e comentar post"
@@ -210,4 +211,6 @@ with col_content:
         eventos = listar_eventos()
         for evento in eventos:
             st.markdown(f"- **{evento['eventName']}** | ID: `{evento['id']}` | Status: `{evento.get('eventStatus', 'N/A')}`")
-
+    
+    elif escolha == "🧩 Criar Evento":
+        enviar_evento_make_component()
