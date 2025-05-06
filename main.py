@@ -54,14 +54,45 @@ st.caption("Powered by você, Fe 💖")
 col_menu, col_avatar, col_content = st.columns([1, 1, 2])
 
 # ========== MENU LADO ESQUERDO ==========
+#with col_menu:
+#    st.markdown("## 🧭 Menu", unsafe_allow_html=True)
+#    escolha = st.radio(
+#        "",
+#        ["🔍 Buscar Empresa ou Site","📅 Criar Evento de Marketing","📤 Importar Leads","🌍 Web Scraping Web Summit","🤖 Fazer uma pergunta","💬 Curtir e comentar post","📚 Enviar Material para Aprendizado","🤖 Perguntar com base nos Aprendizados"],        
+#        index=0
+#    )
 with col_menu:
     st.markdown("## 🧭 Menu", unsafe_allow_html=True)
-    escolha = st.radio(
-        "",
-        ["🔍 Buscar Empresa ou Site","📅 Criar Evento de Marketing","📤 Importar Leads","🌍 Web Scraping Web Summit","🤖 Fazer uma pergunta","💬 Curtir e comentar post","📚 Enviar Material para Aprendizado","🤖 Perguntar com base nos Aprendizados"],        
-        index=0
-    )
-
+    
+    menu_opcoes = [
+        "🔍 Buscar Empresa ou Site", 
+        "📅 Criar Evento de Marketing", 
+        "📤 Importar Leads", 
+        "🌍 Web Scraping Web Summit", 
+        "🤖 Fazer uma pergunta", 
+        "💬 Curtir e comentar post", 
+        "📚 Enviar Material para Aprendizado", 
+        "🤖 Perguntar com base nos Aprendizados"
+    ]
+    
+    # Criação do menu principal
+    escolha = st.radio("", menu_opcoes, index=0)
+    
+    # Condicionais para os menus secundários (exemplo)
+    if escolha == "🔍 Buscar Empresa ou Site":
+        # Opções para SEO, se aplicável
+        st.markdown("### SEO")
+        st.radio("Escolha uma ação para SEO", ["Analisar SEO", "Melhorar SEO", "Ver relatórios de SEO"])
+    
+    elif escolha == "📤 Importar Leads":
+        # Opções para HubSpot
+        st.markdown("### HubSpot")
+        st.radio("Escolha uma ação para HubSpot", ["Importar leads", "Ver leads recentes", "Atribuir tags"])
+    
+    elif escolha == "📚 Enviar Material para Aprendizado":
+        # Opções de Aprendizado
+        st.markdown("### Aprendizado")
+        st.radio("Escolha uma ação para Aprendizado", ["Adicionar novo material", "Consultar aprendizado", "Gerar relatório de aprendizado"])
 # ========== AVATAR CENTRAL ==========
 with col_avatar:
 
