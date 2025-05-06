@@ -66,7 +66,8 @@ with st.sidebar:
         ],
         "📚 Aprendizado / 🤖 Memória": [
             "📚 Enviar Material para Aprendizado",
-            "🤖 Perguntar com base nos Aprendizados"
+            "🤖 Perguntar com base nos Aprendizados",
+            "📝 Gerar Conteúdo para Blog"
         ],
         "🌍 Web Scraping": [
             "🌍 Web Scraping Web Summit"
@@ -199,3 +200,7 @@ with col_content:
     elif escolha == "🤖 Perguntar com base nos Aprendizados":
         from components.perguntas_aprendizado import perguntas_aprendizado_component
         perguntas_aprendizado_component()
+
+    elif escolha == "📝 Gerar Conteúdo para Blog":
+        from components.gerar_blog import gerar_blog_component
+        gerar_blog_component()
