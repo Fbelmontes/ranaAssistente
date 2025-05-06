@@ -34,15 +34,16 @@ def criar_evento_marketing(nome_evento, inicio, fim):
         if validar_evento_ativo(event_id):
             return {
                 "id": event_id,
-                "nome": evento["eventName"]
+                "nome": evento.get("eventName", "Evento sem nome"),
+                "evento_json": evento  # salva tudo se quiser usar depois
             }
         else:
-            st.error("Evento criado, mas não ficou ativo a tempo.")
-            return None
-    else:
-        st.error("Erro ao criar evento")
-        st.text(response.text)
-        return None
+            return {
+                "id": event_id,
+                "nome": evento.get("eventName", "Evento sem nome"),
+                "erro": "O evento foi criado mas ainda não está ativo.",
+                "evento_json": evento
+            }
 
 def listar_eventos():
     url = "https://api.hubapi.com/marketing/v3/marketing-events/external-events"

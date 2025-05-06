@@ -20,18 +20,12 @@ def criar_evento_component():
             st.success(f"✅ Evento criado com sucesso!")
             st.markdown(f"**Nome:** {resultado['nome']}")
             st.markdown(f"**ID:** `{resultado['id']}`")
+
+            if "erro" in resultado:
+                st.warning(resultado["erro"])
         else:
             st.error("⚠️ O evento foi criado, mas a resposta da API está incompleta ou inválida.")
-
             try:
-                if isinstance(resultado, dict):
-                    st.json(resultado)
-                elif isinstance(resultado, str):
-                    import json
-                    st.json(json.loads(resultado))
-                else:
-                    st.text(str(resultado))
-            except Exception as e:
-                st.text("Erro ao exibir resposta:")
-                st.text(str(e))
+                st.json(resultado)
+            except Exception:
                 st.text(str(resultado))
