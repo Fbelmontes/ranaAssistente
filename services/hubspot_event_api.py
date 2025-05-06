@@ -28,3 +28,14 @@ def criar_evento(nome_evento, tipo_evento, inicio, fim, external_id=None):
         st.error("Erro ao criar evento")
         st.text(response.text)
         return None
+
+def listar_eventos():
+    url = "https://api.hubapi.com/marketing/v3/marketing-events/events"
+    response = requests.get(url, headers=HEADERS)
+
+    if response.status_code == 200:
+        return response.json().get("results", [])
+    else:
+        st.error("Erro ao listar eventos")
+        st.text(response.text)
+        return []
