@@ -61,38 +61,51 @@ col_menu, col_avatar, col_content = st.columns([1, 1, 2])
 #        ["🔍 Buscar Empresa ou Site","📅 Criar Evento de Marketing","📤 Importar Leads","🌍 Web Scraping Web Summit","🤖 Fazer uma pergunta","💬 Curtir e comentar post","📚 Enviar Material para Aprendizado","🤖 Perguntar com base nos Aprendizados"],        
 #        index=0
 #    )
-with col_menu:
-    st.markdown("## 🧭 Menu", unsafe_allow_html=True)
-    
-    menu_opcoes = [
-        "🔍 Buscar Empresa ou Site", 
-        "📅 Criar Evento de Marketing", 
-        "📤 Importar Leads", 
-        "🌍 Web Scraping Web Summit", 
-        "🤖 Fazer uma pergunta", 
-        "💬 Curtir e comentar post", 
-        "📚 Enviar Material para Aprendizado", 
-        "🤖 Perguntar com base nos Aprendizados"
-    ]
-    
-    # Criação do menu principal
-    escolha = st.radio("", menu_opcoes, index=0)
-    
-    # Condicionais para os menus secundários (exemplo)
-    if escolha == "🔍 Buscar Empresa ou Site":
-        # Opções para SEO, se aplicável
-        st.markdown("### SEO")
-        st.radio("Escolha uma ação para SEO", ["Analisar SEO", "Melhorar SEO", "Ver relatórios de SEO"])
-    
-    elif escolha == "📤 Importar Leads":
-        # Opções para HubSpot
-        st.markdown("### HubSpot")
-        st.radio("Escolha uma ação para HubSpot", ["Importar leads", "Ver leads recentes", "Atribuir tags"])
-    
-    elif escolha == "📚 Enviar Material para Aprendizado":
-        # Opções de Aprendizado
-        st.markdown("### Aprendizado")
-        st.radio("Escolha uma ação para Aprendizado", ["Adicionar novo material", "Consultar aprendizado", "Gerar relatório de aprendizado"])
+# Título do menu
+st.markdown("## 🧭 Menu", unsafe_allow_html=True)
+
+# Seção de Ferramentas de Marketing
+st.subheader("🔧 Ferramentas de Marketing")
+marketing_opcoes = [
+    "🔍 Buscar Empresa ou Site",
+    "📅 Criar Evento de Marketing",
+    "📤 Importar Leads"
+]
+escolha_marketing = st.radio("Escolha uma opção de marketing", marketing_opcoes, index=0)
+
+# Seção de Automação e Web Scraping
+st.subheader("🔄 Automação e Web Scraping")
+automacao_opcoes = [
+    "🌍 Web Scraping Web Summit",
+    "💬 Curtir e comentar post"
+]
+escolha_automacao = st.radio("Escolha uma automação", automacao_opcoes, index=0)
+
+# Seção de Aprendizado
+st.subheader("📚 Aprendizado")
+aprendizado_opcoes = [
+    "📚 Enviar Material para Aprendizado",
+    "🤖 Perguntar com base nos Aprendizados"
+]
+escolha_aprendizado = st.radio("Escolha uma opção de aprendizado", aprendizado_opcoes, index=0)
+
+# Ações baseadas nas escolhas
+if escolha_marketing == "🔍 Buscar Empresa ou Site":
+    st.write("Você escolheu buscar uma empresa ou site.")
+elif escolha_marketing == "📅 Criar Evento de Marketing":
+    st.write("Você escolheu criar um evento de marketing.")
+elif escolha_marketing == "📤 Importar Leads":
+    st.write("Você escolheu importar leads.")
+
+if escolha_automacao == "🌍 Web Scraping Web Summit":
+    st.write("Você escolheu fazer Web Scraping no Web Summit.")
+elif escolha_automacao == "💬 Curtir e comentar post":
+    st.write("Você escolheu curtir e comentar posts.")
+
+if escolha_aprendizado == "📚 Enviar Material para Aprendizado":
+    st.write("Você escolheu enviar material para aprendizado.")
+elif escolha_aprendizado == "🤖 Perguntar com base nos Aprendizados":
+    st.write("Você escolheu fazer uma pergunta com base nos aprendizados.")
 # ========== AVATAR CENTRAL ==========
 with col_avatar:
 
