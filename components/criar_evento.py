@@ -16,6 +16,10 @@ def criar_evento_component():
 
         resultado = criar_evento_marketing(nome, inicio_iso, fim_iso)
 
-        if resultado:
-            st.success(f"✅ Evento '{resultado['nome']}' criado com sucesso!")
-            st.markdown(f"**ID do evento:** `{resultado['id']}`")
+        if resultado and "id" in resultado:
+            st.success(f"✅ Evento criado com sucesso!")
+            st.markdown(f"**Nome:** {resultado['nome']}")
+            st.markdown(f"**ID:** `{resultado['id']}`")
+        else:
+            st.error("⚠️ O evento foi criado, mas a resposta da API está incompleta.")
+            st.json(resultado)
