@@ -30,7 +30,7 @@ def criar_evento(nome_evento, tipo_evento, inicio, fim, external_id=None):
         return None
 
 def listar_eventos():
-    url = "https://api.hubapi.com/marketing/v3/marketing-events/events"
+    url = "https://api.hubapi.com/marketing/v3/marketing-events/external-events"
     response = requests.get(url, headers=HEADERS)
 
     if response.status_code == 200:
