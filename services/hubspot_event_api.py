@@ -7,23 +7,27 @@ HEADERS = {
     "Content-Type": "application/json"
 }
 
-def criar_evento(nome_evento, tipo_evento, inicio, fim, external_id=None):
+def criar_evento_marketing(nome_evento, inicio, fim):
     url = "https://api.hubapi.com/marketing/v3/marketing-events/events"
 
-    payload = {
+    body = {
         "eventName": nome_evento,
-        "eventType": tipo_evento.upper(),  # Ex: WEBINAR, CONFERENCE
-        "startDateTime": inicio,
-        "endDateTime": fim,
-        "externalEventId": external_id or nome_evento.replace(" ", "_").lower(),
-        "eventOrganizer": "MJV Innovation",  # 👈 Aqui você pode personalizar
-        "externalAccountId": "rana-assistente"
+        "eventType": "WEBINAR",
+        "startDateTime": inicio,         # Ex: "2025-06-10T18:00:00Z"
+        "endDateTime": fim,              # Ex: "2025-06-10T20:00:00Z"
+        "eventOrganizer": "mjv",         # <- Obrigatório
+        "externalAccountId": "rana-assistente",   # <- Obrigatório e fixo
+        "externalEventId": nome_evento.lower().replace(" ", "-")  # opcional, mas bom para rastrear
     }
 
-    response = requests.post(url, json=payload, headers=HEADERS)
+    response = requests.post(url, headers=HEADERS, json=body)
 
-    if response.status_code in [200, 201]:
-        return response.json().get("id")
+    if response.status_code == 201:
+        evento = response.json()
+        return {
+            "id": evento["id"],
+            "nome": evento["eventName"]
+        }
     else:
         st.error("Erro ao criar evento")
         st.text(response.text)
