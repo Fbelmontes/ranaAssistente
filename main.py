@@ -57,7 +57,7 @@ col_menu, col_avatar, col_content = st.columns([1, 1, 2])
 with col_menu:
     st.markdown("## 🧭 Menu", unsafe_allow_html=True)
     escolha = st.radio(
-        st.markdown("## 🧭 Menu", unsafe_allow_html=True),
+        "",
         ["🔍 Buscar Empresa ou Site","📅 Criar Evento de Marketing","📤 Importar Leads","🌍 Web Scraping Web Summit","🤖 Fazer uma pergunta","💬 Curtir e comentar post","📚 Enviar Material para Aprendizado","🤖 Perguntar com base nos Aprendizados"],        
         index=0
     )
