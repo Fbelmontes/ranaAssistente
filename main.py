@@ -106,7 +106,7 @@ with col_avatar:
 with col_content:
     st.markdown("### Área de Interação")
 
-    # Ações baseadas nas opções selecionadas
+    # ############# Opção MENU #############
     if escolha == "🌍 Web Scraping Web Summit":
         st.subheader("🕵️‍♂️ Coletando Palestras e Eventos do Web Summit")
         
@@ -114,11 +114,15 @@ with col_content:
 
         if st.button("Coletar Dados do Web Summit"):
             with st.spinner("Coletando dados..."):
-                eventos = buscar_informacoes()  # Função de scraping
+                eventos = start_scraping()  # Função de scraping
+                
                 if eventos is not None:
-                    df = pd.DataFrame(eventos)
+                    df = eventos
                     st.dataframe(df)  # Exibe os dados no formato de tabela
                     st.success("Dados coletados com sucesso!")
+                    
+                    # Optionally, save to Google Sheets (if needed)
+                    #salvar_historico("Web Summit - Eventos", df.to_dict(orient='records'))
                 else:
                     st.error("Erro ao coletar dados.")
 
@@ -137,6 +141,7 @@ with col_content:
     
     elif escolha == "🌐 Pesquisar na Web":
         st.subheader("Pesquisa com RANA na internet")
+
         tema = st.text_input("Sobre o que você quer saber?")
         if st.button("Pesquisar e Resumir"):
             from services.web_search import buscar_web
@@ -148,17 +153,20 @@ with col_content:
 
                 st.success("Resumo encontrado:")
                 st.markdown(resumo)
+
+                salvar_historico(f"Pesquisa na web: {tema}", resumo)
+
                 st.markdown("### Fontes:")
                 for r in resultados:
                     st.markdown(f"- [{r['title']}]({r['href']})")
 
-    # Outras opções do menu seguem com a mesma lógica...
     elif escolha == "📤 Importar Leads":
         from components.csv_upload import upload_leads_para_evento
         upload_leads_para_evento()
 
     elif escolha == "🤖 Fazer uma pergunta":
         from services.respostas import responder_com_contexto
+
         st.subheader("Pergunte algo com base na memória da RANA")
         pergunta = st.text_input("Digite sua pergunta:")
 
@@ -170,3 +178,22 @@ with col_content:
                     st.markdown(f"**RANA:** {resposta}")
                 else:
                     st.error("Desculpe, não consegui encontrar nada.")
+
+    elif escolha == "🔍 Buscar Empresa ou Site":
+        from components.interacao_aprendizado import interacao_aprendizado
+        interacao_aprendizado()
+    
+    elif escolha == "💬 Curtir e comentar post":
+        from components.linkedin_interact import linkedin_interaction_component
+        linkedin_interaction_component()
+
+    elif escolha == "📅 Criar Evento de Marketing":
+        from components.criar_evento import criar_evento_component
+        criar_evento_component()
+
+    elif escolha == "📚 Enviar Material para Aprendizado":
+        from components.upload_material import upload_material_component
+        upload_material_component()
+        from services.openrouter_api import listar_modelos_disponiveis
+
+    elif escolha == "🤖 Perguntar com base nos Aprendizados":
