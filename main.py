@@ -63,7 +63,6 @@ with st.sidebar:
         "⚙️ Automação de Marketing": [
             "📅 Criar Evento de Marketing",
             "📤 Importar Leads",
-            "📤 Enviar Lead para Evento",
             "📋 Listar Eventos Criados",
             "💬 Curtir e comentar post",
             "🔄 Renovar Token"
@@ -215,25 +214,6 @@ with col_content:
         from components.criar_evento import criar_evento_component
         criar_evento_component()
     
-    elif escolha == "📤 Enviar Lead para Evento":
-        from components.enviar_lead_evento import enviar_lead_evento_component
-        enviar_lead_evento_component()
-
     elif escolha == "🔄 Renovar Token":
         from components.renovar_token import renovar_token_component
         renovar_token_component()
-from services.hubspot_oauth import trocar_code_por_token
-from services.hubspot_oauth import renovar_token
-code = st.text_input("Cole o código de autorização (code) aqui:")
-
-if st.button("Trocar por token"):
-    resultado = trocar_code_por_token(code)
-    st.write(resultado)
-
-resultado = renovar_token("SEU_REFRESH_TOKEN")
-
-if "access_token" in resultado:
-    novo_token = resultado["access_token"]
-    print("Novo access_token:", novo_token)
-else:
-    print("Erro:", resultado)
