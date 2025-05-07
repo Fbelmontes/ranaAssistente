@@ -1,28 +1,53 @@
 import streamlit as st
 from datetime import datetime
 from services.hubspot_event_api import criar_evento_marketing_api
+from services.hubspot_event_api import criar_evento_marketing
 
 def criar_evento_component():
-    st.subheader("📅 Criar Evento de Marketing na HubSpot")
+    st.subheader("📅 Criar Novo Evento de Marketing")
 
+    access_token = st.text_input("Access Token OAuth")
     nome = st.text_input("Nome do Evento")
+    external_event_id = st.text_input("ID Externo do Evento (ex: evento-maio-2025)")
+    
     data = st.date_input("Data do Evento")
     hora_inicio = st.time_input("Hora de Início")
     hora_fim = st.time_input("Hora de Término")
-    descricao = st.text_area("Descrição do Evento", "")
-    url = st.text_input("Link do Evento (opcional)", "")
 
     if st.button("Criar Evento"):
         inicio_iso = datetime.combine(data, hora_inicio).isoformat() + "Z"
         fim_iso = datetime.combine(data, hora_fim).isoformat() + "Z"
 
-        resultado = criar_evento_marketing_api(nome, inicio_iso, fim_iso, descricao, url)
+        resultado = criar_evento_marketing(access_token, nome, inicio_iso, fim_iso, external_event_id)
 
-        if "erro" in resultado:
+        if resultado["sucesso"]:
+            st.success("✅ Evento criado com sucesso!")
+            st.json(resultado["resposta"])
+        else:
             st.error("❌ Erro ao criar evento:")
             st.text(resultado["erro"])
-        else:
-            st.success("✅ Evento criado com sucesso!")
-            st.markdown(f"**Nome:** {resultado['nome']}")
-            st.markdown(f"**ID:** `{resultado['id']}`")
-            st.markdown(f"**externalEventId:** `{resultado['externalEventId']}`")
+
+#def criar_evento_component():
+#    st.subheader("📅 Criar Evento de Marketing na HubSpot")
+
+#    nome = st.text_input("Nome do Evento")
+#    data = st.date_input("Data do Evento")
+#    hora_inicio = st.time_input("Hora de Início")
+#    hora_fim = st.time_input("Hora de Término")
+#    descricao = st.text_area("Descrição do Evento", "")
+#    url = st.text_input("Link do Evento (opcional)", "")
+
+#    if st.button("Criar Evento"):
+#        inicio_iso = datetime.combine(data, hora_inicio).isoformat() + "Z"
+#        fim_iso = datetime.combine(data, hora_fim).isoformat() + "Z"
+
+ #       resultado = criar_evento_marketing_api(nome, inicio_iso, fim_iso, descricao, url)
+
+        #if "erro" in resultado:
+         #   st.error("❌ Erro ao criar evento:")
+          #  st.text(resultado["erro"])
+        #else:
+         #   st.success("✅ Evento criado com sucesso!")
+          #  st.markdown(f"**Nome:** {resultado['nome']}")
+           # st.markdown(f"**ID:** `{resultado['id']}`")
+            #st.markdown(f"**externalEventId:** `{resultado['externalEventId']}`")

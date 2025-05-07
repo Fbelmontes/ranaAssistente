@@ -44,40 +44,38 @@ def criar_evento_marketing_api(nome, dt_inicio, dt_fim, descricao=None, url_even
     except Exception as e:
         return {"erro": str(e)}
 
-def criar_evento_marketing(nome_evento, inicio, fim):
-    url = "https://api.hubapi.com/marketing/v3/marketing-events/events"
+def criar_evento_marketing(access_token, event_name, start_datetime, end_datetime, external_event_id):
+    url = "https://api.hubapi.com/marketing/v3/marketing-events"
 
-    body = {
-        "eventName": nome_evento,
-        "eventType": "WEBINAR",
-        "startDateTime": inicio,
-        "endDateTime": fim,
-        "eventOrganizer": "mjv",
-        "externalAccountId": "rana-assistente",
-        "externalEventId": nome_evento.lower().replace(" ", "-")
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
     }
 
-    response = requests.post(url, headers=HEADERS, json=body)
+    body = {
+        "eventName": event_name,
+        "eventType": "WEBINAR",  # pode ser 'WEBINAR', 'CONFERENCE', etc
+        "startDateTime": start_datetime,
+        "endDateTime": end_datetime,
+        "eventOrganizer": "mjv",
+        "eventDescription": "Criado automaticamente pela RANA",
+        "eventUrl": "https://mjv.com.br",
+        "eventCancelled": False,
+        "eventCompleted": False,
+        "externalEventId": external_event_id,
+        "externalAccountId": "rana-assistente"  # ID fixo para agrupar seus eventos
+    }
 
-    if response.status_code == 201:
-        evento = response.json()
-        event_id = evento["id"]
+    response = requests.post(url, headers=headers, json=body)
 
-        st.info("Evento criado. Verificando se está ativo...")
-
-        if validar_evento_ativo(event_id):
-            return {
-                "id": event_id,
-                "nome": evento.get("eventName", "Evento sem nome"),
-                "evento_json": evento  # salva tudo se quiser usar depois
-            }
-        else:
-            return {
-                "id": event_id,
-                "nome": evento.get("eventName", "Evento sem nome"),
-                "erro": "O evento foi criado mas ainda não está ativo.",
-                "evento_json": evento
-            }
+    if response.status_code == 200:
+        return {"sucesso": True, "resposta": response.json()}
+    else:
+        return {
+            "sucesso": False,
+            "erro": response.text,
+            "status": response.status_code
+        }
 
 def listar_eventos():
     url = "https://api.hubapi.com/marketing/v3/marketing-events/external-events"
