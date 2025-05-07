@@ -19,3 +19,16 @@ def enviar_evento_para_make(dados_evento):
 
     except Exception as e:
         return {"sucesso": False, "erro": str(e)}
+
+def enviar_lead_para_evento(lead):
+    url = st.secrets["MAKE_WEBHOOK_LEAD_EVENTO"]
+
+    try:
+        response = requests.post(url, json=lead)
+
+        if response.status_code == 200:
+            return {"sucesso": True, "resposta": response.text}
+        else:
+            return {"erro": response.text}
+    except Exception as e:
+        return {"erro": str(e)}

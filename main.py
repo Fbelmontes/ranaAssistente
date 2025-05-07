@@ -63,6 +63,7 @@ with st.sidebar:
         "⚙️ Automação de Marketing": [
             "📅 Criar Evento de Marketing",
             "📤 Importar Leads",
+            "📤 Enviar Lead para Evento",
             "📋 Listar Eventos Criados",
             "💬 Curtir e comentar post"
         ],
@@ -212,3 +213,7 @@ with col_content:
     elif escolha == "📅 Criar Evento de Marketing":
         from components.criar_evento import criar_evento_component
         criar_evento_component()
+    
+    elif escolha == "📤 Enviar Lead para Evento":
+        from components.enviar_lead_evento import enviar_lead_evento_component
+        enviar_lead_evento_component()
