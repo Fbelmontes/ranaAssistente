@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import requests
 
+# Importação Token oAuth
+from services.hubspot_oauth import renovar_token_automaticamente
+
 def upload_leads_para_evento():
     st.subheader("📥 Enviar Leads para Evento")
 
@@ -23,12 +26,21 @@ def upload_leads_para_evento():
         st.write("Pré-visualização:")
         st.dataframe(df.head())
 
+        
         if st.button("Enviar para o Make"):
+            # Gera novo token
+            access_token = renovar_token_automaticamente()
+
+            if not access_token:
+                st.error("❌ Não foi possível gerar o token de acesso.")
+                return
+
             leads = df.to_dict(orient="records")
 
             payload = {
                 "evento_id": evento_id,
-                "leads": leads
+                "leads": leads,
+                "access_token": access_token  # Enviando token junto
             }
 
             webhook_url = st.secrets["MAKE_EVENT_WEBHOOK_URL"]
