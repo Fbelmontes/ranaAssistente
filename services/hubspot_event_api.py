@@ -10,6 +10,39 @@ HEADERS = {
     "Content-Type": "application/json"
 }
 
+def criar_evento_marketing_api(nome, dt_inicio, dt_fim, descricao=None, url_evento=None):
+    endpoint = "https://api.hubapi.com/marketing/v3/marketing-events/events"
+
+    body = {
+        "eventName": nome,
+        "eventType": "WEBINAR",
+        "startDateTime": dt_inicio,
+        "endDateTime": dt_fim,
+        "eventOrganizer": "mjv",
+        "externalAccountId": "rana-assistente",
+        "externalEventId": nome.lower().replace(" ", "-"),
+        "eventDescription": descricao or "Evento criado via RANA",
+        "eventUrl": url_evento or "https://mjv.com.br",
+        "eventCancelled": False,
+        "eventCompleted": False,
+        "customProperties": []
+    }
+
+    try:
+        response = requests.post(endpoint, headers=HEADERS, json=body)
+
+        if response.status_code == 201:
+            evento = response.json()
+            return {
+                "id": evento.get("id") or evento.get("objectId"),
+                "externalEventId": body["externalEventId"],
+                "nome": body["eventName"]
+            }
+        else:
+            return {"erro": response.text}
+    except Exception as e:
+        return {"erro": str(e)}
+
 def criar_evento_marketing(nome_evento, inicio, fim):
     url = "https://api.hubapi.com/marketing/v3/marketing-events/events"
 
