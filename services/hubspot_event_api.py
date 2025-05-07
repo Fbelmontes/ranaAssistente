@@ -31,15 +31,16 @@ def criar_evento_marketing_api(nome, dt_inicio, dt_fim, descricao=None, url_even
     try:
         response = requests.post(endpoint, headers=HEADERS, json=body)
 
-        if response.status_code == 201:
-            evento = response.json()
+        evento = response.json()
+
+        if response.status_code in [200, 201] and "objectId" in evento:
             return {
-                "id": evento.get("id") or evento.get("objectId"),
+                "id": evento["objectId"],
                 "externalEventId": body["externalEventId"],
                 "nome": body["eventName"]
             }
         else:
-            return {"erro": response.text}
+            return {"erro": evento}
     except Exception as e:
         return {"erro": str(e)}
 
