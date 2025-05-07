@@ -63,7 +63,6 @@ with st.sidebar:
         "⚙️ Automação de Marketing": [
             "📅 Criar Evento de Marketing",
             "📤 Importar Leads",
-            "📋 Listar Eventos Criados",
             "💬 Curtir e comentar post",
             "🔄 Renovar Token"
         ],
@@ -203,13 +202,7 @@ with col_content:
     elif escolha == "📝 Gerar Conteúdo para Blog":
         from components.gerar_blog import gerar_blog_component
         gerar_blog_component()
-    
-    elif escolha == "📋 Listar Eventos Criados":
-        from services.hubspot_event_api import listar_eventos
-        eventos = listar_eventos()
-        for evento in eventos:
-            st.markdown(f"- **{evento['eventName']}** | ID: `{evento['id']}` | Status: `{evento.get('eventStatus', 'N/A')}`")
-    
+       
     elif escolha == "📅 Criar Evento de Marketing":
         from components.criar_evento import criar_evento_component
         criar_evento_component()
