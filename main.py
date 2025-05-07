@@ -63,8 +63,7 @@ with st.sidebar:
         "⚙️ Automação de Marketing": [
             "📅 Criar Evento de Marketing",
             "📤 Importar Leads",
-            "💬 Curtir e comentar post",
-            "🔄 Renovar Token"
+            "💬 Curtir e comentar post"
         ],
         "📚 Aprendizado / 🤖 Memória": [
             "📚 Enviar Material para Aprendizado",
@@ -73,6 +72,9 @@ with st.sidebar:
         ],
         "🌍 Web Scraping": [
             "🌍 Web Scraping Web Summit"
+        ],"🛡️ Autenticação HubSpot": [
+            "🔐 Gerar Token de Acesso",
+            "🔄 Renovar Token de Acesso"
         ]
     }
 
@@ -207,6 +209,10 @@ with col_content:
         from components.criar_evento import criar_evento_component
         criar_evento_component()
     
-    elif escolha == "🔄 Renovar Token":
+    elif escolha == "🔄 Renovar Token de Acesso":
         from components.renovar_token import renovar_token_component
         renovar_token_component()
+
+    elif escolha == "🔐 Gerar Token de Acesso":
+        from components.gerar_token import gerar_token_component
+        gerar_token_component()
