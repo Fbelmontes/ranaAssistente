@@ -17,3 +17,20 @@ def trocar_code_por_token(code):
 
     response = requests.post(url, data=data, headers=headers)
     return response.json()
+
+def renovar_token(refresh_token):
+    url = "https://api.hubapi.com/oauth/v1/token"
+
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+
+    data = {
+        "grant_type": "refresh_token",
+        "client_id": os.getenv("HUBSPOT_CLIENT_ID"),
+        "client_secret": os.getenv("HUBSPOT_CLIENT_SECRET"),
+        "refresh_token": refresh_token
+    }
+
+    response = requests.post(url, data=data, headers=headers)
+    return response.json()
