@@ -190,9 +190,6 @@ with col_content:
         from components.linkedin_interact import linkedin_interaction_component
         linkedin_interaction_component()
 
-    elif escolha == "📅 Criar Evento de Marketing":
-        from components.criar_evento import criar_evento_component
-
     elif escolha == "📚 Enviar Material para Aprendizado":
         from components.upload_material import upload_material_component
         upload_material_component()
