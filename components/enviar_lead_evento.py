@@ -1,31 +1,24 @@
 import streamlit as st
-from services.make_webhook import enviar_lead_para_evento
+from services.hubspot_event_api import enviar_lead_para_evento
 
 def enviar_lead_evento_component():
-    st.subheader("📤 Enviar Lead para Evento de Marketing")
+    st.subheader("📩 Enviar Lead para Evento de Marketing")
 
-    col1, col2 = st.columns(2)
-    with col1:
-        first_name = st.text_input("Nome")
-        last_name = st.text_input("Sobrenome")
-    with col2:
-        email = st.text_input("Email")
-        external_event_id = st.text_input("ID externo do Evento", help="Use o campo 'externalEventId' gerado na criação do evento")
+    st.markdown("Preencha os dados do lead para associar ao evento.")
 
-    if st.button("Enviar Lead"):
-        if not all([first_name, last_name, email, external_event_id]):
-            st.warning("⚠️ Preencha todos os campos antes de enviar.")
+    access_token = st.text_input("Access Token OAuth")  # você pode depois puxar dos secrets
+    external_event_id = st.text_input("ID do Evento (externalEventId)")
+    email = st.text_input("Email do Lead")
+    first_name = st.text_input("Primeiro Nome")
+    last_name = st.text_input("Último Nome")
+
+    if st.button("📤 Enviar Lead"):
+        resultado = enviar_lead_para_evento(access_token, external_event_id, email, first_name, last_name)
+
+        if resultado["sucesso"]:
+            st.success("✅ Lead enviado com sucesso!")
+            st.json(resultado["resposta"])
         else:
-            lead = {
-                "firstName": first_name,
-                "lastName": last_name,
-                "email": email,
-                "externalEventId": external_event_id
-            }
+            st.error(f"❌ Erro: {resultado['erro']}")
 
-            resultado = enviar_lead_para_evento(lead)
 
-            if "erro" in resultado:
-                st.error(f"❌ Erro: {resultado['erro']}")
-            else:
-                st.success("✅ Lead enviado com sucesso!")

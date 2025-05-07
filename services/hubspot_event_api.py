@@ -144,3 +144,35 @@ def validar_evento_ativo(event_id):
 
     return False
 
+def enviar_lead_para_evento(access_token, external_event_id, email, first_name, last_name):
+    """
+    Envia um lead individual para um evento de marketing no HubSpot.
+    """
+    url = "https://api.hubapi.com/marketing/v3/marketing-events/attendance"
+
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+
+    body = {
+        "externalAccountId": "rana-assistente",  # esse valor pode ser qualquer identificador do seu sistema
+        "externalEventId": external_event_id,    # o ID do evento que a RANA criou
+        "attendee": {
+            "email": email,
+            "firstName": first_name,
+            "lastName": last_name,
+            "registrationStatus": "registered"   # status obrigatório: 'registered'
+        }
+    }
+
+    response = requests.post(url, headers=headers, json=body)
+
+    if response.status_code == 200:
+        return {"sucesso": True, "resposta": response.json()}
+    else:
+        return {
+            "sucesso": False,
+            "erro": response.text,
+            "status": response.status_code
+        }
