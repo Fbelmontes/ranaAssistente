@@ -1,5 +1,5 @@
 import streamlit as st
-from services.envio_make import enviar_lead_para_evento
+from services.make_webhook import enviar_lead_para_evento
 
 def enviar_lead_evento_component():
     st.subheader("📤 Enviar Lead para Evento de Marketing")
