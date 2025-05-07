@@ -7,6 +7,8 @@ import json
 from services.webscraping import buscar_informacoes
 from services.google_sheets import salvar_na_planilha_2, conectar_sheets
 from components.enviar_evento_make import enviar_evento_make_component
+# Chave de Acesso
+from services.oauth_hubspot import gerar_url_autenticacao, trocar_codigo_por_token
 
 # Configuração da página
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
@@ -217,3 +219,22 @@ with col_content:
     elif escolha == "📤 Enviar Lead para Evento":
         from components.enviar_lead_evento import enviar_lead_evento_component
         enviar_lead_evento_component()
+
+st.subheader("🔐 Autenticação HubSpot via OAuth 2.0")
+
+# Primeiro passo: gerar o link
+auth_url = gerar_url_autenticacao()
+st.markdown(f"[Clique aqui para autenticar com HubSpot]({auth_url})", unsafe_allow_html=True)
+
+# Callback: após o redirecionamento
+query_params = st.experimental_get_query_params()
+if "code" in query_params:
+    code = query_params["code"][0]
+    token_response = trocar_codigo_por_token(code)
+
+    if "access_token" in token_response:
+        st.success("✅ Autenticado com sucesso!")
+        st.session_state["access_token"] = token_response["access_token"]
+    else:
+        st.error("❌ Falha ao autenticar.")
+        st.json(token_response)
