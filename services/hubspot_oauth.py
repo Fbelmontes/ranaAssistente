@@ -27,10 +27,10 @@ def renovar_token(refresh_token):
 
     data = {
         "grant_type": "refresh_token",
-        "client_id": os.getenv("HUBSPOT_CLIENT_ID"),
-        "client_secret": os.getenv("HUBSPOT_CLIENT_SECRET"),
+        "client_id": st.secrets["HUBSPOT_CLIENT_ID"],
+        "client_secret": st.secrets["HUBSPOT_CLIENT_SECRET"],
         "refresh_token": refresh_token
     }
 
-    response = requests.post(url, data=data, headers=headers)
+    response = requests.post(url, headers=headers, data=data)
     return response.json()

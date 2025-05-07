@@ -65,7 +65,8 @@ with st.sidebar:
             "📤 Importar Leads",
             "📤 Enviar Lead para Evento",
             "📋 Listar Eventos Criados",
-            "💬 Curtir e comentar post"
+            "💬 Curtir e comentar post",
+            "🔄 Renovar Token"
         ],
         "📚 Aprendizado / 🤖 Memória": [
             "📚 Enviar Material para Aprendizado",
@@ -218,6 +219,9 @@ with col_content:
         from components.enviar_lead_evento import enviar_lead_evento_component
         enviar_lead_evento_component()
 
+    elif escolha == "🔄 Renovar Token":
+        from components.renovar_token import renovar_token_component
+        renovar_token_component()
 from services.hubspot_oauth import trocar_code_por_token
 from services.hubspot_oauth import renovar_token
 code = st.text_input("Cole o código de autorização (code) aqui:")
