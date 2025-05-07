@@ -217,3 +217,10 @@ with col_content:
     elif escolha == "📤 Enviar Lead para Evento":
         from components.enviar_lead_evento import enviar_lead_evento_component
         enviar_lead_evento_component()
+
+from services.hubspot_oauth import trocar_code_por_token
+code = st.text_input("Cole o código de autorização (code) aqui:")
+
+if st.button("Trocar por token"):
+    resultado = trocar_code_por_token(code)
+    st.write(resultado)

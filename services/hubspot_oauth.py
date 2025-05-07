@@ -1,0 +1,19 @@
+import requests
+import os
+
+def trocar_code_por_token(code):
+    url = "https://api.hubapi.com/oauth/v1/token"
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+
+    data = {
+        "grant_type": "authorization_code",
+        "client_id": os.getenv("HUBSPOT_CLIENT_ID"),
+        "client_secret": os.getenv("HUBSPOT_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("HUBSPOT_REDIRECT_URI"),
+        "code": code
+    }
+
+    response = requests.post(url, data=data, headers=headers)
+    return response.json()
