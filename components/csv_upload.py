@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 from services.hubspot_oauth import renovar_token_automaticamente
+from datetime import datetime
 
 def upload_leads_para_evento():
     st.subheader("📥 Enviar Leads para Evento")
@@ -31,14 +32,21 @@ def upload_leads_para_evento():
                 st.error(f"Erro ao ler o arquivo: {e}")
 
     elif modo == "🔗 Link Google Sheets CSV":
-        url_csv = st.text_input("Cole o link público do Google Sheets (formato CSV):")
-        if url_csv and st.button("Carregar Leads do Link"):
+                # 🔐 Link fixo via secrets
+        URL_FIXA_CSV = st.secrets["LEADS_MEMORIA"]
+
+        if st.button("🔄 Atualizar Leads da Planilha Google"):
             try:
-                st.session_state.df_leads = pd.read_csv(url_csv)
-                st.success("✅ Leads carregados do link com sucesso!")
-                st.rerun()  # 🔄 força recarregar a interface
+                st.session_state.df_leads = pd.read_csv(URL_FIXA_CSV)
+                st.session_state["ultima_atualizacao"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                st.success("✅ Leads atualizados com sucesso!")
+                st.rerun()
             except Exception as e:
-                st.error(f"Erro ao carregar o link: {e}")
+                st.error(f"Erro ao carregar os leads: {e}")
+
+        # 🕒 Exibe última atualização, se houver
+        if "ultima_atualizacao" in st.session_state:
+            st.info(f"🕒 Última atualização: {st.session_state['ultima_atualizacao']}")
         
 
     # 🧠 Se tiver df salvo, exibe preview e botão
