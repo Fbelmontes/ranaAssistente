@@ -22,21 +22,24 @@ def upload_leads_para_evento():
 
     if modo == "📎 Upload CSV":
         arquivo = st.file_uploader("Envie o arquivo CSV", type=["csv"])
-        if arquivo:
+        if arquivo is not None:
             try:
                 df = pd.read_csv(arquivo)
+                st.success("✅ CSV carregado com sucesso!")
             except Exception as e:
                 st.error(f"Erro ao ler o arquivo: {e}")
 
     elif modo == "🔗 Link Google Sheets CSV":
         url_csv = st.text_input("Cole o link público do Google Sheets (formato CSV):")
-        if url_csv and st.button("Carregar Leads do Link"):
-            try:
-                df = pd.read_csv(url_csv)
-                st.success("Leads carregados com sucesso do link!")
-            except Exception as e:
-                st.error(f"Erro ao carregar o link: {e}")
+        if url_csv:
+            if st.button("Carregar Leads do Link"):
+                try:
+                    df = pd.read_csv(url_csv)
+                    st.success("✅ Leads carregados do link com sucesso!")
+                except Exception as e:
+                    st.error(f"Erro ao carregar o link: {e}")
 
+    # ✅ Exibe e envia se houver dados carregados
     if df is not None:
         st.markdown("### Pré-visualização dos Leads")
         st.dataframe(df.head())
