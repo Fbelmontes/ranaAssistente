@@ -36,8 +36,10 @@ def upload_leads_para_evento():
             try:
                 st.session_state.df_leads = pd.read_csv(url_csv)
                 st.success("✅ Leads carregados do link com sucesso!")
+                st.experimental_rerun()  # 🔄 força recarregar a interface
             except Exception as e:
                 st.error(f"Erro ao carregar o link: {e}")
+        
 
     # 🧠 Se tiver df salvo, exibe preview e botão
     if st.session_state.df_leads is not None:
