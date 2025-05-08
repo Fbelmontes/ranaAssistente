@@ -2,13 +2,11 @@ import streamlit as st
 import pandas as pd
 import requests
 
-# Importação Token oAuth
 from services.hubspot_oauth import renovar_token_automaticamente
 
 def upload_leads_para_evento():
     st.subheader("📥 Enviar Leads para Evento")
 
-    # Opções visíveis com valores reais por trás
     eventos = {
         "🚀 [BR] 2025.05.10 - Live - Websummit - Online - Linkedin": "427754195285",
         "🚀 TESTE": "428046103560",
@@ -16,19 +14,34 @@ def upload_leads_para_evento():
     }
 
     evento_nome = st.selectbox("Selecione o evento", list(eventos.keys()))
-    evento_id = eventos[evento_nome]  # ID real oculto
+    evento_id = eventos[evento_nome]
 
-    arquivo = st.file_uploader("Envie o CSV com os leads", type=["csv"])
+    modo = st.radio("Como deseja importar os leads?", ["📎 Upload CSV", "🔗 Link Google Sheets CSV"])
 
-    if evento_id and arquivo:
-        df = pd.read_csv(arquivo)
+    df = None
 
-        st.write("Pré-visualização:")
+    if modo == "📎 Upload CSV":
+        arquivo = st.file_uploader("Envie o arquivo CSV", type=["csv"])
+        if arquivo:
+            try:
+                df = pd.read_csv(arquivo)
+            except Exception as e:
+                st.error(f"Erro ao ler o arquivo: {e}")
+
+    elif modo == "🔗 Link Google Sheets CSV":
+        url_csv = st.text_input("Cole o link público do Google Sheets (formato CSV):")
+        if url_csv and st.button("Carregar Leads do Link"):
+            try:
+                df = pd.read_csv(url_csv)
+                st.success("Leads carregados com sucesso do link!")
+            except Exception as e:
+                st.error(f"Erro ao carregar o link: {e}")
+
+    if df is not None:
+        st.markdown("### Pré-visualização dos Leads")
         st.dataframe(df.head())
 
-        
         if st.button("Enviar para o Make"):
-            # Gera novo token
             access_token = renovar_token_automaticamente()
 
             if not access_token:
@@ -40,14 +53,14 @@ def upload_leads_para_evento():
             payload = {
                 "evento_id": evento_id,
                 "leads": leads,
-                "access_token": access_token  # Enviando token junto
+                "access_token": access_token
             }
 
             webhook_url = st.secrets["MAKE_EVENT_WEBHOOK_URL"]
             response = requests.post(webhook_url, json=payload)
 
             if response.status_code == 200:
-                st.success("Leads enviados com sucesso para o evento!")
+                st.success("✅ Leads enviados com sucesso para o Make!")
             else:
-                st.error("Erro ao enviar para o Make.")
+                st.error("❌ Erro ao enviar os dados.")
                 st.text(response.text)
