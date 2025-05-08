@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import requests
-
 from services.hubspot_oauth import renovar_token_automaticamente
 
 def upload_leads_para_evento():
@@ -18,31 +17,32 @@ def upload_leads_para_evento():
 
     modo = st.radio("Como deseja importar os leads?", ["📎 Upload CSV", "🔗 Link Google Sheets CSV"])
 
-    df = None
+    # 🔐 Inicia o estado se ainda não existir
+    if "df_leads" not in st.session_state:
+        st.session_state.df_leads = None
 
     if modo == "📎 Upload CSV":
         arquivo = st.file_uploader("Envie o arquivo CSV", type=["csv"])
         if arquivo is not None:
             try:
-                df = pd.read_csv(arquivo)
+                st.session_state.df_leads = pd.read_csv(arquivo)
                 st.success("✅ CSV carregado com sucesso!")
             except Exception as e:
                 st.error(f"Erro ao ler o arquivo: {e}")
 
     elif modo == "🔗 Link Google Sheets CSV":
         url_csv = st.text_input("Cole o link público do Google Sheets (formato CSV):")
-        if url_csv:
-            if st.button("Carregar Leads do Link"):
-                try:
-                    df = pd.read_csv(url_csv)
-                    st.success("✅ Leads carregados do link com sucesso!")
-                except Exception as e:
-                    st.error(f"Erro ao carregar o link: {e}")
+        if url_csv and st.button("Carregar Leads do Link"):
+            try:
+                st.session_state.df_leads = pd.read_csv(url_csv)
+                st.success("✅ Leads carregados do link com sucesso!")
+            except Exception as e:
+                st.error(f"Erro ao carregar o link: {e}")
 
-    # ✅ Exibe e envia se houver dados carregados
-    if df is not None:
+    # 🧠 Se tiver df salvo, exibe preview e botão
+    if st.session_state.df_leads is not None:
         st.markdown("### Pré-visualização dos Leads")
-        st.dataframe(df.head())
+        st.dataframe(st.session_state.df_leads.head())
 
         if st.button("Enviar para o Make"):
             access_token = renovar_token_automaticamente()
@@ -51,7 +51,7 @@ def upload_leads_para_evento():
                 st.error("❌ Não foi possível gerar o token de acesso.")
                 return
 
-            leads = df.to_dict(orient="records")
+            leads = st.session_state.df_leads.to_dict(orient="records")
 
             payload = {
                 "evento_id": evento_id,
@@ -64,6 +64,7 @@ def upload_leads_para_evento():
 
             if response.status_code == 200:
                 st.success("✅ Leads enviados com sucesso para o Make!")
+                st.session_state.df_leads = None  # limpa após envio
             else:
                 st.error("❌ Erro ao enviar os dados.")
                 st.text(response.text)
