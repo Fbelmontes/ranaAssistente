@@ -4,9 +4,7 @@ from fpdf import FPDF
 from docx import Document
 from io import BytesIO
 from bs4 import BeautifulSoup
-import spacy
-from sklearn.metrics.pairwise import cosine_similarity
-from services.gerador_conteudo import traduzir_texto
+
 
 OPENROUTER_KEY = st.secrets["OPENROUTER_API_KEY"]
 
