@@ -35,7 +35,7 @@ with col_titulo:
     st.markdown(
         """
         <h1 style='color:#003366; line-height: 60px; display: flex; align-items: center;'>
-            <img src='data:image/png;base64,{img_base64}' width='120' style='margin-right: 10px;'/>
+            <img src='data:image/png;base64,{img_base64}' width='60' style='margin-right: 10px;'/>
             RANA - Assistente de Web Analytics
         </h1>
         """.format(img_base64=image_to_base64("assets/icons/style_rana.png")),
@@ -72,7 +72,8 @@ with st.sidebar:
         ],
         "🌍 Web Scraping": [
             "🌍 Web Scraping Web Summit"
-        ],"🛡️ Autenticação HubSpot": [
+        ],
+        "🛡️ Autenticação HubSpot": [
             "🔐 Gerar Token de Acesso",
             "🔄 Renovar Token de Acesso"
         ]
