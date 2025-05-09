@@ -1,5 +1,7 @@
 import requests
 import streamlit as st
+from fpdf import FPDF
+from docx import Document
 
 OPENROUTER_KEY = st.secrets["OPENROUTER_API_KEY"]
 
