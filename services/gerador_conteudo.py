@@ -50,12 +50,13 @@ def gerar_docx(post):
     doc = Document()
     doc.add_heading('Conteúdo do Blog', 0)
     doc.add_paragraph(post)
+
+    # Criar um arquivo em memória (usando BytesIO)
+    doc_io = BytesIO()
+    doc.save(doc_io)
+    doc_io.seek(0)
     
-    # Salvar o arquivo no caminho adequado
-    file_path = "/tmp/conteudo_blog.docx"  # Usando um caminho temporário válido no ambiente
-    doc.save(file_path)
-    
-    return file_path
+    return doc_io
 
 # Função para gerar arquivo PDF
 def gerar_pdf(post):
@@ -63,12 +64,15 @@ def gerar_pdf(post):
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
     pdf.set_font("Arial", size=12)
-
-    # Certificar-se de que o conteúdo está sendo tratado como UTF-8
-    post = post.encode('latin-1', 'replace').decode('latin-1')  # Tentar substituir caracteres incompatíveis com latin1
+    
+    # Certificar-se de que o conteúdo está sendo tratado corretamente
+    post = post.encode('latin-1', 'replace').decode('latin-1')  # Tentar substituir caracteres incompatíveis
 
     pdf.multi_cell(0, 10, post)
-    file_path = "/tmp/conteudo_blog.pdf"  # Garantir que o caminho seja válido no ambiente de execução
-    pdf.output(file_path)
 
-    return file_path
+    # Criar um arquivo em memória (usando BytesIO)
+    pdf_io = BytesIO()
+    pdf.output(pdf_io)
+    pdf_io.seek(0)
+
+    return pdf_io
