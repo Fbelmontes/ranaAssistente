@@ -1,4 +1,3 @@
-# Execução python -m streamlit run .\main.py
 import streamlit as st
 import base64
 import pandas as pd
@@ -7,32 +6,29 @@ import json
 # Chamadas de arquivos 
 from services.webscraping import buscar_informacoes
 from services.google_sheets import salvar_na_planilha_2, conectar_sheets
+from components.enviar_evento_make import enviar_evento_make_component
 
+# Configuração da página
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
 
 if "tema_escuro" not in st.session_state:
     st.session_state.tema_escuro = False
 
-# imagem para GIF
+# Funções para converter imagens e vídeos
 def image_to_base64(path):
     with open(path, "rb") as f:
         data = f.read()
     return base64.b64encode(data).decode()
 
-# imagem para video
 def video_to_base64(path):
     with open(path, "rb") as video_file:
         video_bytes = video_file.read()
     return base64.b64encode(video_bytes).decode()
 
+# Base64 do vídeo
 video_base64 = video_to_base64("assets/videos/rana_avatar.mp4")
 
-#gif_base64 = image_to_base64("assets/icons/rana_avatar2.gif")
-
-#st.markdown(css_escuro if st.session_state.tema_escuro else css_claro, unsafe_allow_html=True)
-
-#st.markdown("<h1 style='color:#003366; text-align: center;'> RANA - Assistente de Web Analytics</h1>", unsafe_allow_html=True)
-#st.caption("Powered by você, Fe 💖")
+# Título da aplicação
 col_logo, col_titulo = st.columns([1, 6])
 
 with col_titulo:
@@ -46,50 +42,77 @@ with col_titulo:
         unsafe_allow_html=True
     )
 
-
 st.caption("Powered by você, Fe 💖")
-
 
 # Layout: Menu | Avatar | Interação
 col_menu, col_avatar, col_content = st.columns([1, 1, 2])
 
 # ========== MENU LADO ESQUERDO ==========
-with col_menu:
+
+# Usando a barra lateral para menu
+with st.sidebar:
     st.markdown("## 🧭 Menu", unsafe_allow_html=True)
-    escolha = st.radio(
-        "",
-        ["🔍 Buscar Empresa ou Site","📅 Criar Evento de Marketing","📤 Importar Leads","🌍 Web Scraping Web Summit","🤖 Fazer uma pergunta","💬 Curtir e comentar post","📚 Enviar Material para Aprendizado","🤖 Perguntar com base nos Aprendizados"],        
-        index=0
-    )
+
+    # Categorias de Menu
+    menu_opcoes = {
+        "🔍 Pesquisa": [
+            "🔍 Buscar Empresa ou Site",
+            "📚 Aprender sobre um site",
+            "🌐 Pesquisar na Web"
+        ],
+        "⚙️ Automação de Marketing": [
+            "📅 Criar Evento de Marketing",
+            "📤 Importar Leads",
+            "💬 Curtir e comentar post"
+        ],
+        "📚 Aprendizado / 🤖 Memória": [
+            "📚 Enviar Material para Aprendizado",
+            "🤖 Perguntar com base nos Aprendizados",
+            "📝 Gerar Conteúdo para Blog"
+        ],
+        "🌍 Web Scraping": [
+            "🌍 Web Scraping Web Summit"
+        ],
+        "🛡️ Autenticação HubSpot": [
+            "🔐 Gerar Token de Acesso",
+            "🔄 Renovar Token de Acesso"
+        ]
+    }
+
+    # Menu com categorias
+    categoria = st.radio("Escolha uma categoria", list(menu_opcoes.keys()))
+
+    # Opções dentro da categoria selecionada
+    escolha = st.radio("Escolha uma opção", menu_opcoes[categoria], index=0)
 
 # ========== AVATAR CENTRAL ==========
-with col_avatar:
 
+with col_avatar:
     st.markdown(
-    f"""
-    <div style="
-        background: rgba(255, 255, 255, 0.6);
-        border: 2px solid #ccc;
-        border-radius: 20px;
-        padding: 20px;
-        text-align: center;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    ">
-        <video width="400" autoplay loop muted playsinline style="border-radius: 40px;" >
-            <source src="data:video/mp4;base64,{video_base64}" type="video/mp4">
-            Seu navegador não suporta vídeo incorporado 😢
-        </video>
-        <p style='color:#003366; font-weight: 500; margin-top: 10px;'></p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+        f"""
+        <div style="
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid #ccc;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        ">
+            <video width="400" autoplay loop muted playsinline style="border-radius: 40px;" >
+                <source src="data:video/mp4;base64,{video_base64}" type="video/mp4">
+                Seu navegador não suporta vídeo incorporado 😢
+            </video>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 # ========== CONTEÚDO À DIREITA ==========
+
 with col_content:
     st.markdown("### Área de Interação")
 
-    # ############# Opção Web Scraping #############
+    # ############# Opção MENU #############
     if escolha == "🌍 Web Scraping Web Summit":
         st.subheader("🕵️‍♂️ Coletando Palestras e Eventos do Web Summit")
         
@@ -170,10 +193,6 @@ with col_content:
         from components.linkedin_interact import linkedin_interaction_component
         linkedin_interaction_component()
 
-    elif escolha == "📅 Criar Evento de Marketing":
-        from components.criar_evento import criar_evento_component
-        criar_evento_component()
-
     elif escolha == "📚 Enviar Material para Aprendizado":
         from components.upload_material import upload_material_component
         upload_material_component()
@@ -183,10 +202,18 @@ with col_content:
         from components.perguntas_aprendizado import perguntas_aprendizado_component
         perguntas_aprendizado_component()
 
-if st.button("📦 Ver modelos disponíveis na minha chave"):
-    modelos = listar_modelos_disponiveis()
-    if modelos:
-        st.markdown("### Modelos disponíveis:")
-        st.code("\n".join(modelos))
-    else:
-        st.warning("Nenhum modelo disponível encontrado.")
+    elif escolha == "📝 Gerar Conteúdo para Blog":
+        from components.gerar_blog import gerar_blog_component
+        gerar_blog_component()
+       
+    elif escolha == "📅 Criar Evento de Marketing":
+        from components.criar_evento import criar_evento_component
+        criar_evento_component()
+    
+    elif escolha == "🔄 Renovar Token de Acesso":
+        from components.renovar_token import renovar_token_component
+        renovar_token_component()
+
+    elif escolha == "🔐 Gerar Token de Acesso":
+        from components.gerar_token import gerar_token_component
+        gerar_token_component()

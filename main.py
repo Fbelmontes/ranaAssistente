@@ -35,7 +35,7 @@ with col_titulo:
     st.markdown(
         """
         <h1 style='color:#003366; line-height: 60px; display: flex; align-items: center;'>
-            <img src='data:image/png;base64,{img_base64}' width='120' style='margin-right: 10px;'/>
+            <img src='data:image/png;base64,{img_base64}' style='max-width: 100px; height: auto; margin-right: 10px;'/>
             RANA - Assistente de Web Analytics
         </h1>
         """.format(img_base64=image_to_base64("assets/icons/style_rana.png")),
@@ -44,16 +44,34 @@ with col_titulo:
 
 st.caption("Powered by você, Fe 💖")
 
-# Layout: Menu | Avatar | Interação
-col_menu, col_avatar, col_content = st.columns([1, 1, 2])
+# Layout principal com responsividade otimizada
+col_avatar, col_content = st.columns([1, 3])
 
-# ========== MENU LADO ESQUERDO ==========
+# ========== AVATAR CENTRAL ==========
+with col_avatar:
+    st.markdown(
+        f"""
+        <div style="
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid #ccc;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        ">
+            <video style="max-width: 100%; height: auto; border-radius: 40px;" autoplay loop muted playsinline>
+                <source src="data:video/mp4;base64,{video_base64}" type="video/mp4">
+                Seu navegador não suporta vídeo incorporado 😞
+            </video>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-# Usando a barra lateral para menu
+# ========== MENU LATERAL ==========
 with st.sidebar:
-    st.markdown("## 🧭 Menu", unsafe_allow_html=True)
+    st.markdown("## 🧑‍🔬 Menu", unsafe_allow_html=True)
 
-    # Categorias de Menu
     menu_opcoes = {
         "🔍 Pesquisa": [
             "🔍 Buscar Empresa ou Site",
@@ -61,7 +79,7 @@ with st.sidebar:
             "🌐 Pesquisar na Web"
         ],
         "⚙️ Automação de Marketing": [
-            "📅 Criar Evento de Marketing",
+            "🗕️ Criar Evento de Marketing",
             "📤 Importar Leads",
             "💬 Curtir e comentar post"
         ],
@@ -79,56 +97,22 @@ with st.sidebar:
         ]
     }
 
-    # Menu com categorias
     categoria = st.radio("Escolha uma categoria", list(menu_opcoes.keys()))
-
-    # Opções dentro da categoria selecionada
     escolha = st.radio("Escolha uma opção", menu_opcoes[categoria], index=0)
 
-# ========== AVATAR CENTRAL ==========
-
-with col_avatar:
-    st.markdown(
-        f"""
-        <div style="
-            background: rgba(255, 255, 255, 0.6);
-            border: 2px solid #ccc;
-            border-radius: 20px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        ">
-            <video width="400" autoplay loop muted playsinline style="border-radius: 40px;" >
-                <source src="data:video/mp4;base64,{video_base64}" type="video/mp4">
-                Seu navegador não suporta vídeo incorporado 😢
-            </video>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
 # ========== CONTEÚDO À DIREITA ==========
-
 with col_content:
     st.markdown("### Área de Interação")
 
-    # ############# Opção MENU #############
     if escolha == "🌍 Web Scraping Web Summit":
         st.subheader("🕵️‍♂️ Coletando Palestras e Eventos do Web Summit")
-        
-        progress_var = st.progress(0)  # Barra de progresso para feedback ao usuário
-
+        progress_var = st.progress(0)
         if st.button("Coletar Dados do Web Summit"):
             with st.spinner("Coletando dados..."):
-                eventos = start_scraping()  # Função de scraping
-                
+                eventos = start_scraping()
                 if eventos is not None:
-                    df = eventos
-                    st.dataframe(df)  # Exibe os dados no formato de tabela
+                    st.dataframe(eventos)
                     st.success("Dados coletados com sucesso!")
-                    
-                    # Optionally, save to Google Sheets (if needed)
-                    #salvar_historico("Web Summit - Eventos", df.to_dict(orient='records'))
                 else:
                     st.error("Erro ao coletar dados.")
 
@@ -144,24 +128,19 @@ with col_content:
                     salvar_na_planilha(url, conteudo)
                     st.success("Aprendizado completo! 🎓")
                     st.text_area("Resumo do Conteúdo:", conteudo, height=200)
-    
+
     elif escolha == "🌐 Pesquisar na Web":
         st.subheader("Pesquisa com RANA na internet")
-
         tema = st.text_input("Sobre o que você quer saber?")
         if st.button("Pesquisar e Resumir"):
             from services.web_search import buscar_web
             from services.openrouter_api import resumir_resultados_web
-
             with st.spinner("RANA está pesquisando..."):
                 resultados = buscar_web(tema)
                 resumo = resumir_resultados_web(resultados)
-
                 st.success("Resumo encontrado:")
                 st.markdown(resumo)
-
                 salvar_historico(f"Pesquisa na web: {tema}", resumo)
-
                 st.markdown("### Fontes:")
                 for r in resultados:
                     st.markdown(f"- [{r['title']}]({r['href']})")
@@ -172,10 +151,8 @@ with col_content:
 
     elif escolha == "🤖 Fazer uma pergunta":
         from services.respostas import responder_com_contexto
-
         st.subheader("Pergunte algo com base na memória da RANA")
         pergunta = st.text_input("Digite sua pergunta:")
-
         if st.button("Perguntar"):
             with st.spinner("RANA está pensando..."):
                 resposta = responder_com_contexto(pergunta)
@@ -188,7 +165,7 @@ with col_content:
     elif escolha == "🔍 Buscar Empresa ou Site":
         from components.interacao_aprendizado import interacao_aprendizado
         interacao_aprendizado()
-    
+
     elif escolha == "💬 Curtir e comentar post":
         from components.linkedin_interact import linkedin_interaction_component
         linkedin_interaction_component()
@@ -196,7 +173,6 @@ with col_content:
     elif escolha == "📚 Enviar Material para Aprendizado":
         from components.upload_material import upload_material_component
         upload_material_component()
-        from services.openrouter_api import listar_modelos_disponiveis
 
     elif escolha == "🤖 Perguntar com base nos Aprendizados":
         from components.perguntas_aprendizado import perguntas_aprendizado_component
@@ -205,11 +181,11 @@ with col_content:
     elif escolha == "📝 Gerar Conteúdo para Blog":
         from components.gerar_blog import gerar_blog_component
         gerar_blog_component()
-       
-    elif escolha == "📅 Criar Evento de Marketing":
+
+    elif escolha == "🗕️ Criar Evento de Marketing":
         from components.criar_evento import criar_evento_component
         criar_evento_component()
-    
+
     elif escolha == "🔄 Renovar Token de Acesso":
         from components.renovar_token import renovar_token_component
         renovar_token_component()
