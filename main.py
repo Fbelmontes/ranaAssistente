@@ -70,7 +70,7 @@ with col_avatar:
 
 # ========== MENU LATERAL ==========
 with st.sidebar:
-    st.markdown("## 🧑‍🔬 Menu", unsafe_allow_html=True)
+    st.markdown("## 🧭 Menu", unsafe_allow_html=True)
 
     menu_opcoes = {
         "🔍 Pesquisa": [
@@ -79,7 +79,7 @@ with st.sidebar:
             "🌐 Pesquisar na Web"
         ],
         "⚙️ Automação de Marketing": [
-            "🗕️ Criar Evento de Marketing",
+            "📅 Criar Evento de Marketing",
             "📤 Importar Leads",
             "💬 Curtir e comentar post"
         ],
@@ -182,7 +182,7 @@ with col_content:
         from components.gerar_blog import gerar_blog_component
         gerar_blog_component()
 
-    elif escolha == "🗕️ Criar Evento de Marketing":
+    elif escolha == "📅 Criar Evento de Marketing":
         from components.criar_evento import criar_evento_component
         criar_evento_component()
 
