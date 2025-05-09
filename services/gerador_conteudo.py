@@ -99,3 +99,36 @@ def buscar_criticas_newsapi(tema):
     else:
         return f"Erro ao buscar críticas: {response.status_code}"
 
+import spacy
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Carregar modelo de linguagem do Spacy
+nlp = spacy.load("pt_core_news_md")
+
+def comparar_textos(texto_gerado, criticas):
+    """
+    Compara o conteúdo gerado com as críticas usando similaridade de cosseno.
+    """
+    doc_gerado = nlp(texto_gerado)
+    
+    # Calcular a similaridade média com cada crítica
+    similaridade_total = 0
+    for critica in criticas:
+        doc_critica = nlp(critica)
+        similaridade = cosine_similarity([doc_gerado.vector], [doc_critica.vector])
+        similaridade_total += similaridade[0][0]
+    
+    media_similaridade = similaridade_total / len(criticas) if criticas else 0
+    return media_similaridade
+
+def ajustar_conteudo(texto_gerado, criticas, similaridade_threshold=0.7):
+    """
+    Ajusta o conteúdo gerado com base nas críticas, se a similaridade for baixa.
+    """
+    similaridade_media = comparar_textos(texto_gerado, criticas)
+
+    if similaridade_media < similaridade_threshold:
+        texto_ajustado = f"Melhorei o conteúdo com base nas críticas: {texto_gerado}"
+        return texto_ajustado
+    else:
+        return texto_gerado

@@ -1,6 +1,5 @@
 import streamlit as st
-from services.gerador_conteudo import gerar_post_blog, buscar_criticas_newsapi, gerar_docx, gerar_pdf
-
+from services.gerador_conteudo import gerar_post_blog, buscar_criticas_newsapi, comparar_textos, ajustar_conteudo, gerar_docx, gerar_pdf
 
 def gerar_blog_component():
     st.subheader("📝 Gerar Conteúdo para Blog com base em uma Resposta")
@@ -14,30 +13,25 @@ def gerar_blog_component():
             post = gerar_post_blog(pergunta, resposta)
             st.markdown("### Conteúdo gerado:")
             st.markdown(post)
-            
-            # Buscar críticas ou artigos com a NewsAPI ou Web Scraping, se o tema for fornecido
-            if tema:
-                st.subheader("🔍 Artigos e Críticas Encontradas:")
 
-                # Buscando artigos via NewsAPI
+            # Buscar críticas/artigos relacionados ao tema
+            if tema:
                 criticas = buscar_criticas_newsapi(tema)
-                if criticas:
-                    for critica in criticas:
-                        st.markdown(f"- {critica}")
-                else:
+                if not criticas:
                     st.write("Nenhuma crítica encontrada na NewsAPI.")
                 
-                # Buscando artigos via Web Scraping (opcional, descomente se desejar ativar)
-                # criticas_scraping = buscar_criticas_scraping(tema)
-                # if criticas_scraping:
-                #     for critica in criticas_scraping:
-                #         st.markdown(f"- {critica}")
-                # else:
-                #     st.write("Nenhuma crítica encontrada via Web Scraping.")
+                # Comparar o conteúdo gerado com as críticas/artigos
+                similaridade = comparar_textos(post, criticas)
 
-            # Gerar DOCX e PDF para o conteúdo
-            docx_file = gerar_docx(post)
+                # Ajuste do conteúdo com base na comparação
+                post_ajustado = ajustar_conteudo(post, criticas, similaridade)
+                
+                st.markdown("### Conteúdo Ajustado:")
+                st.markdown(post_ajustado)
+
+            # Gerar DOCX e PDF para o conteúdo ajustado
+            docx_file = gerar_docx(post_ajustado)
             st.download_button("Baixar como DOCX", docx_file, file_name="conteudo_blog.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 
-            pdf_file = gerar_pdf(post)
+            pdf_file = gerar_pdf(post_ajustado)
             st.download_button("Baixar como PDF", pdf_file, file_name="conteudo_blog.pdf", mime="application/pdf")
