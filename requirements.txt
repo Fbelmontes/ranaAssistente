@@ -17,4 +17,5 @@ openrouter
 PyMuPDF
 python-docx
 fpdf
+spacy
 
