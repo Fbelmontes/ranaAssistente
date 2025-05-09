@@ -1,5 +1,5 @@
 import streamlit as st
-from services.gerador_conteudo import gerar_post_blog, buscar_criticas_newsapi, buscar_criticas_scraping, gerar_docx, gerar_pdf
+from services.gerador_conteudo import gerar_post_blog, buscar_criticas_newsapi, gerar_docx, gerar_pdf
 
 def gerar_blog_component():
     st.subheader("📝 Gerar Conteúdo para Blog com base em uma Resposta")
