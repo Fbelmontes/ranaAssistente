@@ -101,25 +101,3 @@ def buscar_criticas_newsapi(tema):
     else:
         return f"Erro ao buscar críticas: {response.status_code}"
 
-# Carregar o modelo de linguagem do Spacy
-nlp = spacy.load("pt_core_news_md")  # Modelo para português
-
-def comparar_textos(texto_gerado, criticas):
-    """
-    Compara o conteúdo gerado com as críticas usando similaridade de cosseno, com tradução para português.
-    """
-    # Traduzir críticas para português, se necessário
-    criticas_traduzidas = [traduzir_texto(critica) for critica in criticas]
-    
-    # Converter o texto gerado em um documento Spacy
-    doc_gerado = nlp(texto_gerado)
-    
-    # Calcular a similaridade média com cada crítica
-    similaridade_total = 0
-    for critica in criticas_traduzidas:
-        doc_critica = nlp(critica)
-        similaridade = cosine_similarity([doc_gerado.vector], [doc_critica.vector])
-        similaridade_total += similaridade[0][0]
-    
-    media_similaridade = similaridade_total / len(criticas) if criticas else 0
-    return media_similaridade
