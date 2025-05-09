@@ -50,8 +50,11 @@ def gerar_docx(post):
     doc = Document()
     doc.add_heading('Conteúdo do Blog', 0)
     doc.add_paragraph(post)
-    file_path = "conteudo_blog.docx"
+    
+    # Salvar o arquivo no caminho adequado
+    file_path = "/tmp/conteudo_blog.docx"  # Usando um caminho temporário válido no ambiente
     doc.save(file_path)
+    
     return file_path
 
 # Função para gerar arquivo PDF
