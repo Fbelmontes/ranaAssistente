@@ -3,6 +3,7 @@ import streamlit as st
 from fpdf import FPDF
 from docx import Document
 from io import BytesIO
+from bs4 import BeautifulSoup
 
 OPENROUTER_KEY = st.secrets["OPENROUTER_API_KEY"]
 
@@ -77,3 +78,22 @@ def gerar_pdf(post):
     pdf_io.seek(0)
 
     return pdf_io
+
+# Função para buscar críticas usando a NewsAPI
+def buscar_criticas_newsapi(tema):
+    api_key = st.secrets["NEWS_API_KEY"]
+    url = f"https://newsapi.org/v2/everything?q={tema}&apiKey={api_key}"
+    
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+        data = response.json()
+        artigos = data.get("articles", [])
+        
+        criticas = []
+        for artigo in artigos:
+            criticas.append(artigo["title"] + " - " + artigo["description"])
+        
+        return criticas
+    else:
+        return f"Erro ao buscar críticas: {response.status_code}"
