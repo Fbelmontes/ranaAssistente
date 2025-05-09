@@ -16,3 +16,4 @@ selenium
 openrouter
 PyMuPDF
 python-docx
+fpdf

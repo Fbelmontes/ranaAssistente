@@ -12,3 +12,11 @@ def gerar_blog_component():
             post = gerar_post_blog(pergunta, resposta)
             st.markdown("### Conteúdo gerado:")
             st.markdown(post)
+           
+            # Gerar DOCX
+            docx_path = gerar_docx(post)
+            st.download_button("Baixar como DOCX", docx_path)
+
+            # Gerar PDF
+            pdf_path = gerar_pdf(post)
+            st.download_button("Baixar como PDF", pdf_path)

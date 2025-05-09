@@ -42,3 +42,23 @@ Resposta:
         st.error(f"Erro ao gerar post: {response.status_code}")
         st.text(response.text)
         return "Erro ao gerar conteúdo."
+
+# Função para gerar arquivo DOCX
+def gerar_docx(post):
+    doc = Document()
+    doc.add_heading('Conteúdo do Blog', 0)
+    doc.add_paragraph(post)
+    file_path = "conteudo_blog.docx"
+    doc.save(file_path)
+    return file_path
+
+# Função para gerar arquivo PDF
+def gerar_pdf(post):
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    pdf.multi_cell(0, 10, post)
+    file_path = "conteudo_blog.pdf"
+    pdf.output(file_path)
+    return file_path
