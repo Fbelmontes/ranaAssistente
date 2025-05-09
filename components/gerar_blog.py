@@ -13,10 +13,9 @@ def gerar_blog_component():
             st.markdown("### Conteúdo gerado:")
             st.markdown(post)
            
-            # Gerar DOCX
+             # Gerar DOCX e PDF e garantir que o conteúdo seja retornado corretamente
             docx_path = gerar_docx(post)
-            st.download_button("Baixar como DOCX", docx_path)
+            st.download_button("Baixar como DOCX", docx_path, file_name="conteudo_blog.docx")
 
-            # Gerar PDF
             pdf_path = gerar_pdf(post)
-            st.download_button("Baixar como PDF", pdf_path)
+            st.download_button("Baixar como PDF", pdf_path, file_name="conteudo_blog.pdf")
