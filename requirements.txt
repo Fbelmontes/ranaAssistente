@@ -17,6 +17,3 @@ openrouter
 PyMuPDF
 python-docx
 fpdf
-spacy
-scikit-learn
-spacy[pt_core_news_md]
