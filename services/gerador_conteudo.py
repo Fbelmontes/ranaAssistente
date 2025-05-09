@@ -60,7 +60,12 @@ def gerar_pdf(post):
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
     pdf.set_font("Arial", size=12)
+
+    # Certificar-se de que o conteúdo está sendo tratado como UTF-8
+    post = post.encode('latin-1', 'replace').decode('latin-1')  # Tentar substituir caracteres incompatíveis com latin1
+
     pdf.multi_cell(0, 10, post)
-    file_path = "conteudo_blog.pdf"
+    file_path = "/tmp/conteudo_blog.pdf"  # Garantir que o caminho seja válido no ambiente de execução
     pdf.output(file_path)
+
     return file_path
