@@ -60,7 +60,12 @@ def upload_leads_para_evento():
                 st.error("❌ Não foi possível gerar o token de acesso.")
                 return
 
-            leads = st.session_state.df_leads.to_dict(orient="records")
+            leads = (
+                st.session_state.df_leads
+                .fillna("")  # remove NaNs
+                .astype(str)  # força todos os campos a string
+                .to_dict(orient="records")
+            )
 
             payload = {
                 "evento_id": evento_id,
