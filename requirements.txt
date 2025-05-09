@@ -17,3 +17,4 @@ openrouter
 PyMuPDF
 python-docx
 fpdf
+googletrans==4.0.0-rc1
