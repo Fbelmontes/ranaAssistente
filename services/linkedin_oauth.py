@@ -25,7 +25,7 @@ def gerar_url_autorizacao():
 def obter_access_token(authorization_code):
     data = {
         "grant_type": "authorization_code",
-        "code": authorization_code,
+        "code": st.secrets["LINKDIN_CODE_AUTHORIZATION"],
         "redirect_uri": REDIRECT_URI,
         "client_id": CLIENT_ID,
         "client_secret": CLIENT_SECRET,
