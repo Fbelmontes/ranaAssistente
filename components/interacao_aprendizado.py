@@ -9,7 +9,7 @@ def interacao_aprendizado():
     if st.button("Buscar e Aprender"):
         with st.spinner("Buscando e aprendendo..."):
             dados = buscar_informacoes(termo)
-            salvar_aprendizado(termo, dados)
+            #salvar_aprendizado(termo, dados)
             st.success("Informações aprendidas com sucesso!")
             st.json(dados)
 
