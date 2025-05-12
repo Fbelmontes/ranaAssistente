@@ -4,33 +4,30 @@ import streamlit as st
 
 def buscar_informacoes(termo):
     """
-    Função para buscar informações sobre um link de site ou nome de empresa.
+    Função para buscar informações sobre uma empresa usando a Hunter.io API.
     """
     dados = {}
-    
-    if termo.startswith("http://") or termo.startswith("https://"):
-        dados["tipo"] = "site"
-        dados["url"] = termo
-        try:
-            # Web scraping básico
-            response = requests.get(termo)
-            soup = BeautifulSoup(response.text, "html.parser")
-            
-            # Pegando título da página
-            dados["titulo"] = soup.title.string if soup.title else "Sem título"
-            
-            # Pegando meta descrição
-            dados["descricao"] = soup.find("meta", attrs={"name": "description"})["content"] if soup.find("meta", attrs={"name": "description"}) else "Sem descrição"
-            
-            # Pegando o primeiro link de contato
-            dados["contato"] = soup.find("a", href=True).text if soup.find("a", href=True) else "Sem contato encontrado"
-        except Exception as e:
-            dados["erro"] = f"Erro ao acessar o site: {e}"
-    else:
-        dados["tipo"] = "empresa"
-        dados["nome"] = termo
-        dados["informacoes"] = f"Informações sobre {termo} ainda não estão disponíveis diretamente."
-    
+    dominio = termo.split("://")[1] if "://" in termo else termo
+
+    # Configuração da chave da API Hunter.io
+    api_key = st.secrets["HUNTER_API"] # Substitua com sua chave da API do Hunter.io
+    api_url = f"https://api.hunter.io/v2/domain-search?domain={dominio}&api_key={api_key}"
+
+    try:
+        response = requests.get(api_url)
+        if response.status_code == 200:
+            empresa_data = response.json()
+            dados["nome"] = empresa_data.get("data", {}).get("organization", "Nome não encontrado")
+            dados["setor"] = empresa_data.get("data", {}).get("industry", "Setor não encontrado")
+            dados["funcionarios"] = empresa_data.get("data", {}).get("employees", "Número de funcionários não encontrado")
+            dados["tamanho"] = empresa_data.get("data", {}).get("size", "Tamanho não encontrado")
+            dados["localizacao"] = empresa_data.get("data", {}).get("location", "Localização não encontrada")
+            dados["descricao"] = empresa_data.get("data", {}).get("description", "Descrição não disponível")
+        else:
+            dados["erro"] = "Erro ao acessar dados da empresa."
+    except Exception as e:
+        dados["erro"] = f"Erro na chamada à API: {e}"
+
     return dados
 
 def buscar_dados_multiplas_paginas(url_base):
