@@ -89,7 +89,8 @@ with st.sidebar:
             "📝 Gerar Conteúdo para Blog"
         ],
         "🌍 Web Scraping": [
-            "🌍 Web Scraping Web Summit"
+            "🌍 Web Scraping Web Summit",
+            "🌍 Web Scraping Linkedin"
         ],
         "🛡️ Autenticação HubSpot": [
             "🔐 Gerar Token de Acesso",
@@ -193,3 +194,6 @@ with col_content:
     elif escolha == "🔐 Gerar Token de Acesso":
         from components.gerar_token import gerar_token_component
         gerar_token_component()
+
+    elif escolha == "🌍 Web Scraping Web Summit":
+        scraping_evento_component()
