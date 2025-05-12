@@ -15,7 +15,7 @@ def gerar_url_autorizacao():
         "response_type": "code",
         "client_id": CLIENT_ID,
         "redirect_uri": REDIRECT_URI,
-        "scope": "r_liteprofile r_emailaddress w_member_social",
+        "scope": "r_liteprofile w_member_social",  # Remova r_emailaddress se não for necessário
         "state": "unique_state_string",  # Use um estado único para evitar CSRF
     }
     url = f"{AUTHORIZATION_URL}?{urlencode(params)}"
