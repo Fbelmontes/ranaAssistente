@@ -4,7 +4,7 @@ import pandas as pd
 import json
 
 # Chamadas de arquivos 
-from services.webscraping import buscar_informacoes
+from services.webscraping import buscar_informacoes, scraping_evento_component
 from services.google_sheets import salvar_na_planilha_2, conectar_sheets
 from components.enviar_evento_make import enviar_evento_make_component
 
