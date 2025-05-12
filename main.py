@@ -199,3 +199,6 @@ with col_content:
     elif escolha == "🌍 Web Scraping Linkedin":
         scraping_evento_component()
     
+    elif escolha == "🔗 Integração com LinkedIn":
+        linkedin_integration_component()
+    
