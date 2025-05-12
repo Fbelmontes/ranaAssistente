@@ -195,5 +195,5 @@ with col_content:
         from components.gerar_token import gerar_token_component
         gerar_token_component()
 
-    elif escolha == "🌍 Web Scraping Web Summit":
+    elif escolha == "🌍 Web Scraping Linkedin":
         scraping_evento_component()
