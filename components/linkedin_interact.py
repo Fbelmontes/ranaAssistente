@@ -11,11 +11,11 @@ def linkedin_interaction_component():
     if st.button("Verificar e interagir com o post"):
         if post_urn and post_texto:
             # Verifica se é da MJV (simplesmente por conter "MJV" no texto)
-            if "MJV" in post_texto.upper():
-                acao = "curtir_comentar_compartilhar"
-            else:
-                acao = "curtir_comentar"
+            acao = "curtir_comentar"  # ação padrão
 
+            if "MJV" in post_texto.upper():  # Ajuste para verificar melhor
+                acao = "curtir_comentar_compartilhar"
+            
             with st.spinner("RANA está gerando um comentário engajador..."):
                 prompt = f"""
 Crie um comentário curto e engajador para um post do LinkedIn com o seguinte conteúdo:
@@ -38,7 +38,7 @@ Resposta:
                     "acao": acao
                 }
 
-                webhook_url = st.secrets["MAKE_WEBHOOK_URL_LINKEDIN"]
+                webhook_url = st.secrets["MAKE_WEBHOOK_URL_LINKEDIN"]  # Certifique-se de que o URL está correto
                 response = requests.post(webhook_url, json=payload)
 
                 if response.status_code == 200:
