@@ -8,6 +8,7 @@ from services.webscraping import buscar_informacoes, scraping_evento_component
 from services.google_sheets import salvar_na_planilha_2, conectar_sheets
 from components.enviar_evento_make import enviar_evento_make_component
 from components.linkedin_integration import linkedin_integration_component
+from components.lookerstudio import exibir_relatorio_lookerstudio
 # Configuração da página
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
 
@@ -96,6 +97,9 @@ with st.sidebar:
             "🔐 Gerar Token de Acesso",
             "🔄 Renovar Token de Acesso",
             "🔗 Integração com LinkedIn"
+        ],
+        "📊 Analise":[
+            "📊 Relatórios de Tráfego e Comportamento"
         ]
     }
 
@@ -202,3 +206,5 @@ with col_content:
     elif escolha == "🔗 Integração com LinkedIn":
         linkedin_integration_component()
     
+    elif escolha == "📊 Relatórios de Tráfego e Comportamento":
+        exibir_relatorio_lookerstudio()
