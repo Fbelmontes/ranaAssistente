@@ -96,7 +96,8 @@ with st.sidebar:
         "🛡️ Autenticação HubSpot": [
             "🔐 Gerar Token de Acesso",
             "🔄 Renovar Token de Acesso",
-            "🔗 Integração com LinkedIn"
+            "🔗 Integração com LinkedIn",
+            "🔗 Integração com LinkedIn 2"
         ],
         "📊 Analise":[
             "📊 Relatórios de Tráfego e Comportamento"
@@ -205,4 +206,7 @@ with col_content:
     
     elif escolha == "🔗 Integração com LinkedIn":
         linkedin_integration_component()
+    
+    elif escolha == "🔗 Integração com LinkedIn 2":
+        linkedin_auth_component()
     

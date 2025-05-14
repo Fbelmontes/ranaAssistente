@@ -1,6 +1,6 @@
 import requests
 import streamlit as st
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse, parse_qs
 import uuid
 
 # Credenciais do LinkedIn
@@ -52,3 +52,15 @@ def obter_access_token(authorization_code):
         # Se não for bem-sucedido, levanta uma exceção com o erro
         raise Exception(f"Erro ao obter o access token: {response.status_code} - {response.text}")
 
+def obter_codigo_autorizacao():
+    """
+    Captura o código de autorização a partir da URL de redirecionamento
+    """
+    # Obtém os parâmetros da URL
+    query_params = st.experimental_get_query_params()
+    
+    # Verifica se existe o parâmetro 'code' na URL
+    authorization_code = query_params.get("code", None)
+    if authorization_code:
+        return authorization_code[0]  # Retorna o código de autorização
+    return None
