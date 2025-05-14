@@ -8,7 +8,7 @@ def upload_leads_para_evento():
     st.subheader("📥 Enviar Leads para Evento")
 
     eventos = {
-        "🚀 [BR] 2025.05.10 - Live - Websummit - Online - Linkedin": "427754195285",
+        "🚀 [BR] 2025.05.10 - Live - Websummit - Online - Linkedin": "428202075307",
         "🚀 TESTE": "428556741234",
     }
 
