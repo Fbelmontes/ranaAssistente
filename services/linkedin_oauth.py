@@ -23,7 +23,7 @@ def gerar_url_autorizacao():
         'response_type': 'code',  # Solicita o Authorization Code
         'client_id': CLIENT_ID,
         'redirect_uri': REDIRECT_URI,
-        'scope': 'r_liteprofile w_member_social r_events',  # Escopos necessários
+        'scope': 'w_member_social r_events',  # Escopos necessários
         'state': state  # Parâmetro de segurança para evitar CSRF
     }
     
