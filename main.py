@@ -208,5 +208,6 @@ with col_content:
         linkedin_integration_component()
     
     elif escolha == "🔗 Integração com LinkedIn 2":
+        from components.linkedin_auth import linkedin_auth_component
         linkedin_auth_component()
     
