@@ -99,8 +99,7 @@ with st.sidebar:
             "🔗 Integração com LinkedIn"
         ],
         "📊 Analise":[
-            "📊 Relatórios de Tráfego e Comportamento",
-            "🔗 Integração com LinkedIn 2"
+            "📊 Relatórios de Tráfego e Comportamento"
         ]
     }
 
@@ -205,9 +204,7 @@ with col_content:
         scraping_evento_component()
     
     elif escolha == "🔗 Integração com LinkedIn":
-        linkedin_integration_component()
-    
-    elif escolha == "🔗 Integração com LinkedIn 2":
         from components.linkedin_auth import linkedin_auth_component
         linkedin_auth_component()
+        
     
