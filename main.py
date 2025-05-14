@@ -96,11 +96,11 @@ with st.sidebar:
         "🛡️ Autenticação HubSpot": [
             "🔐 Gerar Token de Acesso",
             "🔄 Renovar Token de Acesso",
-            "🔗 Integração com LinkedIn",
-            "🔗 Integração com LinkedIn 2"
+            "🔗 Integração com LinkedIn"
         ],
         "📊 Analise":[
-            "📊 Relatórios de Tráfego e Comportamento"
+            "📊 Relatórios de Tráfego e Comportamento",
+            "🔗 Integração com LinkedIn 2"
         ]
     }
 
