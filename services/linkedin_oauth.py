@@ -19,7 +19,7 @@ def gerar_url_autorizacao():
         'response_type': 'code',
         'client_id': CLIENT_ID,
         'redirect_uri': REDIRECT_URI,
-        'scope': 'r_liteprofile w_member_social r_organization_social',  # Escopos necessários
+        'scope': 'r_liteprofile w_member_social r_events',  # Escopos necessários
         'state': 'unique_state_string',  # Use um valor único para proteção CSRF
     }
     return f"{AUTHORIZATION_URL}?{urlencode(params)}"
