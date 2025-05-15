@@ -1,6 +1,5 @@
 import streamlit as st
 from services.linkedin_api import obter_eventos_organizacao
-from services.google_sheets import salvar_na_planilha_leads
 
 def consultar_eventos_component():
     st.title("📅 Consultar Eventos e Participantes LinkedIn")
