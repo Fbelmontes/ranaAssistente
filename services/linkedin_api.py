@@ -7,8 +7,8 @@ def obter_eventos_organizacao(access_token, organization_id):
     url = f"https://api.linkedin.com/rest/eventsByOrganizer?organizer={organization_id}"
     headers = {
         'Authorization': f'Bearer {access_token}',
-        'X-Restli-Protocol-Version': '2.0.0',  # Protocolo da versão
-        'LinkedIn-Version': '2.0',  # Especificando a versão da API do LinkedIn
+        'X-Restli-Protocol-Version': '2.0.0',  # Versão do protocolo
+        'LinkedIn-Version': '202301',  # Versão da API no formato correto (YYYYMM)
     }
 
     response = requests.get(url, headers=headers)
@@ -27,7 +27,7 @@ def obter_detalhes_evento(access_token, event_id):
     headers = {
         'Authorization': f'Bearer {access_token}',
         'X-Restli-Protocol-Version': '2.0.0',
-        'LinkedIn-Version': '2.0',  # Versão da API
+        'LinkedIn-Version': '202301',  # Versão da API no formato correto (YYYYMM)
     }
 
     response = requests.get(url, headers=headers)
