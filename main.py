@@ -8,6 +8,7 @@ from services.webscraping import buscar_informacoes, scraping_evento_component
 from services.google_sheets import salvar_na_planilha_2, conectar_sheets
 from components.enviar_evento_make import enviar_evento_make_component
 from components.linkedin_integration import linkedin_integration_component
+from components.consultar_eventos import consultar_eventos_component
 
 # Configuração da página
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
@@ -99,7 +100,8 @@ with st.sidebar:
             "🔗 Integração com LinkedIn"
         ],
         "📊 Analise":[
-            "📊 Relatórios de Tráfego e Comportamento"
+            "📊 Relatórios de Tráfego e Comportamento",
+            "📅 Consultar Eventos e Participantes LinkedIn"
         ]
     }
 
@@ -206,5 +208,7 @@ with col_content:
     elif escolha == "🔗 Integração com LinkedIn":
         from components.linkedin_auth import linkedin_auth_component
         linkedin_auth_component()
-        
+    
+    elif escolha == "📅 Consultar Eventos e Participantes LinkedIn":
+        consultar_eventos_component()
     
