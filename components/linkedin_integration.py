@@ -1,6 +1,6 @@
 import streamlit as st
 from services.linkedin_oauth import gerar_url_autorizacao, obter_access_token
-from services.linkedin_api import buscar_dados_empresa_linkedin
+from services.linkedin_api import obter_eventos_organizacao, obter_detalhes_evento
 
 def linkedin_integration_component():
     st.title("🔗 Integração com LinkedIn")
