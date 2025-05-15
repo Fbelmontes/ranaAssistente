@@ -83,7 +83,8 @@ with st.sidebar:
         "⚙️ Automação de Marketing": [
             "📅 Criar Evento de Marketing",
             "📤 Importar Leads",
-            "💬 Curtir e comentar post"
+            "💬 Curtir e comentar post",
+            "📅 Consultar Eventos e Participantes LinkedIn"
         ],
         "📚 Aprendizado / 🤖 Memória": [
             "📚 Enviar Material para Aprendizado",
@@ -100,8 +101,7 @@ with st.sidebar:
             "🔗 Integração com LinkedIn"
         ],
         "📊 Analise":[
-            "📊 Relatórios de Tráfego e Comportamento",
-            "📅 Consultar Eventos e Participantes LinkedIn"
+            "📊 Relatórios de Tráfego e Comportamento"
         ]
     }
 
