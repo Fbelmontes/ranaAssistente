@@ -41,3 +41,23 @@ def obter_eventos_sales_navigator(access_token, organization_id):
         return response.json()  # Retorna os eventos da organização
     else:
         return {"erro": f"Erro ao acessar eventos: {response.status_code}"}
+
+def obter_eventos_linkedin(access_token, organization_id):
+    """
+    Função para obter eventos de uma organização no LinkedIn com o escopo r_events.
+    """
+    # URL para obter eventos da organização no LinkedIn (com o escopo r_events)
+    url = f"https://api.linkedin.com/v2/events?q=organization&organization={organization_id}"
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'X-Restli-Protocol-Version': '2.0.0'
+    }
+
+    # Fazendo a requisição para acessar os eventos
+    response = requests.get(url, headers=headers)
+    
+    if response.status_code == 200:
+        return response.json()  # Retorna os eventos encontrados
+    else:
+        return {"erro": f"Erro ao acessar eventos: {response.status_code} - {response.text}"}
