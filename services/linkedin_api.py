@@ -25,11 +25,11 @@ def buscar_dados_empresa_linkedin(company_name, access_token):
     else:
         return {"erro": f"Erro ao acessar dados da empresa: {response.status_code}"}
 
-def obter_eventos_organizacao(access_token):
+def obter_eventos_sales_navigator(access_token, organization_id):
     """
-    Função para obter os eventos organizados pela sua organização no LinkedIn.
+    Requisição para acessar eventos através da API de Sales Navigator.
     """
-    url = "https://api.linkedin.com/v2/events"
+    url = f"https://api.linkedin.com/v2/organizationEvents?q=organization&organization={organization_id}"
     headers = {
         'Authorization': f'Bearer {access_token}',
         'X-Restli-Protocol-Version': '2.0.0'
@@ -38,6 +38,6 @@ def obter_eventos_organizacao(access_token):
     response = requests.get(url, headers=headers)
     
     if response.status_code == 200:
-        return response.json()  # Retorna os eventos encontrados
+        return response.json()  # Retorna os eventos da organização
     else:
         return {"erro": f"Erro ao acessar eventos: {response.status_code}"}
