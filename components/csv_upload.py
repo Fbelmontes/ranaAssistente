@@ -9,7 +9,8 @@ def upload_leads_para_evento():
 
     eventos = {
         "🚀 [BR] 2025.05.10 - Live - Websummit - Online - Linkedin": "428202075307",
-        "🚀 TESTE": "428556741234",
+        "🚀 [BR] 2025.05.08 - Inovabra Habitat - Liderança como potencia de transformação (presencial)": "430080653739",
+        "🚀 TESTE": "428556741234"
     }
 
     evento_nome = st.selectbox("Selecione o evento", list(eventos.keys()))
