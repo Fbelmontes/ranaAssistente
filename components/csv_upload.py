@@ -10,6 +10,7 @@ def upload_leads_para_evento():
     eventos = {
         "🚀 [BR] 2025.05.10 - Live - Websummit - Online - Linkedin": "428202075307",
         "🚀 [BR] 2025.05.08 - Inovabra Habitat - Liderança como potencia de transformação (presencial)": "430080653739",
+        "🚀 [GLOBAL] 13-15.05.2025 - Leads Informatica World 2025 - Presencial": "430146681914",
         "🚀 TESTE": "428556741234"
     }
 
