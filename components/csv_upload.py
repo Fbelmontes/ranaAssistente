@@ -12,14 +12,18 @@ def verificar_duplicidade(df_leads, evento_id):
         sheets_service = conectar_sheets()
         
         # Acessar a aba "Leads Enviados"
-        aba_histórico = sheets_service.worksheet("Leads Enviados")  # Acessa a aba pelo nome
+        aba_histórico = sheets_service.worksheet("Leads Enviados")
         
         # Ler os dados dessa aba
-        dados = aba_histórico.get_all_records()  # Retorna todos os dados como lista de dicionários
+        dados = aba_histórico.get_all_records()
         aba_histórico_df = pd.DataFrame(dados)
 
-        # Criar uma lista de emails já enviados para o evento
-        emails_enviados = aba_histórico_df[aba_histórico_df['Evento ID'] == evento_id]['Email'].tolist()
+        # Se não houver leads enviados ainda, inicializamos uma lista vazia para emails enviados
+        if aba_histórico_df.empty:
+            emails_enviados = []
+        else:
+            # Criar uma lista de emails já enviados para o evento
+            emails_enviados = aba_histórico_df[aba_histórico_df['Evento ID'] == evento_id]['Email'].tolist()
 
         # Filtrar os leads para verificar se o email já foi enviado
         leads_nao_enviados = df_leads[~df_leads['Email'].isin(emails_enviados)]
@@ -29,6 +33,7 @@ def verificar_duplicidade(df_leads, evento_id):
     except Exception as e:
         print(f"Erro ao verificar duplicidade: {e}")
         return pd.DataFrame()  # Retorna um DataFrame vazio em caso de erro
+
 
 def upload_leads_para_evento():
     st.subheader("📥 Enviar Leads para Evento")
@@ -45,7 +50,6 @@ def upload_leads_para_evento():
 
     modo = st.radio("Como deseja importar os leads?", ["📎 Upload CSV", "🔗 Link Google Sheets CSV"])
 
-    # 🔐 Inicia o estado se ainda não existir
     if "df_leads" not in st.session_state:
         st.session_state.df_leads = None
 
@@ -70,11 +74,9 @@ def upload_leads_para_evento():
             except Exception as e:
                 st.error(f"Erro ao carregar os leads: {e}")
 
-        # 🕒 Exibe última atualização, se houver
         if "ultima_atualizacao" in st.session_state:
             st.info(f"🕒 Última atualização: {st.session_state['ultima_atualizacao']}")
 
-    # 🧠 Se tiver df salvo, exibe preview e botão
     if st.session_state.df_leads is not None:
         st.markdown("### Pré-visualização dos Leads")
         st.dataframe(st.session_state.df_leads.head())
@@ -114,9 +116,11 @@ def upload_leads_para_evento():
 
                 # Atualizar a aba de 'Leads Enviados' com os leads enviados
                 sheets_service = conectar_sheets()
+                aba_histórico = sheets_service.worksheet("Leads Enviados")
+
                 for lead in leads:
-                    # Registra o e-mail e o evento na aba "Leads Enviados"
-                    sheets_service.append_row("Leads Enviados", [lead['Email'], evento_id, datetime.now().strftime("%d/%m/%Y %H:%M:%S")])
+                    # Registra o e-mail, evento_id e data na aba "Leads Enviados"
+                    aba_histórico.append_row([lead['Email'], evento_id, datetime.now().strftime("%d/%m/%Y %H:%M:%S")])
 
                 # Limpa o DataFrame após o envio
                 st.session_state.df_leads = None
