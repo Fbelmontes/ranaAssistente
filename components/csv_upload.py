@@ -18,15 +18,19 @@ def verificar_duplicidade(df_leads, evento_id):
         dados = aba_histórico.get_all_records()
         aba_histórico_df = pd.DataFrame(dados)
 
-        # Se não houver leads enviados ainda, inicializamos uma lista vazia para emails enviados
+        # Verificar se a planilha de histórico está vazia
         if aba_histórico_df.empty:
             emails_enviados = []
         else:
-            # Criar uma lista de emails já enviados para o evento
-            emails_enviados = aba_histórico_df[aba_histórico_df['Evento ID'] == evento_id]['Email'].tolist()
+            # Criar uma lista de combinações de email + evento_id já enviados
+            emails_enviados = aba_histórico_df.apply(
+                lambda x: (x['Email'] + str(x['Evento ID'])), axis=1
+            ).tolist()
 
-        # Filtrar os leads para verificar se o email já foi enviado
-        leads_nao_enviados = df_leads[~df_leads['Email'].isin(emails_enviados)]
+        # Criar a lista de combinações de email + evento_id nos novos leads
+        leads_nao_enviados = df_leads[
+            ~df_leads.apply(lambda x: (x['Email address'] + str(evento_id)) in emails_enviados, axis=1)
+        ]
 
         return leads_nao_enviados
     
@@ -42,7 +46,7 @@ def upload_leads_para_evento():
         "🚀 [BR] 2025.05.10 - Live - Websummit - Online - Linkedin": "430200305978",
         "🚀 [BR] 2025.05.08 - Inovabra Habitat - Liderança como potencia de transformação (presencial)": "430080653739",
         "🚀 [GLOBAL] 13-15.05.2025 - Leads Informatica World 2025 - Presencial": "430148874827",
-        "🚀 Teste de API - RANA": "430545533869"
+        "🚀 TESTE": "428556741234"
     }
 
     evento_nome = st.selectbox("Selecione o evento", list(eventos.keys()))
@@ -120,7 +124,10 @@ def upload_leads_para_evento():
 
                 for lead in leads:
                     # Registra o e-mail, evento_id e data na aba "Leads Enviados"
-                    aba_histórico.append_row([lead['Email'], evento_id, datetime.now().strftime("%d/%m/%Y %H:%M:%S")])
+                    aba_histórico.append_row([lead['Email address'], evento_id, datetime.now().strftime("%d/%m/%Y %H:%M:%S")])
+
+                print(f"Leads enviados: {leads}")  # Verificar quais leads estão sendo enviados
+                print("Leads registrados na aba 'Leads Enviados'.")
 
                 # Limpa o DataFrame após o envio
                 st.session_state.df_leads = None
