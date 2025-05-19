@@ -42,7 +42,7 @@ def upload_leads_para_evento():
         "🚀 [BR] 2025.05.10 - Live - Websummit - Online - Linkedin": "430200305978",
         "🚀 [BR] 2025.05.08 - Inovabra Habitat - Liderança como potencia de transformação (presencial)": "430080653739",
         "🚀 [GLOBAL] 13-15.05.2025 - Leads Informatica World 2025 - Presencial": "430148874827",
-        "🚀 TESTE": "428556741234"
+        "🚀 Teste de API - RANA": "430545533869"
     }
 
     evento_nome = st.selectbox("Selecione o evento", list(eventos.keys()))
