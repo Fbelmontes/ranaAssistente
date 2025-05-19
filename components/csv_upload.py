@@ -1,8 +1,25 @@
+import pandas as pd
 import streamlit as st
 import pandas as pd
 import requests
 from services.hubspot_oauth import renovar_token_automaticamente
 from datetime import datetime
+from services.google_sheets import conectar_sheets
+
+def verificar_duplicidade(df_leads, evento_id):
+    # Conectar à planilha do Google Sheets
+    sheets_service = conectar_sheets()
+
+    # Ler aba de histórico de envios de leads
+    aba_histórico = sheets_service.read_sheet("Leads Enviados")
+
+    # Criar uma lista de emails já enviados para o evento
+    emails_enviados = aba_histórico[aba_histórico['Evento ID'] == evento_id]['Email'].tolist()
+
+    # Filtrar os leads para verificar se o email já foi enviado
+    leads_nao_enviados = df_leads[~df_leads['Email'].isin(emails_enviados)]
+
+    return leads_nao_enviados
 
 def upload_leads_para_evento():
     st.subheader("📥 Enviar Leads para Evento")
@@ -33,7 +50,6 @@ def upload_leads_para_evento():
                 st.error(f"Erro ao ler o arquivo: {e}")
 
     elif modo == "🔗 Link Google Sheets CSV":
-                # 🔐 Link fixo via secrets
         URL_FIXA_CSV = st.secrets["LEADS_MEMORIA"]
 
         if st.button("🔄 Atualizar Leads da Planilha Google"):
@@ -48,7 +64,6 @@ def upload_leads_para_evento():
         # 🕒 Exibe última atualização, se houver
         if "ultima_atualizacao" in st.session_state:
             st.info(f"🕒 Última atualização: {st.session_state['ultima_atualizacao']}")
-        
 
     # 🧠 Se tiver df salvo, exibe preview e botão
     if st.session_state.df_leads is not None:
@@ -62,8 +77,15 @@ def upload_leads_para_evento():
                 st.error("❌ Não foi possível gerar o token de acesso.")
                 return
 
+            # Verificar duplicidade
+            leads_nao_enviados = verificar_duplicidade(st.session_state.df_leads, evento_id)
+
+            if leads_nao_enviados.empty:
+                st.info("Todos os leads já foram enviados para este evento.")
+                return
+
             leads = (
-                st.session_state.df_leads
+                leads_nao_enviados
                 .fillna("")  # remove NaNs
                 .astype(str)  # força todos os campos a string
                 .to_dict(orient="records")
@@ -80,7 +102,15 @@ def upload_leads_para_evento():
 
             if response.status_code == 200:
                 st.success("✅ Leads enviados com sucesso para o Make!")
-                st.session_state.df_leads = None  # limpa após envio
+
+                # Atualizar a aba de 'Leads Enviados' com os leads enviados
+                sheets_service = conectar_sheets()
+                for lead in leads:
+                    # Registra o e-mail e o evento na aba "Leads Enviados"
+                    sheets_service.append_row("Leads Enviados", [lead['Email'], evento_id, datetime.now().strftime("%d/%m/%Y %H:%M:%S")])
+
+                # Limpa o DataFrame após o envio
+                st.session_state.df_leads = None
             else:
                 st.error("❌ Erro ao enviar os dados.")
                 st.text(response.text)
