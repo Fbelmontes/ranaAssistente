@@ -7,19 +7,28 @@ from datetime import datetime
 from services.google_sheets import conectar_sheets
 
 def verificar_duplicidade(df_leads, evento_id):
-    # Conectar à planilha do Google Sheets
-    sheets_service = conectar_sheets()
+    try:
+        # Conectar à planilha do Google Sheets
+        sheets_service = conectar_sheets()
+        
+        # Acessar a aba "Leads Enviados"
+        aba_histórico = sheets_service.worksheet("Leads Enviados")  # Acessa a aba pelo nome
+        
+        # Ler os dados dessa aba
+        dados = aba_histórico.get_all_records()  # Retorna todos os dados como lista de dicionários
+        aba_histórico_df = pd.DataFrame(dados)
 
-    # Ler aba de histórico de envios de leads
-    aba_histórico = sheets_service.read_sheet("Leads Enviados")
+        # Criar uma lista de emails já enviados para o evento
+        emails_enviados = aba_histórico_df[aba_histórico_df['Evento ID'] == evento_id]['Email'].tolist()
 
-    # Criar uma lista de emails já enviados para o evento
-    emails_enviados = aba_histórico[aba_histórico['Evento ID'] == evento_id]['Email'].tolist()
+        # Filtrar os leads para verificar se o email já foi enviado
+        leads_nao_enviados = df_leads[~df_leads['Email'].isin(emails_enviados)]
 
-    # Filtrar os leads para verificar se o email já foi enviado
-    leads_nao_enviados = df_leads[~df_leads['Email'].isin(emails_enviados)]
-
-    return leads_nao_enviados
+        return leads_nao_enviados
+    
+    except Exception as e:
+        print(f"Erro ao verificar duplicidade: {e}")
+        return pd.DataFrame()  # Retorna um DataFrame vazio em caso de erro
 
 def upload_leads_para_evento():
     st.subheader("📥 Enviar Leads para Evento")
