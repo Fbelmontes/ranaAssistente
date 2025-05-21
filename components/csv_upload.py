@@ -113,7 +113,7 @@ def upload_leads_para_evento():
                 "access_token": access_token
             }
 
-            webhook_url = st.secrets["MAKE_WEBHOOK_URL"]
+            webhook_url = st.secrets["MAKE_EVENT_WEBHOOK_URL "]
             response = requests.post(webhook_url, json=payload)
 
             if response.status_code == 200:
