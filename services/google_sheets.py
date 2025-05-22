@@ -80,4 +80,3 @@ def salvar_na_planilha_2(termo, dados):
     # Salvar as informações coletadas
     aba.append_row([termo, dados])
     return True
-

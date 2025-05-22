@@ -9,6 +9,7 @@ from services.google_sheets import salvar_na_planilha_2, conectar_sheets
 from components.enviar_evento_make import enviar_evento_make_component
 from components.linkedin_integration import linkedin_integration_component
 from components.consultar_eventos import consultar_eventos_component
+from components.trello_sync_component import trello_sync_component
 
 # Configuração da página
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
@@ -84,7 +85,8 @@ with st.sidebar:
             "📅 Criar Evento de Marketing",
             "📤 Importar Leads",
             "💬 Curtir e comentar post",
-            "📅 Consultar Eventos e Participantes LinkedIn"
+            "📅 Consultar Eventos e Participantes LinkedIn",
+            "✅ Atualizar Tarefas no Trello"
         ],
         "📚 Aprendizado / 🤖 Memória": [
             "📚 Enviar Material para Aprendizado",
@@ -212,3 +214,5 @@ with col_content:
     elif escolha == "📅 Consultar Eventos e Participantes LinkedIn":
         consultar_eventos_component()
     
+    elif escolha == "✅ Atualizar Tarefas no Trello":
+        trello_sync_component()
