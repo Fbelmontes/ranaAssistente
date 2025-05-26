@@ -48,3 +48,15 @@ def atualizar_card(card_id, titulo, descricao, data, lista_nome):
     r = requests.put(url, params=params)
     if r.status_code != 200:
         raise Exception(f"Erro ao atualizar card {card_id}: {r.text}")
+
+def buscar_cards_da_lista(id_lista):
+    url = f"https://api.trello.com/1/lists/{id_lista}/cards"
+    params = {
+        "key": API_KEY,
+        "token": TOKEN
+    }
+    r = requests.get(url, params=params)
+    if r.status_code == 200:
+        return r.json()
+    else:
+        raise Exception(f"Erro ao buscar cards da lista {id_lista}: {r.text}")

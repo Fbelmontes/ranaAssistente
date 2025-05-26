@@ -1,10 +1,10 @@
 import streamlit as st
 import pandas as pd
-from services.trello_api import criar_card, atualizar_card
+from services.trello_api import criar_card, atualizar_card, buscar_cards_da_lista
 from services.google_sheets import conectar_sheets
+from services.trello_api import LISTAS_TRELLO
 
 TRELLO_ABA = "Integração_Trelo"
-
 
 def trello_sync_component():
     st.subheader("🔄 Integração com Trello")
@@ -14,24 +14,40 @@ def trello_sync_component():
 
         aba = conectar_sheets().worksheet(TRELLO_ABA)
         dados = aba.get_all_records()
-        df = pd.DataFrame(dados)
+        df = pd.DataFrame(dados).fillna('')  # Preenche vazios com string vazia
 
         for i, row in df.iterrows():
-            titulo = row.get("Título da Tarefa", "").strip()
+            titulo = str(row.get("Título da Tarefa", "")).strip()
             descricao = str(row.get("Descrição", "")).strip()
-            data = row.get("Data", "").strip()
-            lista = row.get("Lista Trello", "").strip().upper()
-            card_id = row.get("ID do Card (RANA)", "").strip()
-            status = row.get("Status", "").strip().lower()
+            data = str(row.get("Data", "")).strip()
+            lista_nome = str(row.get("Lista Trello", "")).strip().upper()
+            card_id = str(row.get("ID do Card (RANA)", "")).strip()
+            status = str(row.get("Status", "")).strip().lower()
+
+            id_lista = LISTAS_TRELLO.get(lista_nome)
+            if not id_lista:
+                st.error(f"Lista '{lista_nome}' não encontrada no mapeamento.")
+                continue
 
             try:
-                if card_id and status == "sincronizado":
-                    atualizar_card(card_id, titulo, descricao, data, lista)
-                    st.success(f"✅ Atualizado: {titulo},✅ Card ID:{card_id}")
+                card_encontrado = None
+                cards_existentes = buscar_cards_da_lista(id_lista)
+
+                # Verifica se já existe um card com mesmo título e data
+                for c in cards_existentes:
+                    if c["name"].strip().lower() == titulo.lower().strip() and c.get("due", "").startswith(data):
+                        card_encontrado = c
+                        break
+
+                if card_encontrado:
+                    atualizar_card(card_encontrado["id"], titulo, descricao, data, lista_nome)
+                    aba.update_cell(i + 2, 5, card_encontrado["id"])
+                    aba.update_cell(i + 2, 6, "sincronizado")
+                    st.success(f"✅ Atualizado: {titulo}")
                 else:
-                    novo_id = criar_card(titulo, descricao, data, lista)
-                    aba.update_cell(i + 2, 5, novo_id)       # Coluna E = ID do Card (RANA)
-                    aba.update_cell(i + 2, 6, "sincronizado")  # Coluna F = Status
+                    novo_id = criar_card(titulo, descricao, data, lista_nome)
+                    aba.update_cell(i + 2, 5, novo_id)
+                    aba.update_cell(i + 2, 6, "sincronizado")
                     st.success(f"🔃 Criado: {titulo}")
 
             except Exception as e:
