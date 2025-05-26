@@ -33,9 +33,9 @@ def trello_sync_component():
                 card_encontrado = None
                 cards_existentes = buscar_cards_da_lista(id_lista)
 
-                # Verifica se já existe um card com mesmo título e data
+                # Verifica se já existe um card com mesmo título (ignora data)
                 for c in cards_existentes:
-                    if c["name"].strip().lower() == titulo.lower().strip() and c.get("due", "").startswith(data):
+                    if c["name"].strip().lower() == titulo.lower().strip():
                         card_encontrado = c
                         break
 
