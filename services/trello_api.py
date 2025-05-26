@@ -14,6 +14,7 @@ LISTAS_TRELLO = {
     "STUCK": "67a289ef69c2b08592bcbb5a"
 }
 
+
 # Credenciais
 API_KEY = st.secrets["API_TRELLO"]
 TOKEN = st.secrets["TOKEN_TRELLO"]
