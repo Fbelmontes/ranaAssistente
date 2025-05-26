@@ -18,7 +18,7 @@ def trello_sync_component():
 
         for i, row in df.iterrows():
             titulo = row.get("Título da Tarefa", "").strip()
-            descricao = row.get("Descrição", "").strip()
+            descricao = str(row.get("Descrição", "")).strip()
             data = row.get("Data", "").strip()
             lista = row.get("Lista Trello", "").strip().upper()
             card_id = row.get("ID do Card (RANA)", "").strip()
@@ -27,7 +27,7 @@ def trello_sync_component():
             try:
                 if card_id and status == "sincronizado":
                     atualizar_card(card_id, titulo, descricao, data, lista)
-                    st.success(f"✅ Atualizado: {titulo}")
+                    st.success(f"✅ Atualizado: {titulo},✅ Card ID:{card_id}")
                 else:
                     novo_id = criar_card(titulo, descricao, data, lista)
                     aba.update_cell(i + 2, 5, novo_id)       # Coluna E = ID do Card (RANA)
