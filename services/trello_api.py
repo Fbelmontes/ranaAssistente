@@ -3,18 +3,15 @@ import streamlit as st
 
 # Mapeamento das listas
 LISTAS_TRELLO = {
-    "BACKLOG": "64f78d0c362c5efc717c8b4f",
-    "A FAZER": "66f5c26aa9bb4fe4a1adb29d",
-    "EVENTOS": "67a6643e09ad4d568223789e",
-    "CONTEÚDO": "67a6644476298d0728598d30",
-    "DESIGN": "67a66449fca49c7b784bc10a",
-    "AUTOMAÇÃO": "67a66457849350b6cbb3d5fd",
-    "CRM": "67a6645b56b4b732b851eae4",
-    "REVISÃO": "67a66465e78c374af458851e",
-    "PRONTO PARA PUBLICAR": "67a6647736e2199ba0eed338",
-    "CONCLUÍDO": "66f5c299135d99693f57d296",
-    "STUCK": "64f78d8243294d54660ef714",
-    "STUCK/PARADO": "64f78d8243294d54660ef714"
+    "BACKLOG": "67a289a7a2f8f98484a418ea",
+    "PARA SEMANA": "67a289ae54d6edf31151b464",
+    "EVENTOS": "67a289b37cfedcee3f26bbb3",
+    "CONTEUDO": "67a289bbe7777e8d075aa30b",
+    "DESIGN": "67a289c238280ce45d863a84",
+    "AUTOMAÇÃO": "67a289ce9c2365cbd484a45b",
+    "PARA PUBLICAR": "67a289e2b597e915ad706199",
+    "CONCLUIDO": "67a289e7f598f7040d09d38e",
+    "STUCK": "67a289ef69c2b08592bcbb5a"
 }
 
 # Credenciais
