@@ -20,12 +20,7 @@ def trello_sync_component():
             titulo = str(row.get("Título da Tarefa", "")).strip()
             descricao = str(row.get("Descrição", "")).strip()
             data = str(row.get("Data", "")).strip()
-            # Valida se está no formato YYYY-MM-DD
-            if re.match(r"^\\d{4}-\\d{2}-\\d{2}$", data_original):
-                data = f"{data_original}T12:00:00.000Z"
-            else:
-                st.warning(f"⚠️ Data inválida ignorada para '{titulo}': '{data_original}'")
-                continue
+            
             lista_nome = str(row.get("Lista Trello", "")).strip().upper()
             card_id = str(row.get("ID do Card (RANA)", "")).strip()
             status = str(row.get("Status", "")).strip().lower()
