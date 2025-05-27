@@ -1,7 +1,7 @@
 import requests
 import streamlit as st
 
-# Mapeamento das listas
+# Mapeamento das listas do Trello
 LISTAS_TRELLO = {
     "BACKLOG": "67a289a7a2f8f98484a418ea",
     "PARA SEMANA": "67a289ae54d6edf31151b464",
@@ -14,20 +14,35 @@ LISTAS_TRELLO = {
     "STUCK": "67a289ef69c2b08592bcbb5a"
 }
 
+# Mapeamento das cores da planilha para as etiquetas do Trello
+MAPA_CORES_TRELLO = {
+    "#9fc5e8": "67a2899a3eccd70031a43a54",  # azul → Post Redes Sociais
+    "#fff2cc": "67a2899a3eccd70031a43a50",  # amarelo → Ebooks e Reports
+    "#b6d7a8": "67a2899a3eccd70031a43a4f",  # verde → (sem nome)
+    "#f9cb9c": "67a2899a3eccd70031a43a51",  # laranja → Pronto para produção
+    "#d9d2e9": "67a2899a3eccd70031a43a53",  # roxo → (sem nome)
+    "#e06666": "67a2899a3eccd70031a43a52",  # vermelho → REVISÃO
+}
 
-# Credenciais
+# Credenciais do Trello
 API_KEY = st.secrets["API_TRELLO"]
 TOKEN = st.secrets["TOKEN_TRELLO"]
 
-def criar_card(titulo, descricao, data, lista_nome):
+def criar_card(titulo, descricao, data, lista_nome, cor_hex=None):
     url = f"https://api.trello.com/1/cards"
+    etiquetas = []
+
+    if cor_hex and cor_hex.lower() in MAPA_CORES_TRELLO:
+        etiquetas.append(MAPA_CORES_TRELLO[cor_hex.lower()])
+
     params = {
         "key": API_KEY,
         "token": TOKEN,
         "name": titulo,
         "desc": descricao,
         "due": data,
-        "idList": LISTAS_TRELLO.get(lista_nome.upper(), "")
+        "idList": LISTAS_TRELLO.get(lista_nome.upper(), ""),
+        "idLabels": ",".join(etiquetas) if etiquetas else None
     }
     r = requests.post(url, params=params)
     if r.status_code == 200:
@@ -35,7 +50,12 @@ def criar_card(titulo, descricao, data, lista_nome):
     else:
         raise Exception(f"Erro ao criar card: {r.text}")
 
-def atualizar_card(card_id, titulo, descricao, data, lista_nome):
+def atualizar_card(card_id, titulo, descricao, data, lista_nome, cor_hex=None):
+    etiquetas = []
+
+    if cor_hex and cor_hex.lower() in MAPA_CORES_TRELLO:
+        etiquetas.append(MAPA_CORES_TRELLO[cor_hex.lower()])
+
     url = f"https://api.trello.com/1/cards/{card_id}"
     params = {
         "key": API_KEY,
@@ -43,7 +63,8 @@ def atualizar_card(card_id, titulo, descricao, data, lista_nome):
         "name": titulo,
         "desc": descricao,
         "due": data,
-        "idList": LISTAS_TRELLO.get(lista_nome.upper(), "")
+        "idList": LISTAS_TRELLO.get(lista_nome.upper(), ""),
+        "idLabels": ",".join(etiquetas) if etiquetas else None
     }
     r = requests.put(url, params=params)
     if r.status_code != 200:

@@ -25,6 +25,7 @@ def trello_sync_component():
             lista_nome = str(row.get("Lista Trello", "")).strip().upper()
             card_id = str(row.get("ID do Card (RANA)", "")).strip()
             status = str(row.get("Status", "")).strip().lower()
+            cor_hex = str(row.get("Cor HEX", "")).strip().lower()
 
             # Validar e formatar data para Trello
             data_formatada = None
@@ -55,12 +56,12 @@ def trello_sync_component():
                         break
 
                 if card_encontrado:
-                    atualizar_card(card_encontrado["id"], titulo, descricao, data_formatada, lista_nome)
+                    atualizar_card(card_encontrado["id"], titulo, descricao, data_original, lista_nome, cor_hex)
                     aba.update_cell(i + 2, 5, card_encontrado["id"])
                     aba.update_cell(i + 2, 6, "sincronizado")
                     st.success(f"✅ Atualizado: {titulo}")
                 else:
-                    novo_id = criar_card(titulo, descricao, data_formatada, lista_nome)
+                    novo_id = criar_card(titulo, descricao, data_original, lista_nome, cor_hex)
                     aba.update_cell(i + 2, 5, novo_id)
                     aba.update_cell(i + 2, 6, "sincronizado")
                     st.success(f"🔃 Criado: {titulo}")
