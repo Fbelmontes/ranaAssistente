@@ -3,6 +3,8 @@ import pandas as pd
 from services.trello_api import criar_card, atualizar_card, buscar_cards_da_lista
 from services.google_sheets import conectar_sheets
 from services.trello_api import LISTAS_TRELLO
+import re
+from datetime import datetime
 
 TRELLO_ABA = "Integração_Trelo"
 
@@ -19,8 +21,24 @@ def trello_sync_component():
         for i, row in df.iterrows():
             titulo = str(row.get("Título da Tarefa", "")).strip()
             descricao = str(row.get("Descrição", "")).strip()
-            data = str(row.get("Data", "")).strip()
-            
+            data_original = str(row.get("Data", "")).strip()
+
+            # Validação rígida: formato YYYY-MM-DD
+            padrao_data = r"^\d{4}-\d{2}-\d{2}$"
+
+            # Se a data for válida, formatar para o padrão Trello
+            if re.match(padrao_data, data_original):
+                try:
+                    # Valida se é uma data real (ex: evita 2025-02-31)
+                    datetime.strptime(data_original, "%Y-%m-%d")
+                    data_formatada = f"{data_original}T12:00:00.000Z"
+                except ValueError:
+                    st.warning(f"⚠️ Data inválida (não existe): '{data_original}' para '{titulo}'")
+                    continue
+            else:
+                st.warning(f"⚠️ Data inválida (formato errado): '{data_original}' para '{titulo}'")
+                continue
+                        
             lista_nome = str(row.get("Lista Trello", "")).strip().upper()
             card_id = str(row.get("ID do Card (RANA)", "")).strip()
             status = str(row.get("Status", "")).strip().lower()
