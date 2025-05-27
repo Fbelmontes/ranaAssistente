@@ -11,12 +11,24 @@ TRELLO_ABA = "Integração_Trelo"
 def trello_sync_component():
     st.subheader("🔄 Integração com Trello")
 
-    if st.button("Atualizar o Trello"):
-        st.info("Lendo tarefas da aba Integração_Trelo...")
+    aba = conectar_sheets().worksheet(TRELLO_ABA)
+    dados = aba.get_all_records()
+    df = pd.DataFrame(dados).fillna('')  # Preenche vazios com string vazia
 
-        aba = conectar_sheets().worksheet(TRELLO_ABA)
-        dados = aba.get_all_records()
-        df = pd.DataFrame(dados).fillna('')  # Preenche vazios com string vazia
+    st.markdown("### 📋 Status das Tarefas na Planilha")
+    total = len(df)
+    sincronizados = df[df["Status"].str.lower() == "sincronizado"]
+    pendentes = df[df["Status"].str.lower() != "sincronizado"]
+
+    st.success(f"✅ Tarefas sincronizadas: {len(sincronizados)}")
+    st.warning(f"🔄 Tarefas pendentes: {len(pendentes)}")
+
+    if len(pendentes) > 0:
+        st.markdown("#### 🔍 Prévia das tarefas pendentes:")
+        st.dataframe(pendentes[["Título da Tarefa", "Data", "Lista Trello"]])
+
+    if st.button("Atualizar o Trello"):
+        st.info("🔄 Sincronizando com o Trello...")
 
         for i, row in df.iterrows():
             titulo = str(row.get("Título da Tarefa", "")).strip()
