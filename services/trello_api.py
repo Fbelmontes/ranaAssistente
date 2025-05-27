@@ -26,7 +26,7 @@ def criar_card(titulo, descricao, data, lista_nome):
         "token": TOKEN,
         "name": titulo,
         "desc": descricao,
-        "due": f"{data}T12:00:00.000Z",
+        "due": data,
         "idList": LISTAS_TRELLO.get(lista_nome.upper(), "")
     }
     r = requests.post(url, params=params)
@@ -42,7 +42,7 @@ def atualizar_card(card_id, titulo, descricao, data, lista_nome):
         "token": TOKEN,
         "name": titulo,
         "desc": descricao,
-        "due": f"{data}T12:00:00.000Z",
+        "due": data,
         "idList": LISTAS_TRELLO.get(lista_nome.upper(), "")
     }
     r = requests.put(url, params=params)
