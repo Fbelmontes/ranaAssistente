@@ -30,20 +30,19 @@ TOKEN = st.secrets["TOKEN_TRELLO"]
 
 def criar_card(titulo, descricao, data, lista_nome, cor_hex=None):
     url = f"https://api.trello.com/1/cards"
-    etiquetas = []
-
-    if cor_hex and cor_hex.lower() in MAPA_CORES_TRELLO:
-        etiquetas.append(MAPA_CORES_TRELLO[cor_hex.lower()])
-
     params = {
         "key": API_KEY,
         "token": TOKEN,
         "name": titulo,
         "desc": descricao,
         "due": data,
-        "idList": LISTAS_TRELLO.get(lista_nome.upper(), ""),
-        "idLabels": ",".join(etiquetas) if etiquetas else None
+        "idList": LISTAS_TRELLO.get(lista_nome.upper(), "")
     }
+
+    # Adiciona etiqueta se a cor existir no mapeamento
+    if cor_hex and cor_hex.lower() in MAPA_CORES_TRELLO:
+        params["idLabels"] = MAPA_CORES_TRELLO[cor_hex.lower()]
+
     r = requests.post(url, params=params)
     if r.status_code == 200:
         return r.json()["id"]
@@ -51,11 +50,6 @@ def criar_card(titulo, descricao, data, lista_nome, cor_hex=None):
         raise Exception(f"Erro ao criar card: {r.text}")
 
 def atualizar_card(card_id, titulo, descricao, data, lista_nome, cor_hex=None):
-    etiquetas = []
-
-    if cor_hex and cor_hex.lower() in MAPA_CORES_TRELLO:
-        etiquetas.append(MAPA_CORES_TRELLO[cor_hex.lower()])
-
     url = f"https://api.trello.com/1/cards/{card_id}"
     params = {
         "key": API_KEY,
@@ -63,9 +57,13 @@ def atualizar_card(card_id, titulo, descricao, data, lista_nome, cor_hex=None):
         "name": titulo,
         "desc": descricao,
         "due": data,
-        "idList": LISTAS_TRELLO.get(lista_nome.upper(), ""),
-        "idLabels": ",".join(etiquetas) if etiquetas else None
+        "idList": LISTAS_TRELLO.get(lista_nome.upper(), "")
     }
+
+    # Atualiza etiqueta se a cor estiver no mapeamento
+    if cor_hex and cor_hex.lower() in MAPA_CORES_TRELLO:
+        params["idLabels"] = MAPA_CORES_TRELLO[cor_hex.lower()]
+
     r = requests.put(url, params=params)
     if r.status_code != 200:
         raise Exception(f"Erro ao atualizar card {card_id}: {r.text}")
