@@ -37,12 +37,17 @@ def criar_card(titulo, descricao, data, lista_id, cor_hex=None):
         "name": titulo,
         "desc": descricao,
         "due": data,
-        "idList": lista_id  # agora recebendo diretamente o ID da lista
+        "idList": lista_id
     }
 
-    # Adiciona etiqueta se a cor existir no mapeamento
-    if cor_hex and cor_hex.lower() in MAPA_CORES_TRELLO:
-        params["idLabels"] = MAPA_CORES_TRELLO[cor_hex.lower()]
+    if cor_hex:
+        cor_formatada = cor_hex.lower().strip()
+        if cor_formatada in MAPA_CORES_TRELLO:
+            etiqueta_id = MAPA_CORES_TRELLO[cor_formatada]
+            params["idLabels"] = etiqueta_id
+            st.info(f"Etiqueta aplicada no card '{titulo}': {cor_formatada} → {etiqueta_id}")
+        else:
+            st.warning(f"⚠️ Cor não mapeada para etiqueta no card '{titulo}': {cor_hex}")
 
     r = requests.post(url, params=params)
     if r.status_code == 200:
@@ -58,24 +63,22 @@ def atualizar_card(card_id, titulo, descricao, data, lista_id, cor_hex=None):
         "name": titulo,
         "desc": descricao,
         "due": data,
-        "idList": lista_id  # agora recebendo diretamente o ID da lista
+        "idList": lista_id
     }
 
-    # Atualiza etiqueta se a cor estiver no mapeamento
-    if cor_hex and cor_hex.lower() in MAPA_CORES_TRELLO:
-        params["idLabels"] = MAPA_CORES_TRELLO[cor_hex.lower()]
+    if cor_hex:
+        cor_formatada = cor_hex.lower().strip()
+        if cor_formatada in MAPA_CORES_TRELLO:
+            etiqueta_id = MAPA_CORES_TRELLO[cor_formatada]
+            params["idLabels"] = etiqueta_id
+            st.info(f"Etiqueta atualizada no card '{titulo}': {cor_formatada} → {etiqueta_id}")
+        else:
+            st.warning(f"⚠️ Cor não mapeada para etiqueta no card '{titulo}': {cor_hex}")
 
     r = requests.put(url, params=params)
     if r.status_code != 200:
         raise Exception(f"Erro ao atualizar card {card_id}: {r.text}")
 
-    # Atualiza etiqueta se a cor estiver no mapeamento
-    if cor_hex and cor_hex.lower() in MAPA_CORES_TRELLO:
-        params["idLabels"] = MAPA_CORES_TRELLO[cor_hex.lower()]
-
-    r = requests.put(url, params=params)
-    if r.status_code != 200:
-        raise Exception(f"Erro ao atualizar card {card_id}: {r.text}")
 
 def buscar_cards_da_lista(id_lista):
     url = f"https://api.trello.com/1/lists/{id_lista}/cards"
