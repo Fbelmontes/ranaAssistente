@@ -49,7 +49,7 @@ def criar_card(titulo, descricao, data, lista_nome, cor_hex=None):
     else:
         raise Exception(f"Erro ao criar card: {r.text}")
 
-def atualizar_card(card_id, titulo, descricao, data, lista_nome, cor_hex=None):
+def atualizar_card(card_id, titulo, descricao, data, lista_id, cor_hex=None):
     url = f"https://api.trello.com/1/cards/{card_id}"
     params = {
         "key": API_KEY,
@@ -57,8 +57,16 @@ def atualizar_card(card_id, titulo, descricao, data, lista_nome, cor_hex=None):
         "name": titulo,
         "desc": descricao,
         "due": data,
-        "idList": LISTAS_TRELLO.get(lista_nome.upper(), "")
+        "idList": lista_id  # agora recebendo diretamente o ID da lista
     }
+
+    # Atualiza etiqueta se a cor estiver no mapeamento
+    if cor_hex and cor_hex.lower() in MAPA_CORES_TRELLO:
+        params["idLabels"] = MAPA_CORES_TRELLO[cor_hex.lower()]
+
+    r = requests.put(url, params=params)
+    if r.status_code != 200:
+        raise Exception(f"Erro ao atualizar card {card_id}: {r.text}")
 
     # Atualiza etiqueta se a cor estiver no mapeamento
     if cor_hex and cor_hex.lower() in MAPA_CORES_TRELLO:
