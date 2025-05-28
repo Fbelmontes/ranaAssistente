@@ -94,7 +94,7 @@ def buscar_todos_os_cards():
         raise Exception(f"Erro ao buscar todos os cards: {r.text}")
 
 def buscar_cards_do_board():
-    url = f"https://api.trello.com/1/boards/{ID_BOARD_TRELLO}/cards"
+    url = f"https://api.trello.com/1/boards/{st.secrets['ID_BOARD_TRELLO']}/cards"
     params = {
         "key": API_KEY,
         "token": TOKEN
