@@ -2,24 +2,30 @@ import streamlit as st
 import pandas as pd
 import re
 from datetime import datetime
-from services.trello_api import criar_card, atualizar_card, buscar_todos_os_cards
+from services.trello_api import criar_card, atualizar_card, buscar_cards_do_board, LISTAS_TRELLO
 from services.google_sheets import conectar_sheets
-from services.trello_api import LISTAS_TRELLO
 
 TRELLO_ABA = "Integração_Trelo"
 
 def trello_sync_component():
     st.subheader("🔄 Integração com Trello")
 
+    aba = conectar_sheets().worksheet(TRELLO_ABA)
+    dados = aba.get_all_records()
+    df = pd.DataFrame(dados).fillna('')
+
+    # Exibir cards sincronizados e pendentes
+    sincronizados = df[df["Status"].str.lower() == "sincronizado"]
+    pendentes = df[df["Status"].str.lower() != "sincronizado"]
+
+    st.markdown(f"✅ **Tarefas sincronizadas:** {len(sincronizados)}")
+    st.markdown(f"❌ **Tarefas pendentes:** {len(pendentes)}")
+
     if st.button("Atualizar o Trello"):
         st.info("Lendo tarefas da aba Integração_Trelo...")
 
-        aba = conectar_sheets().worksheet(TRELLO_ABA)
-        dados = aba.get_all_records()
-        df = pd.DataFrame(dados).fillna('')  # Preenche vazios com string vazia
-
-        # Puxar todos os cards do quadro (para evitar duplicações em listas diferentes)
-        todos_os_cards = buscar_todos_os_cards()
+        # Busca todos os cards do board para evitar duplicações
+        todos_cards_board = buscar_cards_do_board()
 
         for i, row in df.iterrows():
             titulo = str(row.get("Título da Tarefa", "")).strip()
@@ -27,16 +33,15 @@ def trello_sync_component():
             data_original = str(row.get("Data", "")).strip()
             lista_nome = str(row.get("Lista Trello", "")).strip().upper()
             card_id = str(row.get("ID do Card (RANA)", "")).strip()
-            status = str(row.get("Status", "")).strip().lower()
 
-            # Validar e formatar data
+            # Valida e formata data
             data_formatada = None
             if re.match(r"^\d{4}-\d{2}-\d{2}$", data_original):
                 try:
                     datetime.strptime(data_original, "%Y-%m-%d")
                     data_formatada = f"{data_original}T12:00:00.000Z"
                 except ValueError:
-                    st.warning(f"⚠️ Data inválida: {data_original} para '{titulo}'")
+                    st.warning(f"⚠️ Data inválida (não existe): {data_original} para '{titulo}'")
                     continue
             else:
                 st.warning(f"⚠️ Formato de data inválido: '{data_original}' em '{titulo}'")
@@ -48,29 +53,19 @@ def trello_sync_component():
                 continue
 
             try:
-                if card_id:
-                    # Atualiza com base no ID se já estiver salvo
-                    atualizar_card(card_id, titulo, descricao, data_formatada, lista_nome)
-                    aba.update_cell(i + 2, 6, "sincronizado")
-                    st.success(f"✅ Atualizado (por ID): {titulo}")
-                else:
-                    # Busca global por título (em todas as listas do quadro)
-                    card_encontrado = None
-                    for c in todos_os_cards:
-                        if c["name"].strip().casefold() == titulo.strip().casefold():
-                            card_encontrado = c
-                            break
+                # Procura o card no board todo
+                card_encontrado = next((c for c in todos_cards_board if c["name"].strip().casefold() == titulo.strip().casefold()), None)
 
-                    if card_encontrado:
-                        atualizar_card(card_encontrado["id"], titulo, descricao, data_formatada, lista_nome)
-                        aba.update_cell(i + 2, 5, card_encontrado["id"])
-                        aba.update_cell(i + 2, 6, "sincronizado")
-                        st.success(f"✅ Atualizado (por título): {titulo}")
-                    else:
-                        novo_id = criar_card(titulo, descricao, data_formatada, lista_nome)
-                        aba.update_cell(i + 2, 5, novo_id)
-                        aba.update_cell(i + 2, 6, "sincronizado")
-                        st.success(f"🔃 Criado: {titulo}")
+                if card_encontrado:
+                    atualizar_card(card_encontrado["id"], titulo, descricao, data_formatada, lista_nome)
+                    aba.update_cell(i + 2, 5, card_encontrado["id"])
+                    aba.update_cell(i + 2, 6, "sincronizado")
+                    st.success(f"✅ Atualizado: {titulo}")
+                else:
+                    novo_id = criar_card(titulo, descricao, data_formatada, lista_nome)
+                    aba.update_cell(i + 2, 5, novo_id)
+                    aba.update_cell(i + 2, 6, "sincronizado")
+                    st.success(f"🔃 Criado: {titulo}")
 
             except Exception as e:
                 st.error(f"Erro com '{titulo}': {e}")
