@@ -28,7 +28,7 @@ MAPA_CORES_TRELLO = {
 API_KEY = st.secrets["API_TRELLO"]
 TOKEN = st.secrets["TOKEN_TRELLO"]
 
-def criar_card(titulo, descricao, data, lista_nome, cor_hex=None):
+def criar_card(titulo, descricao, data, lista_id, cor_hex=None):
     url = f"https://api.trello.com/1/cards"
     params = {
         "key": API_KEY,
@@ -36,7 +36,7 @@ def criar_card(titulo, descricao, data, lista_nome, cor_hex=None):
         "name": titulo,
         "desc": descricao,
         "due": data,
-        "idList": LISTAS_TRELLO.get(lista_nome.upper(), "")
+        "idList": lista_id  # agora recebendo diretamente o ID da lista
     }
 
     # Adiciona etiqueta se a cor existir no mapeamento
