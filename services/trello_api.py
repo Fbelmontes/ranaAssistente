@@ -22,6 +22,7 @@ MAPA_CORES_TRELLO = {
     "#f9cb9c": "67a2899a3eccd70031a43a51",  # laranja → Pronto para produção
     "#d9d2e9": "67a2899a3eccd70031a43a53",  # roxo → (sem nome)
     "#e06666": "67a2899a3eccd70031a43a52",  # vermelho → REVISÃO
+    "#ffff00": "67a2899a3eccd70031a43a52",  # vermelho → REVISÃO
 }
 
 # Credenciais do Trello
