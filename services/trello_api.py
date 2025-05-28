@@ -79,3 +79,15 @@ def buscar_cards_da_lista(id_lista):
         return r.json()
     else:
         raise Exception(f"Erro ao buscar cards da lista {id_lista}: {r.text}")
+
+def buscar_todos_os_cards():
+    url = f"https://api.trello.com/1/boards/{st.secrets['ID_BOARD_TRELLO']}/cards"
+    params = {
+        "key": API_KEY,
+        "token": TOKEN
+    }
+    r = requests.get(url, params=params)
+    if r.status_code == 200:
+        return r.json()
+    else:
+        raise Exception(f"Erro ao buscar todos os cards: {r.text}")

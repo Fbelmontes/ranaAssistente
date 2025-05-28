@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import re
 from datetime import datetime
-from services.trello_api import criar_card, atualizar_card, buscar_cards_da_lista
+from services.trello_api import criar_card, atualizar_card, buscar_todos_os_cards
 from services.google_sheets import conectar_sheets
 from services.trello_api import LISTAS_TRELLO
 
@@ -18,12 +18,16 @@ def trello_sync_component():
         dados = aba.get_all_records()
         df = pd.DataFrame(dados).fillna('')  # Preenche vazios com string vazia
 
+        # Puxar todos os cards do quadro (para evitar duplicações em listas diferentes)
+        todos_os_cards = buscar_todos_os_cards()
+
         for i, row in df.iterrows():
             titulo = str(row.get("Título da Tarefa", "")).strip()
             descricao = str(row.get("Descrição", "")).strip()
             data_original = str(row.get("Data", "")).strip()
             lista_nome = str(row.get("Lista Trello", "")).strip().upper()
             card_id = str(row.get("ID do Card (RANA)", "")).strip()
+            status = str(row.get("Status", "")).strip().lower()
 
             # Validar e formatar data
             data_formatada = None
@@ -32,45 +36,41 @@ def trello_sync_component():
                     datetime.strptime(data_original, "%Y-%m-%d")
                     data_formatada = f"{data_original}T12:00:00.000Z"
                 except ValueError:
-                    st.warning(f"⚠️ Data inválida (não existe): {data_original} para '{titulo}'")
+                    st.warning(f"⚠️ Data inválida: {data_original} para '{titulo}'")
                     continue
             else:
                 st.warning(f"⚠️ Formato de data inválido: '{data_original}' em '{titulo}'")
                 continue
 
-            # Busca lista atual
             id_lista = LISTAS_TRELLO.get(lista_nome)
             if not id_lista:
                 st.error(f"Lista '{lista_nome}' não encontrada no mapeamento.")
                 continue
 
             try:
-                # 🔁 Atualizar direto pelo ID do card
                 if card_id:
+                    # Atualiza com base no ID se já estiver salvo
                     atualizar_card(card_id, titulo, descricao, data_formatada, lista_nome)
                     aba.update_cell(i + 2, 6, "sincronizado")
                     st.success(f"✅ Atualizado (por ID): {titulo}")
-                    continue
-
-                # 🧠 Se não tem ID, tenta buscar por nome na lista
-                card_encontrado = None
-                cards_existentes = buscar_cards_da_lista(id_lista)
-
-                for c in cards_existentes:
-                    if c["name"].strip().casefold() == titulo.strip().casefold():
-                        card_encontrado = c
-                        break
-
-                if card_encontrado:
-                    atualizar_card(card_encontrado["id"], titulo, descricao, data_formatada, lista_nome)
-                    aba.update_cell(i + 2, 5, card_encontrado["id"])
-                    aba.update_cell(i + 2, 6, "sincronizado")
-                    st.success(f"✅ Atualizado (por nome): {titulo}")
                 else:
-                    novo_id = criar_card(titulo, descricao, data_formatada, lista_nome)
-                    aba.update_cell(i + 2, 5, novo_id)
-                    aba.update_cell(i + 2, 6, "sincronizado")
-                    st.success(f"🔃 Criado: {titulo}")
+                    # Busca global por título (em todas as listas do quadro)
+                    card_encontrado = None
+                    for c in todos_os_cards:
+                        if c["name"].strip().casefold() == titulo.strip().casefold():
+                            card_encontrado = c
+                            break
+
+                    if card_encontrado:
+                        atualizar_card(card_encontrado["id"], titulo, descricao, data_formatada, lista_nome)
+                        aba.update_cell(i + 2, 5, card_encontrado["id"])
+                        aba.update_cell(i + 2, 6, "sincronizado")
+                        st.success(f"✅ Atualizado (por título): {titulo}")
+                    else:
+                        novo_id = criar_card(titulo, descricao, data_formatada, lista_nome)
+                        aba.update_cell(i + 2, 5, novo_id)
+                        aba.update_cell(i + 2, 6, "sincronizado")
+                        st.success(f"🔃 Criado: {titulo}")
 
             except Exception as e:
                 st.error(f"Erro com '{titulo}': {e}")
