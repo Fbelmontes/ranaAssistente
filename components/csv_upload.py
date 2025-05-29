@@ -37,6 +37,7 @@ def upload_leads_para_evento():
         "🚀 [BR] 2025.05.08 - Inovabra Habitat - Liderança como potencia de transformação (presencial)": "430080653739",
         "🚀 [GLOBAL] 13-15.05.2025 - Leads Informatica World 2025 - Presencial": "430148874827",
         "🚀 [BR] 17.06.2025 - Agentes de IA: o desafio de governar o imprevisível - Live": "431162995823",
+        "🚀 2025.05.30 - Lista de convidados Conecta Hub - RSVP - Presencial": "433570033187",
         "🚀 Teste de API - RANA": "430545533869"
     }
 
