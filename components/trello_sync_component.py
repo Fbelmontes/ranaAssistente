@@ -30,7 +30,8 @@ def trello_sync_component():
             data_original = str(row.get("Data", "")).strip()
             lista_nome_planilha = str(row.get("Lista Trello", "")).strip().upper()
             card_id_planilha = str(row.get("ID do Card (RANA)", "")).strip()
-
+            cor_hex = str(row.get("Cor HEX", "")).strip()
+            
             # Captura da cor da célula do título (coluna A)
             celula_cor = aba.cell(i + 2, 1)  # 1 = Coluna A
             cor_hex = celula_cor.bgColor if hasattr(celula_cor, 'bgColor') else None
