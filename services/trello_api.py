@@ -31,7 +31,7 @@ TOKEN = st.secrets["TOKEN_TRELLO"]
 
 
 def criar_card(titulo, descricao, data, lista_id, cor_hex=None):
-    url = f"https://api.trello.com/1/cards"
+    url = "https://api.trello.com/1/cards"
 
     payload = {
         "key": API_KEY,
@@ -47,20 +47,25 @@ def criar_card(titulo, descricao, data, lista_id, cor_hex=None):
         etiqueta_id = MAPA_CORES_TRELLO.get(cor_formatada)
         if etiqueta_id:
             payload["idLabels"] = [etiqueta_id]
-            st.info(f"🎯 Enviando etiqueta ID {etiqueta_id} para '{titulo}'")
+            st.info(f"🎯 Aplicando etiqueta: {cor_formatada} → {etiqueta_id}")
         else:
-            st.warning(f"⚠️ Cor não encontrada no mapa: {cor_hex}")
+            st.warning(f"⚠️ Cor sem mapeamento: {cor_hex}")
 
     headers = {
         "Content-Type": "application/json"
     }
 
-    r = requests.post(url, json=payload, headers=headers)
+    # DEBUG
+    st.json(payload)
 
-    if r.status_code == 200:
-        return r.json()["id"]
+    response = requests.post(url, json=payload, headers=headers)
+
+    if response.status_code == 200:
+        return response.json()["id"]
     else:
-        raise Exception(f"❌ Erro ao criar card: {r.text}")
+        st.error(f"❌ Erro Trello: {response.text}")
+        raise Exception(f"Erro ao criar card: {response.text}")
+
 
 
 
