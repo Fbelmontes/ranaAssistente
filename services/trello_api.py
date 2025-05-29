@@ -32,6 +32,7 @@ TOKEN = st.secrets["TOKEN_TRELLO"]
 
 def criar_card(titulo, descricao, data, lista_id, cor_hex=None):
     url = f"https://api.trello.com/1/cards"
+
     payload = {
         "key": API_KEY,
         "token": TOKEN,
@@ -45,20 +46,27 @@ def criar_card(titulo, descricao, data, lista_id, cor_hex=None):
         cor_formatada = cor_hex.lower().strip()
         etiqueta_id = MAPA_CORES_TRELLO.get(cor_formatada)
         if etiqueta_id:
-            payload["idLabels"] = [etiqueta_id]  # ← Sempre como lista
+            payload["idLabels"] = [etiqueta_id]
             st.info(f"🎯 Enviando etiqueta ID {etiqueta_id} para '{titulo}'")
         else:
-            st.warning(f"⚠️ Cor sem mapeamento: {cor_formatada}")
+            st.warning(f"⚠️ Cor não encontrada no mapa: {cor_hex}")
 
-    r = requests.post(url, json=payload)
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    r = requests.post(url, json=payload, headers=headers)
+
     if r.status_code == 200:
         return r.json()["id"]
     else:
-        raise Exception(f"❌ Erro ao criar card '{titulo}': {r.text}")
+        raise Exception(f"❌ Erro ao criar card: {r.text}")
+
 
 
 def atualizar_card(card_id, titulo, descricao, data, lista_id, cor_hex=None):
     url = f"https://api.trello.com/1/cards/{card_id}"
+
     payload = {
         "key": API_KEY,
         "token": TOKEN,
@@ -72,14 +80,20 @@ def atualizar_card(card_id, titulo, descricao, data, lista_id, cor_hex=None):
         cor_formatada = cor_hex.lower().strip()
         etiqueta_id = MAPA_CORES_TRELLO.get(cor_formatada)
         if etiqueta_id:
-            payload["idLabels"] = [etiqueta_id]  # ← Sempre como lista
-            st.info(f"🎯 Enviando etiqueta ID {etiqueta_id} para '{titulo}'")
+            payload["idLabels"] = [etiqueta_id]
+            st.info(f"🔁 Atualizando etiqueta no card '{titulo}' com ID {etiqueta_id}")
         else:
-            st.warning(f"⚠️ Cor sem mapeamento: {cor_formatada}")
+            st.warning(f"⚠️ Cor não mapeada para etiqueta: {cor_hex}")
 
-    r = requests.put(url, json=payload)
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    r = requests.put(url, json=payload, headers=headers)
+
     if r.status_code != 200:
-        raise Exception(f"❌ Erro ao atualizar card '{titulo}': {r.text}")
+        raise Exception(f"❌ Erro ao atualizar card: {r.text}")
+
 
 def buscar_cards_da_lista(id_lista):
     url = f"https://api.trello.com/1/lists/{id_lista}/cards"
