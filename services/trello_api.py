@@ -49,8 +49,12 @@ def criar_card(titulo, descricao, data, lista_id, cor_hex=None):
             st.info(f"🎨 Etiqueta aplicada em '{titulo}': {cor_formatada} → {etiqueta_id}")
         else:
             st.warning(f"⚠️ Cor sem mapeamento para etiqueta: {cor_hex} no card '{titulo}'")
+    headers = {
+    "Content-Type": "application/x-www-form-urlencoded"
+    }
+    r = requests.post(url, data=params, headers=headers)
 
-    r = requests.post(url, data=params)
+   
     if r.status_code == 200:
         return r.json()["id"]
     else:
