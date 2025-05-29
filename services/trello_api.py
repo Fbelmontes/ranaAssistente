@@ -40,20 +40,21 @@ def criar_card(titulo, descricao, data, lista_id, cor_hex=None):
         "idList": lista_id
     }
 
+    # Aplicar etiqueta se houver cor válida
     if cor_hex:
         cor_formatada = cor_hex.lower().strip()
-        if cor_formatada in MAPA_CORES_TRELLO:
-            etiqueta_id = MAPA_CORES_TRELLO[cor_formatada]
-            params["idLabels"] = [etiqueta_id]  # ✅ Correção aqui
-            st.info(f"Etiqueta aplicada no card '{titulo}': {cor_formatada} → {etiqueta_id}")
+        etiqueta_id = MAPA_CORES_TRELLO.get(cor_formatada)
+        if etiqueta_id:
+            params["idLabels"] = [etiqueta_id]  # <- usar como lista
+            st.info(f"🎨 Etiqueta aplicada em '{titulo}': {cor_formatada} → {etiqueta_id}")
         else:
-            st.warning(f"⚠️ Cor não mapeada para etiqueta no card '{titulo}': {cor_hex}")
+            st.warning(f"⚠️ Cor sem mapeamento para etiqueta: {cor_hex} no card '{titulo}'")
 
     r = requests.post(url, params=params)
     if r.status_code == 200:
         return r.json()["id"]
     else:
-        raise Exception(f"Erro ao criar card: {r.text}")
+        raise Exception(f"❌ Erro ao criar card '{titulo}': {r.text}")
 
 def atualizar_card(card_id, titulo, descricao, data, lista_id, cor_hex=None):
     url = f"https://api.trello.com/1/cards/{card_id}"
@@ -66,19 +67,19 @@ def atualizar_card(card_id, titulo, descricao, data, lista_id, cor_hex=None):
         "idList": lista_id
     }
 
+    # Atualizar etiqueta
     if cor_hex:
         cor_formatada = cor_hex.lower().strip()
-        if cor_formatada in MAPA_CORES_TRELLO:
-            etiqueta_id = MAPA_CORES_TRELLO[cor_formatada]
-            params["idLabels"] = [etiqueta_id]  # ✅ Correção aqui
-            st.info(f"Etiqueta aplicada no card '{titulo}': {cor_formatada} → {etiqueta_id}")
+        etiqueta_id = MAPA_CORES_TRELLO.get(cor_formatada)
+        if etiqueta_id:
+            params["idLabels"] = [etiqueta_id]
+            st.info(f"🔁 Etiqueta atualizada em '{titulo}': {cor_formatada} → {etiqueta_id}")
         else:
-            st.warning(f"⚠️ Cor não mapeada para etiqueta no card '{titulo}': {cor_hex}")
+            st.warning(f"⚠️ Cor sem mapeamento para etiqueta: {cor_hex} no card '{titulo}'")
 
     r = requests.put(url, params=params)
     if r.status_code != 200:
-        raise Exception(f"Erro ao atualizar card {card_id}: {r.text}")
-
+        raise Exception(f"❌ Erro ao atualizar card '{titulo}': {r.text}")
 
 def buscar_cards_da_lista(id_lista):
     url = f"https://api.trello.com/1/lists/{id_lista}/cards"
