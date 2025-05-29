@@ -45,7 +45,7 @@ def criar_card(titulo, descricao, data, lista_id, cor_hex):
         cor_formatada = cor_hex.lower().strip()
         etiqueta_id = MAPA_CORES_TRELLO.get(cor_formatada)
         if etiqueta_id:
-            payload["idLabels"] = [etiqueta_id]
+            payload["idLabels"] = etiqueta_id
             st.info(f"🎨 Etiqueta aplicada em '{titulo}': {cor_formatada} → {etiqueta_id}")
         else:
             st.warning(f"⚠️ Cor sem mapeamento para etiqueta: {cor_hex} no card '{titulo}'")
@@ -72,7 +72,7 @@ def atualizar_card(card_id, titulo, descricao, data, lista_id, cor_hex):
         cor_formatada = cor_hex.lower().strip()
         etiqueta_id = MAPA_CORES_TRELLO.get(cor_formatada)
         if etiqueta_id:
-            payload["idLabels"] = [etiqueta_id]
+            payload["idLabels"] = etiqueta_id
             st.info(f"🔁 Etiqueta atualizada em '{titulo}': {cor_formatada} → {etiqueta_id}")
         else:
             st.warning(f"⚠️ Cor sem mapeamento para etiqueta: {cor_hex} no card '{titulo}'")
