@@ -45,10 +45,10 @@ def criar_card(titulo, descricao, data, lista_id, cor_hex=None):
         cor_formatada = cor_hex.lower().strip()
         etiqueta_id = MAPA_CORES_TRELLO.get(cor_formatada)
         if etiqueta_id:
-            payload["idLabels"] = etiqueta_id
-            st.info(f"🎨 Etiqueta aplicada em '{titulo}': {cor_formatada} → {etiqueta_id}")
+            payload["idLabels"] = [etiqueta_id]  # ← Sempre como lista
+            st.info(f"🎯 Enviando etiqueta ID {etiqueta_id} para '{titulo}'")
         else:
-            st.warning(f"⚠️ Cor sem mapeamento para etiqueta: {cor_hex} no card '{titulo}'")
+            st.warning(f"⚠️ Cor sem mapeamento: {cor_formatada}")
 
     r = requests.post(url, json=payload)
     if r.status_code == 200:
@@ -72,10 +72,10 @@ def atualizar_card(card_id, titulo, descricao, data, lista_id, cor_hex=None):
         cor_formatada = cor_hex.lower().strip()
         etiqueta_id = MAPA_CORES_TRELLO.get(cor_formatada)
         if etiqueta_id:
-            payload["idLabels"] = etiqueta_id
-            st.info(f"🔁 Etiqueta atualizada em '{titulo}': {cor_formatada} → {etiqueta_id}")
+            payload["idLabels"] = [etiqueta_id]  # ← Sempre como lista
+            st.info(f"🎯 Enviando etiqueta ID {etiqueta_id} para '{titulo}'")
         else:
-            st.warning(f"⚠️ Cor sem mapeamento para etiqueta: {cor_hex} no card '{titulo}'")
+            st.warning(f"⚠️ Cor sem mapeamento: {cor_formatada}")
 
     r = requests.put(url, json=payload)
     if r.status_code != 200:
