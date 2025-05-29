@@ -50,7 +50,7 @@ def criar_card(titulo, descricao, data, lista_id, cor_hex=None):
         else:
             st.warning(f"⚠️ Cor sem mapeamento para etiqueta: {cor_hex} no card '{titulo}'")
 
-    r = requests.post(url, params=params)
+    r = requests.post(url, data=params)
     if r.status_code == 200:
         return r.json()["id"]
     else:
@@ -77,7 +77,7 @@ def atualizar_card(card_id, titulo, descricao, data, lista_id, cor_hex=None):
         else:
             st.warning(f"⚠️ Cor sem mapeamento para etiqueta: {cor_hex} no card '{titulo}'")
 
-    r = requests.put(url, params=params)
+    r = requests.put(url, data=params)
     if r.status_code != 200:
         raise Exception(f"❌ Erro ao atualizar card '{titulo}': {r.text}")
 
