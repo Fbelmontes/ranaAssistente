@@ -31,7 +31,10 @@ def trello_sync_component():
             lista_nome_planilha = str(row.get("Lista Trello", "")).strip().upper()
             card_id_planilha = str(row.get("ID do Card (RANA)", "")).strip()
 
-            # Validar e formatar data
+            # Captura da cor da célula do título (coluna A)
+            celula_cor = aba.cell(i + 2, 1)  # 1 = Coluna A
+            cor_hex = celula_cor.bgColor if hasattr(celula_cor, 'bgColor') else None
+
             if re.match(r"^\d{4}-\d{2}-\d{2}$", data_original):
                 try:
                     datetime.strptime(data_original, "%Y-%m-%d")
@@ -61,7 +64,8 @@ def trello_sync_component():
                         titulo=titulo,
                         descricao=descricao,
                         data=data_formatada,
-                        lista_id=card_encontrado.get("idList", id_lista_planilha)
+                        lista_id=card_encontrado.get("idList", id_lista_planilha),
+                        cor_hex=cor_hex
                     )
                     aba.update_cell(i + 2, 5, card_encontrado["id"])
                     aba.update_cell(i + 2, 6, "sincronizado")
@@ -71,7 +75,8 @@ def trello_sync_component():
                         titulo=titulo,
                         descricao=descricao,
                         data=data_formatada,
-                        lista_id=id_lista_planilha
+                        lista_id=id_lista_planilha,
+                        cor_hex=cor_hex
                     )
                     aba.update_cell(i + 2, 5, novo_id)
                     aba.update_cell(i + 2, 6, "sincronizado")
@@ -80,6 +85,7 @@ def trello_sync_component():
             except Exception as e:
                 st.error(f"Erro com '{titulo}': {e}")
                 cards_ignorados.append(titulo)
+
 
         # Feedback visual
         st.markdown("---")
