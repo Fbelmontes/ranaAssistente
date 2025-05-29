@@ -31,7 +31,7 @@ def trello_sync_component():
             lista_nome_planilha = str(row.get("Lista Trello", "")).strip().upper()
             card_id_planilha = str(row.get("ID do Card (RANA)", "")).strip()
             cor_hex = str(row.get("Cor HEX", "")).strip()
-            
+
             # Captura da cor da célula do título (coluna A)
             celula_cor = aba.cell(i + 2, 1)  # 1 = Coluna A
             cor_hex = celula_cor.bgColor if hasattr(celula_cor, 'bgColor') else None
@@ -66,7 +66,7 @@ def trello_sync_component():
                         descricao=descricao,
                         data=data_formatada,
                         lista_id=card_encontrado.get("idList", id_lista_planilha),
-                        cor_hex=cor_hex
+                        cor_hex=row.get("Cor HEX", "")
                     )
                     aba.update_cell(i + 2, 5, card_encontrado["id"])
                     aba.update_cell(i + 2, 6, "sincronizado")
@@ -77,7 +77,7 @@ def trello_sync_component():
                         descricao=descricao,
                         data=data_formatada,
                         lista_id=id_lista_planilha,
-                        cor_hex=cor_hex
+                        cor_hex=row.get("Cor HEX", "")
                     )
                     aba.update_cell(i + 2, 5, novo_id)
                     aba.update_cell(i + 2, 6, "sincronizado")
