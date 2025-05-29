@@ -33,8 +33,8 @@ def trello_sync_component():
             cor_hex = str(row.get("Cor HEX", "")).strip()
 
             # Captura da cor da célula do título (coluna A)
-            celula_cor = aba.cell(i + 2, 1)  # 1 = Coluna A
-            cor_hex = celula_cor.bgColor if hasattr(celula_cor, 'bgColor') else None
+            #celula_cor = aba.cell(i + 2, 1)  # 1 = Coluna A
+            #cor_hex = celula_cor.bgColor if hasattr(celula_cor, 'bgColor') else None
 
             if re.match(r"^\d{4}-\d{2}-\d{2}$", data_original):
                 try:
