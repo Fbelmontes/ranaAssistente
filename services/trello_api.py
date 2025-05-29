@@ -30,7 +30,7 @@ API_KEY = st.secrets["API_TRELLO"]
 TOKEN = st.secrets["TOKEN_TRELLO"]
 
 
-def criar_card(titulo, descricao, data, lista_id, cor_hex):
+def criar_card(titulo, descricao, data, lista_id, cor_hex=None):
     url = f"https://api.trello.com/1/cards"
     payload = {
         "key": API_KEY,
@@ -57,7 +57,7 @@ def criar_card(titulo, descricao, data, lista_id, cor_hex):
         raise Exception(f"❌ Erro ao criar card '{titulo}': {r.text}")
 
 
-def atualizar_card(card_id, titulo, descricao, data, lista_id, cor_hex):
+def atualizar_card(card_id, titulo, descricao, data, lista_id, cor_hex=None):
     url = f"https://api.trello.com/1/cards/{card_id}"
     payload = {
         "key": API_KEY,
