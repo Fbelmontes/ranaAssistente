@@ -2,13 +2,10 @@ import streamlit as st
 import pandas as pd
 import re
 from datetime import datetime
-from services.trello_api import criar_card, atualizar_card, buscar_cards_do_board, LISTAS_TRELLO, atualizar_descricao_card
-from services.google_sheets import conectar_sheets, conectar_planilha_externa
+from services.trello_api import criar_card, atualizar_card, buscar_cards_do_board, LISTAS_TRELLO
+from services.google_sheets import conectar_sheets
 
 TRELLO_ABA = "Integração_Trelo"
-PLANILHA_BRIEFING_ID = "1R9ob_7olENe70KuM2yjBxTJhVoq0s950HLgmSAQY9OA"
-ABA_BRIEFING = "Respostas ao formulário 1"
-
 
 def trello_sync_component():
     st.subheader("🔄 Integração com Trello")
@@ -34,6 +31,10 @@ def trello_sync_component():
             lista_nome_planilha = str(row.get("Lista Trello", "")).strip().upper()
             card_id_planilha = str(row.get("ID do Card (RANA)", "")).strip()
             cor_hex = str(row.get("Cor HEX", "")).strip()
+
+            # Captura da cor da célula do título (coluna A)
+            #celula_cor = aba.cell(i + 2, 1)  # 1 = Coluna A
+            #cor_hex = celula_cor.bgColor if hasattr(celula_cor, 'bgColor') else None
 
             if re.match(r"^\d{4}-\d{2}-\d{2}$", data_original):
                 try:
@@ -65,7 +66,7 @@ def trello_sync_component():
                         descricao=descricao,
                         data=data_formatada,
                         lista_id=card_encontrado.get("idList", id_lista_planilha),
-                        cor_hex=cor_hex
+                        cor_hex=row.get("Cor HEX", "")
                     )
                     aba.update_cell(i + 2, 5, card_encontrado["id"])
                     aba.update_cell(i + 2, 6, "sincronizado")
@@ -76,7 +77,7 @@ def trello_sync_component():
                         descricao=descricao,
                         data=data_formatada,
                         lista_id=id_lista_planilha,
-                        cor_hex=cor_hex
+                        cor_hex=row.get("Cor HEX", "")
                     )
                     aba.update_cell(i + 2, 5, novo_id)
                     aba.update_cell(i + 2, 6, "sincronizado")
@@ -86,41 +87,10 @@ def trello_sync_component():
                 st.error(f"Erro com '{titulo}': {e}")
                 cards_ignorados.append(titulo)
 
+
+        # Feedback visual
         st.markdown("---")
         st.success(f"✅ Atualizados: {len(cards_atualizados)}")
         st.info(f"➕ Criados: {len(cards_criados)}")
         if cards_ignorados:
             st.warning(f"⚠️ Ignorados: {len(cards_ignorados)}")
-
-    if st.button("📎 Anexar Briefing aos Cards"):
-        st.info("🔍 Buscando briefings e adicionando nas descrições dos cards...")
-
-        try:
-            aba_cards = conectar_sheets().worksheet(TRELLO_ABA)
-            df_cards = pd.DataFrame(aba_cards.get_all_records()).fillna('')
-            aba_briefing = conectar_planilha_externa(PLANILHA_BRIEFING_ID).worksheet(ABA_BRIEFING)
-            df_briefing = pd.DataFrame(aba_briefing.get_all_records()).fillna('')
-
-            cards_anexados = 0
-            for i, row in df_cards.iterrows():
-                titulo = str(row.get("Título da Tarefa", "")).strip()
-                card_id = row.get("ID do Card (RANA)", "").strip()
-                if not card_id:
-                    continue
-
-                dados_briefing = df_briefing[df_briefing["📑 Nome do Projeto/Evento:"].str.strip().str.casefold() == titulo.casefold()]
-
-                if not dados_briefing.empty:
-                    texto_briefing = "\n\n📎 Briefing Recebido:\n"
-                    for _, linha in dados_briefing.iterrows():
-                        for coluna, valor in linha.items():
-                            if valor:
-                                texto_briefing += f"- {coluna.strip()}: {str(valor).strip()}\n"
-
-                    atualizar_descricao_card(card_id, texto_briefing)
-                    cards_anexados += 1
-
-            st.success(f"📎 Briefings adicionados em {cards_anexados} cards.")
-
-        except Exception as e:
-            st.error(f"Erro ao anexar briefing: {e}")
