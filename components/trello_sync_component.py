@@ -9,11 +9,16 @@ TRELLO_ABA = "Integração_Trelo"
 PLANILHA_BRIEFING_ID = "1R9ob_7olENe70KuM2yjBxTJhVoq0s950HLgmSAQY9OA"
 ABA_BRIEFING = "Respostas ao formulário 1"
 
-
 def trello_sync_component():
-    st.subheader("🔄 Integração com Trello")
+    st.subheader("🔁 Integração com Trello")
 
-    if st.button("Atualizar o Trello"):
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        atualizar_trello = st.button("🔄 Atualizar o Trello")
+    with col2:
+        anexar_briefing = st.button("📎 Anexar Briefing aos Cards")
+
+    if atualizar_trello:
         st.info("🔍 Lendo tarefas da aba Integração_Trelo...")
 
         aba = conectar_sheets().worksheet(TRELLO_ABA)
@@ -92,8 +97,8 @@ def trello_sync_component():
         if cards_ignorados:
             st.warning(f"⚠️ Ignorados: {len(cards_ignorados)}")
 
-    if st.button("📎 Anexar Briefing aos Cards"):
-        st.info("🔍 Buscando briefings e adicionando nas descrições dos cards...")
+    if anexar_briefing:
+        st.info("📎 Buscando briefings e adicionando nas descrições dos cards...")
 
         try:
             aba_cards = conectar_sheets().worksheet(TRELLO_ABA)
@@ -108,10 +113,10 @@ def trello_sync_component():
                 if not card_id:
                     continue
 
-                dados_briefing = df_briefing[df_briefing["📑 Nome do Projeto/Evento:"].str.strip().str.casefold() == titulo.casefold()]
+                dados_briefing = df_briefing[df_briefing["📁 Nome do Projeto/Evento:"].str.strip().str.casefold() == titulo.casefold()]
 
                 if not dados_briefing.empty:
-                    texto_briefing = "\n\n📎 Briefing Recebido:\n"
+                    texto_briefing = "\n\n📁 Briefing Recebido:\n"
                     for _, linha in dados_briefing.iterrows():
                         for coluna, valor in linha.items():
                             if valor:
@@ -120,7 +125,7 @@ def trello_sync_component():
                     atualizar_descricao_card(card_id, texto_briefing)
                     cards_anexados += 1
 
-            st.success(f"📎 Briefings adicionados em {cards_anexados} cards.")
+            st.success(f"📁 Briefings adicionados em {cards_anexados} cards.")
 
         except Exception as e:
             st.error(f"Erro ao anexar briefing: {e}")
