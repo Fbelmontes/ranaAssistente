@@ -3,7 +3,7 @@ import pandas as pd
 import re
 from datetime import datetime
 from services.trello_api import criar_card, atualizar_card, buscar_cards_do_board,LISTAS_TRELLO, atualizar_descricao_card
-from services.google_sheets import conectar_sheets, conectar_planilha_externa
+from services.google_sheets import conectar_sheets
 
 TRELLO_ABA = "Integração_Trelo"
 PLANILHA_BRIEFING_ID = "1R9ob_7olENe70KuM2yjBxTJhVoq0s950HLgmSAQY9OA"
