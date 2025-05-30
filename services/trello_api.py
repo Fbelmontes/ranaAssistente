@@ -141,3 +141,32 @@ def buscar_cards_do_board(board_id):
         return r.json()
     else:
         raise Exception(f"Erro ao buscar cards do board {board_id}: {r.text}")
+
+def atualizar_descricao_card(card_id, novo_texto):
+    """
+    Adiciona texto ao final da descrição existente do card.
+    """
+    url_get = f"https://api.trello.com/1/cards/{card_id}"
+    params = {
+        "key": API_KEY,
+        "token": TOKEN,
+        "fields": "desc"
+    }
+
+    response = requests.get(url_get, params=params)
+    if response.status_code != 200:
+        raise Exception(f"Erro ao obter descrição atual do card: {response.text}")
+
+    descricao_atual = response.json().get("desc", "")
+    nova_descricao = f"{descricao_atual.strip()}\n{novo_texto.strip()}"
+
+    url_put = f"https://api.trello.com/1/cards/{card_id}"
+    update_params = {
+        "key": API_KEY,
+        "token": TOKEN,
+        "desc": nova_descricao
+    }
+
+    r = requests.put(url_put, params=update_params)
+    if r.status_code != 200:
+        raise Exception(f"Erro ao atualizar descrição do card {card_id}: {r.text}")
