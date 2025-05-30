@@ -2,7 +2,10 @@ import streamlit as st
 import pandas as pd
 import re
 from datetime import datetime
-from services.trello_api import criar_card, atualizar_card, buscar_cards_do_board, LISTAS_TRELLO, atualizar_descricao_card
+from services.trello_api import (
+    criar_card, atualizar_card, buscar_cards_do_board,
+    LISTAS_TRELLO, atualizar_descricao_card
+)
 from services.google_sheets import conectar_sheets, conectar_planilha_externa
 
 TRELLO_ABA = "Integração_Trelo"
@@ -10,15 +13,10 @@ PLANILHA_BRIEFING_ID = "1R9ob_7olENe70KuM2yjBxTJhVoq0s950HLgmSAQY9OA"
 ABA_BRIEFING = "Respostas ao formulário 1"
 
 def trello_sync_component():
-    st.subheader("🔁 Integração com Trello")
+    st.subheader("🔄 Integração com Trello")
 
-    col1, col2 = st.columns([1, 1])
-    with col1:
-        atualizar_trello = st.button("🔄 Atualizar o Trello")
-    with col2:
-        anexar_briefing = st.button("📎 Anexar Briefing aos Cards")
-
-    if atualizar_trello:
+    # ========== BOTÃO 1: Atualizar o Trello ==========
+    if st.button("Atualizar o Trello"):
         st.info("🔍 Lendo tarefas da aba Integração_Trelo...")
 
         aba = conectar_sheets().worksheet(TRELLO_ABA)
@@ -36,7 +34,7 @@ def trello_sync_component():
             titulo = str(row.get("Título da Tarefa", "")).strip()
             descricao = str(row.get("Descrição", "")).strip()
             data_original = str(row.get("Data", "")).strip()
-            lista_nome_planilha = str(row.get("Lista Trello", "")).strip().upper()
+            lista_nome = str(row.get("Lista Trello", "")).strip().upper()
             card_id_planilha = str(row.get("ID do Card (RANA)", "")).strip()
             cor_hex = str(row.get("Cor HEX", "")).strip()
 
@@ -51,17 +49,16 @@ def trello_sync_component():
                 st.warning(f"⚠️ Formato de data inválido: '{data_original}' em '{titulo}'")
                 continue
 
-            id_lista_planilha = LISTAS_TRELLO.get(lista_nome_planilha)
-            if not id_lista_planilha:
-                st.error(f"❌ Lista '{lista_nome_planilha}' não encontrada no mapeamento.")
+            id_lista = LISTAS_TRELLO.get(lista_nome)
+            if not id_lista:
+                st.error(f"❌ Lista '{lista_nome}' não encontrada.")
                 continue
 
             try:
-                card_encontrado = None
-                for c in todos_cards:
-                    if c["name"].strip().casefold() == titulo.strip().casefold():
-                        card_encontrado = c
-                        break
+                card_encontrado = next(
+                    (c for c in todos_cards if c["name"].strip().casefold() == titulo.casefold()),
+                    None
+                )
 
                 if card_encontrado:
                     atualizar_card(
@@ -69,7 +66,7 @@ def trello_sync_component():
                         titulo=titulo,
                         descricao=descricao,
                         data=data_formatada,
-                        lista_id=card_encontrado.get("idList", id_lista_planilha),
+                        lista_id=card_encontrado.get("idList", id_lista),
                         cor_hex=cor_hex
                     )
                     aba.update_cell(i + 2, 5, card_encontrado["id"])
@@ -80,7 +77,7 @@ def trello_sync_component():
                         titulo=titulo,
                         descricao=descricao,
                         data=data_formatada,
-                        lista_id=id_lista_planilha,
+                        lista_id=id_lista,
                         cor_hex=cor_hex
                     )
                     aba.update_cell(i + 2, 5, novo_id)
@@ -97,8 +94,9 @@ def trello_sync_component():
         if cards_ignorados:
             st.warning(f"⚠️ Ignorados: {len(cards_ignorados)}")
 
-    if anexar_briefing:
-        st.info("📎 Buscando briefings e adicionando nas descrições dos cards...")
+    # ========== BOTÃO 2: Anexar Briefings ==========
+    if st.button("📎 Anexar Briefing aos Cards"):
+        st.info("🔍 Buscando briefings e adicionando nas descrições...")
 
         try:
             aba_cards = conectar_sheets().worksheet(TRELLO_ABA)
@@ -107,25 +105,28 @@ def trello_sync_component():
             df_briefing = pd.DataFrame(aba_briefing.get_all_records()).fillna('')
 
             cards_anexados = 0
+
             for i, row in df_cards.iterrows():
                 titulo = str(row.get("Título da Tarefa", "")).strip()
                 card_id = row.get("ID do Card (RANA)", "").strip()
                 if not card_id:
                     continue
 
-                dados_briefing = df_briefing[df_briefing["📁 Nome do Projeto/Evento:"].str.strip().str.casefold() == titulo.casefold()]
+                dados_briefing = df_briefing[
+                    df_briefing["📑 Nome do Projeto/Evento:"].str.strip().str.casefold() == titulo.casefold()
+                ]
 
                 if not dados_briefing.empty:
-                    texto_briefing = "\n\n📁 Briefing Recebido:\n"
+                    texto = "\n\n📎 Briefing:\n"
                     for _, linha in dados_briefing.iterrows():
                         for coluna, valor in linha.items():
                             if valor:
-                                texto_briefing += f"- {coluna.strip()}: {str(valor).strip()}\n"
+                                texto += f"- {coluna.strip()}: {str(valor).strip()}\n"
 
-                    atualizar_descricao_card(card_id, texto_briefing)
+                    atualizar_descricao_card(card_id, texto)
                     cards_anexados += 1
 
-            st.success(f"📁 Briefings adicionados em {cards_anexados} cards.")
+            st.success(f"📎 Briefings adicionados em {cards_anexados} cards.")
 
         except Exception as e:
             st.error(f"Erro ao anexar briefing: {e}")
