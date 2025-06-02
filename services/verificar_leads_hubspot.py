@@ -8,7 +8,7 @@ ABA_VERIFICAR = "Verificar_Leads"
 def buscar_leads_na_base():
     access_token = renovar_token_automaticamente()
     aba = conectar_sheets().worksheet(ABA_VERIFICAR)
-    
+
     dados = aba.get_all_records()
     
     for i, linha in enumerate(dados):
@@ -57,6 +57,7 @@ def buscar_leads_na_base():
                 status = "Lead encontrado"
                 lead_id = contato.get("id", "")
                 lifecycle = props.get("lifecyclestage", "")
+                email = email.get("E-mail HubSpot", "")
                 obs = f"Empresa: {props.get('company', '')}"
             else:
                 status = "Novo lead"
