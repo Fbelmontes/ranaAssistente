@@ -7,7 +7,8 @@ ABA_VERIFICAR = "Verificar_Leads"
 
 def buscar_leads_na_base():
     access_token = renovar_token_automaticamente()
-    aba = conectar_sheets(PLANILHA_ID).worksheet(ABA_VERIFICAR)
+    aba = conectar_sheets().worksheet(ABA_VERIFICAR)
+    
     dados = aba.get_all_records()
     
     for i, linha in enumerate(dados):
