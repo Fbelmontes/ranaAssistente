@@ -2,7 +2,15 @@ import streamlit as st
 import pandas as pd
 import re
 from datetime import datetime
-from services.trello_api import criar_card, atualizar_card, buscar_cards_do_board,LISTAS_TRELLO, atualizar_descricao_card
+from services.trello_api import (
+    criar_card,
+    atualizar_card,
+    buscar_cards_do_board,
+    atualizar_descricao_card,
+    anexar_texto_na_descricao,  # <-- nova função
+    LISTAS_TRELLO
+)
+
 from services.google_sheets import conectar_sheets
 
 TRELLO_ABA = "Integração_Trelo"
