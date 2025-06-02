@@ -91,39 +91,45 @@ def trello_sync_component():
         if cards_ignorados:
             st.warning(f"⚠️ Ignorados: {len(cards_ignorados)}")
 
-    # ========== BOTÃO 2: Anexar Briefings ==========
+    
+        # ========== BOTÃO 2: Anexar Briefings ==========  
     if st.button("📎 Anexar Briefing aos Cards"):
-        st.info("🔍 Buscando briefings e adicionando nas descrições...")
+        st.info("🔍 Lendo dados da memória da RANA...")
 
         try:
             aba_cards = conectar_sheets().worksheet(TRELLO_ABA)
             df_cards = pd.DataFrame(aba_cards.get_all_records()).fillna('')
-            aba_briefing = conectar_planilha_externa(PLANILHA_BRIEFING_ID).worksheet(ABA_BRIEFING)
-            df_briefing = pd.DataFrame(aba_briefing.get_all_records()).fillna('')
+
+            aba_briefings = conectar_sheets().worksheet("Briefings_RANA")
+            df_briefings = pd.DataFrame(aba_briefings.get_all_records()).fillna('')
 
             cards_anexados = 0
 
             for i, row in df_cards.iterrows():
-                titulo = str(row.get("Título da Tarefa", "")).strip()
+                titulo_card = str(row.get("Título da Tarefa", "")).strip()
                 card_id = row.get("ID do Card (RANA)", "").strip()
+
                 if not card_id:
                     continue
 
-                dados_briefing = df_briefing[
-                    df_briefing["📑 Nome do Projeto/Evento:"].str.strip().str.casefold() == titulo.casefold()
+                # Match pelo nome do projeto
+                dados_briefing = df_briefings[
+                    df_briefings["📑 Nome do Projeto/Evento:"].str.strip().str.casefold() == titulo_card.casefold()
                 ]
 
                 if not dados_briefing.empty:
-                    texto = "\n\n📎 Briefing:\n"
+                    texto_final = ""
                     for _, linha in dados_briefing.iterrows():
                         for coluna, valor in linha.items():
                             if valor:
-                                texto += f"- {coluna.strip()}: {str(valor).strip()}\n"
+                                texto_final += f"- {coluna.strip()}: {str(valor).strip()}\n"
 
-                    atualizar_descricao_card(card_id, texto)
+                    from services.trello_api import anexar_texto_na_descricao
+                    anexar_texto_na_descricao(card_id, texto_final)
                     cards_anexados += 1
 
-            st.success(f"📎 Briefings adicionados em {cards_anexados} cards.")
+            st.success(f"📎 Briefings anexados em {cards_anexados} cards.")
 
         except Exception as e:
-            st.error(f"Erro ao anexar briefing: {e}")
+            st.error(f"❌ Erro ao anexar briefings: {e}")
+

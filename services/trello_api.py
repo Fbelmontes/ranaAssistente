@@ -66,9 +66,6 @@ def criar_card(titulo, descricao, data, lista_id, cor_hex=None):
         st.error(f"❌ Erro Trello: {response.text}")
         raise Exception(f"Erro ao criar card: {response.text}")
 
-
-
-
 def atualizar_card(card_id, titulo, descricao, data, lista_id, cor_hex=None):
     url = f"https://api.trello.com/1/cards/{card_id}"
 
@@ -99,7 +96,6 @@ def atualizar_card(card_id, titulo, descricao, data, lista_id, cor_hex=None):
     if r.status_code != 200:
         raise Exception(f"❌ Erro ao atualizar card: {r.text}")
 
-
 def buscar_cards_da_lista(id_lista):
     url = f"https://api.trello.com/1/lists/{id_lista}/cards"
     params = {
@@ -112,7 +108,6 @@ def buscar_cards_da_lista(id_lista):
     else:
         raise Exception(f"Erro ao buscar cards da lista {id_lista}: {r.text}")
 
-
 def buscar_todos_os_cards():
     url = f"https://api.trello.com/1/boards/{st.secrets['ID_BOARD_TRELLO']}/cards"
     params = {
@@ -124,7 +119,6 @@ def buscar_todos_os_cards():
         return r.json()
     else:
         raise Exception(f"Erro ao buscar todos os cards: {r.text}")
-
 
 def buscar_cards_do_board(board_id):
     """
@@ -170,3 +164,25 @@ def atualizar_descricao_card(card_id, novo_texto):
     r = requests.put(url_put, params=update_params)
     if r.status_code != 200:
         raise Exception(f"Erro ao atualizar descrição do card {card_id}: {r.text}")
+
+def anexar_texto_na_descricao(card_id, texto_adicional):
+    """
+    Atualiza a descrição de um card do Trello, mantendo o conteúdo anterior e adicionando novo texto ao final.
+    """
+    url_get = f"https://api.trello.com/1/cards/{card_id}"
+    params = {
+        "key": API_KEY,
+        "token": TOKEN
+    }
+    response_get = requests.get(url_get, params=params)
+    if response_get.status_code != 200:
+        raise Exception(f"Erro ao buscar descrição atual: {response_get.text}")
+
+    descricao_atual = response_get.json().get("desc", "")
+    nova_descricao = descricao_atual.strip() + "\n\n📎 Briefing Recebido:\n" + texto_adicional.strip()
+
+    url_put = f"https://api.trello.com/1/cards/{card_id}"
+    response_put = requests.put(url_put, params=params | {"desc": nova_descricao})
+    if response_put.status_code != 200:
+        raise Exception(f"Erro ao atualizar descrição: {response_put.text}")
+
