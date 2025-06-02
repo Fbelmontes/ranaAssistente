@@ -228,3 +228,5 @@ with col_content:
                 st.info("Pesquisando leads na base do HubSpot...")
                 buscar_leads_na_base()
                 st.success("Verificação concluída! Resultados atualizados na planilha.")
+
+        verificar_leads_component()
