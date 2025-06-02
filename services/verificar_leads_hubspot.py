@@ -2,80 +2,69 @@ import requests
 from services.google_sheets import conectar_sheets
 from services.hubspot_oauth import renovar_token_automaticamente
 
-PLANILHA_ID = "1YnX5Lg7eW6AXwSdo73SIwvlxc4fITwUw5mTPHlspSqA"
+PLANILHA_ID = "1YnX5Lg7eW6AXwSdo73SIwvlxc4fITwUw5mTPHlspSqA"  # Memória da RANA
 ABA_VERIFICAR = "Verificar_Leads"
 
 def buscar_leads_na_base():
-    # 1. Renova o token automaticamente
     access_token = renovar_token_automaticamente()
-
-    # 2. Lê os dados da aba
-    aba = conectar_sheets().worksheet(ABA_VERIFICAR)
+    aba = conectar_sheets(PLANILHA_ID).worksheet(ABA_VERIFICAR)
     dados = aba.get_all_records()
+    
+    for i, linha in enumerate(dados):
+        nome = linha.get("Nome", "").strip()
+        empresa = linha.get("Empresa", "").strip()
+        email = linha.get("E-mail", "").strip()
 
-    resultados = []
+        status = "Não encontrado"
+        lead_id = ""
+        lifecycle = ""
+        obs = ""
 
-    for linha in dados:
-        nome = linha.get("Nome", "")
-        empresa = linha.get("Empresa", "")
-        email = linha.get("E-mail", "")
-
-        resultado = {
-            "Status Pesquisa": "Não encontrado",
-            "ID HubSpot": "",
-            "Lifecycle Stage": "",
-            "Observações": ""
+        payload = {
+            "filterGroups": [],
+            "properties": ["email", "lifecyclestage", "company", "firstname", "lastname"],
+            "limit": 3
         }
 
         if email:
-            filtro = f"properties.email={email}"
+            payload["filterGroups"].append({
+                "filters": [{"propertyName": "email", "operator": "EQ", "value": email}]
+            })
         else:
-            filtro = f"properties.firstname__icontains={nome}&properties.company__icontains={empresa}"
+            filtros = []
+            if nome:
+                filtros.append({"propertyName": "firstname", "operator": "CONTAINS_TOKEN", "value": nome})
+            if empresa:
+                filtros.append({"propertyName": "company", "operator": "CONTAINS_TOKEN", "value": empresa})
+            if filtros:
+                payload["filterGroups"].append({"filters": filtros})
 
-        url = f"https://api.hubapi.com/crm/v3/objects/contacts/search"
+        url = "https://api.hubapi.com/crm/v3/objects/contacts/search"
         headers = {
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json"
         }
 
-        payload = {
-            "filterGroups": [
-                {
-                    "filters": [
-                        {
-                            "propertyName": "email" if email else "firstname",
-                            "operator": "EQ" if email else "CONTAINS_TOKEN",
-                            "value": email if email else nome
-                        }
-                    ]
-                }
-            ],
-            "properties": ["email", "lifecyclestage", "company"],
-            "limit": 1
-        }
-
         res = requests.post(url, headers=headers, json=payload)
 
         if res.status_code == 200:
-            resultado_json = res.json()
-            if resultado_json.get("results"):
-                contato = resultado_json["results"][0]
-                resultado["Status Pesquisa"] = "Lead encontrado"
-                resultado["ID HubSpot"] = contato.get("id", "")
+            resultado = res.json()
+            resultados = resultado.get("results", [])
+            if resultados:
+                contato = resultados[0]
                 props = contato.get("properties", {})
-                resultado["Lifecycle Stage"] = props.get("lifecyclestage", "")
-                resultado["Observações"] = "Encontrado via pesquisa HubSpot"
+                status = "Lead encontrado"
+                lead_id = contato.get("id", "")
+                lifecycle = props.get("lifecyclestage", "")
+                obs = f"Empresa: {props.get('company', '')}"
             else:
-                resultado["Status Pesquisa"] = "Novo lead"
+                status = "Novo lead"
         else:
-            resultado["Status Pesquisa"] = "Erro na API"
-            resultado["Observações"] = res.text
+            status = "Erro na API"
+            obs = res.text
 
-        resultados.append(resultado)
-
-    # Atualizar a aba com os resultados
-    for idx, r in enumerate(resultados):
-        aba.update_cell(idx + 2, 7, r["Status Pesquisa"])
-        aba.update_cell(idx + 2, 8, r["ID HubSpot"])
-        aba.update_cell(idx + 2, 9, r["Lifecycle Stage"])
-        aba.update_cell(idx + 2, 10, r["Observações"])
+        # Atualiza as colunas G, H, I, J
+        aba.update_cell(i+2, 7, status)
+        aba.update_cell(i+2, 8, lead_id)
+        aba.update_cell(i+2, 9, lifecycle)
+        aba.update_cell(i+2, 10, obs)
