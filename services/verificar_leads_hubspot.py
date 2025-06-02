@@ -57,7 +57,7 @@ def buscar_leads_na_base():
                 status = "Lead encontrado"
                 lead_id = contato.get("id", "")
                 lifecycle = props.get("lifecyclestage", "")
-                email = email.get("E-mail HubSpot", "")
+                email_hubspot = props.get("email", "")
                 obs = f"Empresa: {props.get('company', '')}"
             else:
                 status = "Novo lead"
@@ -70,3 +70,5 @@ def buscar_leads_na_base():
         aba.update_cell(i+2, 8, lead_id)
         aba.update_cell(i+2, 9, lifecycle)
         aba.update_cell(i+2, 10, obs)
+        aba.update_cell(i+2, 10, email_hubspot)
+        
