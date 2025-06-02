@@ -10,6 +10,7 @@ from components.enviar_evento_make import enviar_evento_make_component
 from components.linkedin_integration import linkedin_integration_component
 from components.consultar_eventos import consultar_eventos_component
 from components.trello_sync_component import trello_sync_component
+from services.verificar_leads_hubspot import buscar_leads_na_base
 
 # Configuração da página
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
@@ -84,6 +85,7 @@ with st.sidebar:
         "⚙️ Automação de Marketing": [
             "📅 Criar Evento de Marketing",
             "📤 Importar Leads",
+            "🔎 Verificar Leads no HubSpot",
             "💬 Curtir e comentar post",
             "📅 Consultar Eventos e Participantes LinkedIn",
             "✅ Atualizar Tarefas no Trello"
@@ -216,3 +218,13 @@ with col_content:
     
     elif escolha == "✅ Atualizar Tarefas no Trello":
         trello_sync_component()
+    
+    elif escolha == "🔎 Verificar Leads no HubSpot":
+        
+        def verificar_leads_component():
+            st.subheader("🔎 Verificar Leads no HubSpot")
+
+            if st.button("🔍 Iniciar verificação"):
+                st.info("Pesquisando leads na base do HubSpot...")
+                buscar_leads_na_base()
+                st.success("Verificação concluída! Resultados atualizados na planilha.")
