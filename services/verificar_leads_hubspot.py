@@ -69,11 +69,11 @@ def buscar_leads_na_base():
                 status = "Erro na API"
                 obs = res.text
 
-            aba.update_cell(i+2, 7, str(status or ""))
-            aba.update_cell(i+2, 8, str(lead_id or ""))
-            aba.update_cell(i+2, 9, str(lifecycle or ""))
-            aba.update_cell(i+2, 10, str(obs or ""))
-            aba.update_cell(i+2, 11, str(email_hubspot or ""))
+            aba.update_cell(i+2, 8, str(status or ""))
+            aba.update_cell(i+2, 9, str(lead_id or ""))
+            aba.update_cell(i+2, 10, str(lifecycle or ""))
+            aba.update_cell(i+2, 11, str(obs or ""))
+            aba.update_cell(i+2, 12, str(email_hubspot or ""))
 
             time.sleep(1.2)
 
