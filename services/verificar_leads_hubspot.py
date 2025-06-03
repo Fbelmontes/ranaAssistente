@@ -1,5 +1,4 @@
 import requests
-import time
 from services.google_sheets import conectar_sheets
 from services.hubspot_oauth import renovar_token_automaticamente
 
@@ -72,23 +71,23 @@ def buscar_leads_na_base():
                 status = "Erro na API"
                 obs = res.text
 
-            aba.update_cell(i+2, 8, str(status or ""))
-            aba.update_cell(i+2, 9, str(lead_id or ""))
-            aba.update_cell(i+2, 10, str(lifecycle or ""))
-            aba.update_cell(i+2, 11, str(obs or ""))
-            aba.update_cell(i+2, 12, str(email_hubspot or ""))
-
-            time.sleep(1.2)
+            # Atualização em bloco para evitar erro 429
+            aba.update(f"G{i+2}:K{i+2}", [[
+                str(status or ""),
+                str(lead_id or ""),
+                str(lifecycle or ""),
+                str(obs or ""),
+                str(email_hubspot or "")
+            ]])
 
         except Exception as e:
             erro_msg = f"Erro na linha {i+2}: {e}"
             print(erro_msg)
 
             try:
-                aba.update_cell(i+2, 7, "Erro")
-                aba.update_cell(i+2, 10, erro_msg[:500])
+                aba.update(f"G{i+2}:K{i+2}", [[
+                    "Erro", "", "", erro_msg[:500], ""
+                ]])
             except Exception as erro_interno:
                 print(f"Erro ao registrar falha na planilha: {erro_interno}")
-
-            time.sleep(1.2)
             continue
