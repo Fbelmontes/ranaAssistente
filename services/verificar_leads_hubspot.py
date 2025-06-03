@@ -16,6 +16,7 @@ def buscar_leads_na_base():
             sobrenome = linha.get("Sobrenome", "").strip()
             empresa = linha.get("Empresa", "").strip()
             email = linha.get("E-mail", "").strip()
+            linkedin = linha.get("LinkedIn", "").strip()
 
             status = "Não encontrado"
             lead_id = ""
@@ -25,7 +26,7 @@ def buscar_leads_na_base():
 
             payload = {
                 "filterGroups": [],
-                "properties": ["email", "lifecyclestage", "company", "firstname", "lastname"],
+                "properties": ["email", "lifecyclestage", "company", "firstname", "lastname", "linkedin"],
                 "limit": 3
             }
 
@@ -41,6 +42,8 @@ def buscar_leads_na_base():
                     filtros.append({"propertyName": "lastname", "operator": "CONTAINS_TOKEN", "value": sobrenome})
                 if empresa:
                     filtros.append({"propertyName": "company", "operator": "CONTAINS_TOKEN", "value": empresa})
+                if linkedin:
+                    filtros.append({"propertyName": "linkedin", "operator": "CONTAINS_TOKEN", "value": linkedin})
                 if filtros:
                     payload["filterGroups"].append({"filters": filtros})
 
