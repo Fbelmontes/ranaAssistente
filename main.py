@@ -86,8 +86,8 @@ with st.sidebar:
             "📅 Criar Evento de Marketing",
             "📤 Importar Leads",
             "🔎 Verificar Leads no HubSpot",
-            "💬 Curtir e comentar post",
-            "📅 Consultar Eventos e Participantes LinkedIn",
+            #"💬 Curtir e comentar post",
+            #"📅 Consultar Eventos e Participantes LinkedIn",
             "✅ Atualizar Tarefas no Trello"
         ],
         "📚 Aprendizado / 🤖 Memória": [
