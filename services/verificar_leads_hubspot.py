@@ -77,6 +77,10 @@ def buscar_leads_na_base():
         except Exception as e:
             erro_msg = f"Erro na linha {i+2}: {e}"
             print(erro_msg)
-            aba.update_cell(i+2, 7, "Erro")
-            aba.update_cell(i+2, 10, erro_msg)
+
+            try:
+                aba.update_cell(i+2, 7, "Erro")
+                aba.update_cell(i+2, 10, erro_msg[:500])  # limita o tamanho da mensagem
+            except Exception as erro_interno:
+                print(f"Erro ao registrar falha na planilha: {erro_interno}")
             continue
