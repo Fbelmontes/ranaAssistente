@@ -3,6 +3,7 @@ import streamlit as st
 
 # Mapeamento das listas do Trello
 LISTAS_TRELLO = {
+    "BACKLOG RANA": "683da6577bcdfdcc2c22845c",
     "BACKLOG": "67a289a7a2f8f98484a418ea",
     "PARA SEMANA": "67a289ae54d6edf31151b464",
     "EVENTOS": "67a289b37cfedcee3f26bbb3",
