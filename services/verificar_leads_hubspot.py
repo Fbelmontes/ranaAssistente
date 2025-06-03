@@ -16,6 +16,7 @@ def buscar_leads_na_base():
             empresa = linha.get("Empresa", "").strip()
             email = linha.get("E-mail", "").strip()
             linkedin = linha.get("LinkedIn", "").strip()
+            cargo = linha.get("Cargo", "").strip()
 
             status = "Não encontrado"
             lead_id = ""
@@ -25,7 +26,10 @@ def buscar_leads_na_base():
 
             payload = {
                 "filterGroups": [],
-                "properties": ["email", "lifecyclestage", "company", "firstname", "lastname", "linkedin"],
+                "properties": [
+                    "email", "lifecyclestage", "company", "firstname", "lastname",
+                    "linkedin", "jobtitle"
+                ],
                 "limit": 3
             }
 
@@ -41,10 +45,17 @@ def buscar_leads_na_base():
                     filtros.append({"propertyName": "lastname", "operator": "CONTAINS_TOKEN", "value": sobrenome})
                 if empresa:
                     filtros.append({"propertyName": "company", "operator": "CONTAINS_TOKEN", "value": empresa})
+                if cargo:
+                    filtros.append({"propertyName": "jobtitle", "operator": "CONTAINS_TOKEN", "value": cargo})
                 if linkedin:
                     filtros.append({"propertyName": "linkedin", "operator": "CONTAINS_TOKEN", "value": linkedin})
+
                 if filtros:
                     payload["filterGroups"].append({"filters": filtros})
+                else:
+                    # Nada para pesquisar
+                    aba.update(f"G{i+2}:K{i+2}", [["Dados insuficientes", "", "", "", ""]])
+                    continue
 
             url = "https://api.hubapi.com/crm/v3/objects/contacts/search"
             headers = {
@@ -64,15 +75,14 @@ def buscar_leads_na_base():
                     lead_id = contato.get("id", "")
                     lifecycle = props.get("lifecyclestage", "")
                     email_hubspot = props.get("email", "")
-                    obs = f"Empresa: {props.get('company', '')}"
+                    obs = f"Empresa: {props.get('company', '')} | Cargo: {props.get('jobtitle', '')}"
                 else:
                     status = "Novo lead"
             else:
                 status = "Erro na API"
                 obs = res.text
 
-            # Atualização em bloco para evitar erro 429
-            aba.update(f"G{i+2}:K{i+2}", [[
+            aba.update(f"H{i+2}:L{i+2}", [[
                 str(status or ""),
                 str(lead_id or ""),
                 str(lifecycle or ""),
@@ -83,11 +93,8 @@ def buscar_leads_na_base():
         except Exception as e:
             erro_msg = f"Erro na linha {i+2}: {e}"
             print(erro_msg)
-
             try:
-                aba.update(f"G{i+2}:K{i+2}", [[
-                    "Erro", "", "", erro_msg[:500], ""
-                ]])
+                aba.update(f"H{i+2}:L{i+2}", [["Erro", "", "", erro_msg[:500], ""]])
             except Exception as erro_interno:
                 print(f"Erro ao registrar falha na planilha: {erro_interno}")
             continue
