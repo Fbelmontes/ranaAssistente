@@ -13,6 +13,7 @@ def buscar_leads_na_base():
     for i, linha in enumerate(dados):
         try:
             nome = linha.get("Nome", "").strip()
+            sobrenome = linha.get("Sobrenome", "").strip()
             empresa = linha.get("Empresa", "").strip()
             email = linha.get("E-mail", "").strip()
 
@@ -22,7 +23,6 @@ def buscar_leads_na_base():
             obs = ""
             email_hubspot = ""
 
-            # Monta a payload da pesquisa
             payload = {
                 "filterGroups": [],
                 "properties": ["email", "lifecyclestage", "company", "firstname", "lastname"],
@@ -37,12 +37,13 @@ def buscar_leads_na_base():
                 filtros = []
                 if nome:
                     filtros.append({"propertyName": "firstname", "operator": "CONTAINS_TOKEN", "value": nome})
+                if sobrenome:
+                    filtros.append({"propertyName": "lastname", "operator": "CONTAINS_TOKEN", "value": sobrenome})
                 if empresa:
                     filtros.append({"propertyName": "company", "operator": "CONTAINS_TOKEN", "value": empresa})
                 if filtros:
                     payload["filterGroups"].append({"filters": filtros})
 
-            # Faz a requisição à API do HubSpot
             url = "https://api.hubapi.com/crm/v3/objects/contacts/search"
             headers = {
                 "Authorization": f"Bearer {access_token}",
@@ -68,14 +69,13 @@ def buscar_leads_na_base():
                 status = "Erro na API"
                 obs = res.text
 
-            # Atualiza a planilha com segurança
             aba.update_cell(i+2, 7, str(status or ""))
             aba.update_cell(i+2, 8, str(lead_id or ""))
             aba.update_cell(i+2, 9, str(lifecycle or ""))
             aba.update_cell(i+2, 10, str(obs or ""))
             aba.update_cell(i+2, 11, str(email_hubspot or ""))
 
-            time.sleep(1.2)  # Evita limite de gravação da API
+            time.sleep(1.2)
 
         except Exception as e:
             erro_msg = f"Erro na linha {i+2}: {e}"
