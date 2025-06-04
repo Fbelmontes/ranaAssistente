@@ -109,7 +109,7 @@ def buscar_leads_na_base():
                 status = "Erro na API"
                 obs = res.text
 
-            aba.update(f"G{i+2}:K{i+2}", [[
+            aba.update(f"H{i+2}:L{i+2}", [[
                 str(status or ""),
                 str(lead_id or ""),
                 str(lifecycle or ""),
@@ -121,7 +121,7 @@ def buscar_leads_na_base():
             erro_msg = f"Erro na linha {i+2}: {e}"
             print(erro_msg)
             try:
-                aba.update(f"G{i+2}:K{i+2}", [["Erro", "", "", erro_msg[:500], ""]])
+                aba.update(f"H{i+2}:L{i+2}", [["Erro", "", "", erro_msg[:500], ""]])
             except Exception as erro_interno:
                 print(f"Erro ao registrar falha: {erro_interno}")
             continue
