@@ -233,5 +233,5 @@ with col_content:
         verificar_leads_component()
     
     elif escolha == "📚 Aprender sobre alguem":
-        
+        print('nada')
         
