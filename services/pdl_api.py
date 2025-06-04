@@ -1,4 +1,5 @@
 import requests
+import streamlit as st
 
 PDL_API_KEY = st.secrets["KEY_PPD"]
 
