@@ -26,7 +26,10 @@ def buscar_leads_na_base():
 
             payload = {
                 "filterGroups": [],
-                "properties": ["email", "lifecyclestage", "company", "firstname", "lastname", "linkedin", "jobtitle"],
+                "properties": [
+                    "email", "lifecyclestage", "company",
+                    "firstname", "lastname", "linkedin", "jobtitle"
+                ],
                 "limit": 5
             }
 
@@ -68,50 +71,45 @@ def buscar_leads_na_base():
                 if not resultados:
                     status = "Novo lead"
                 else:
-                    matches = []
+                    possiveis_matches = []
+
                     for contato in resultados:
                         props = contato.get("properties", {})
-                        # Verifica se nome, sobrenome e empresa batem
-                        if (
-                            nome.lower() in props.get("firstname", "").lower()
-                            and sobrenome.lower() in props.get("lastname", "").lower()
-                            and empresa.lower() in props.get("company", "").lower()
-                        ):
-                            matches.append(contato)
+                        nome_ok = nome.lower() in props.get("firstname", "").lower()
+                        sobrenome_ok = sobrenome.lower() in props.get("lastname", "").lower()
+                        empresa_ok = empresa.lower() in props.get("company", "").lower()
 
-                    if email:
-                        status = "Match exato"
-                        contato = resultados[0]
-                    elif len(matches) == 1:
-                        status = "Match exato"
-                        contato = matches[0]
-                    elif len(matches) > 1:
-                        status = "Possível match"
-                        obs = "; ".join([
-                            f"Empresa: {c['properties'].get('company','')}, ID: {c['id']}, Email: {c['properties'].get('email','')}"
-                            for c in matches
-                        ])
-                        lead_id = ", ".join([c['id'] for c in matches])
-                        lifecycle = matches[0]['properties'].get("lifecyclestage", "")
-                        email_hubspot = matches[0]['properties'].get("email", "")
-                        aba.update(f"G{i+2}:K{i+2}", [[status, lead_id, lifecycle, obs, email_hubspot]])
-                        continue
-                    else:
-                        # Nenhum match 100% confiável
-                        contato = resultados[0]
-                        status = "Possível match"
+                        score = sum([nome_ok, sobrenome_ok, empresa_ok])
 
-                    props = contato.get("properties", {})
-                    lead_id = contato.get("id", "")
-                    lifecycle = props.get("lifecyclestage", "")
-                    email_hubspot = props.get("email", "")
-                    obs = f"Empresa: {props.get('company', '')} | Cargo: {props.get('jobtitle', '')}"
+                        if score == 3:
+                            # Match exato
+                            status = "Match exato"
+                            lead_id = contato.get("id", "")
+                            lifecycle = props.get("lifecyclestage", "")
+                            email_hubspot = props.get("email", "")
+                            obs = f"Empresa: {props.get('company', '')} | Cargo: {props.get('jobtitle', '')}"
+                            break
+                        elif score == 2:
+                            possiveis_matches.append(contato)
+
+                    if status != "Match exato":
+                        if possiveis_matches:
+                            status = "Possível match"
+                            obs = "; ".join([
+                                f"Empresa: {c['properties'].get('company','')}, ID: {c['id']}, Email: {c['properties'].get('email','')}"
+                                for c in possiveis_matches
+                            ])
+                            lead_id = ", ".join([c['id'] for c in possiveis_matches])
+                            lifecycle = possiveis_matches[0]['properties'].get("lifecyclestage", "")
+                            email_hubspot = possiveis_matches[0]['properties'].get("email", "")
+                        else:
+                            status = "Novo lead"
 
             else:
                 status = "Erro na API"
                 obs = res.text
 
-            aba.update(f"H{i+2}:L{i+2}", [[
+            aba.update(f"G{i+2}:K{i+2}", [[
                 str(status or ""),
                 str(lead_id or ""),
                 str(lifecycle or ""),
@@ -123,7 +121,7 @@ def buscar_leads_na_base():
             erro_msg = f"Erro na linha {i+2}: {e}"
             print(erro_msg)
             try:
-                aba.update(f"H{i+2}:L{i+2}", [["Erro", "", "", erro_msg[:500], ""]])
+                aba.update(f"G{i+2}:K{i+2}", [["Erro", "", "", erro_msg[:500], ""]])
             except Exception as erro_interno:
                 print(f"Erro ao registrar falha: {erro_interno}")
             continue
