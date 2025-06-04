@@ -26,19 +26,17 @@ def buscar_leads_na_base():
 
             payload = {
                 "filterGroups": [],
-                "properties": [
-                    "email", "lifecyclestage", "company", "firstname", "lastname",
-                    "linkedin", "jobtitle"
-                ],
-                "limit": 3
+                "properties": ["email", "lifecyclestage", "company", "firstname", "lastname", "linkedin", "jobtitle"],
+                "limit": 5
             }
+
+            filtros = []
 
             if email:
                 payload["filterGroups"].append({
                     "filters": [{"propertyName": "email", "operator": "EQ", "value": email}]
                 })
             else:
-                filtros = []
                 if nome:
                     filtros.append({"propertyName": "firstname", "operator": "CONTAINS_TOKEN", "value": nome})
                 if sobrenome:
@@ -49,11 +47,9 @@ def buscar_leads_na_base():
                     filtros.append({"propertyName": "jobtitle", "operator": "CONTAINS_TOKEN", "value": cargo})
                 if linkedin:
                     filtros.append({"propertyName": "linkedin", "operator": "CONTAINS_TOKEN", "value": linkedin})
-
                 if filtros:
                     payload["filterGroups"].append({"filters": filtros})
                 else:
-                    # Nada para pesquisar
                     aba.update(f"G{i+2}:K{i+2}", [["Dados insuficientes", "", "", "", ""]])
                     continue
 
@@ -68,16 +64,49 @@ def buscar_leads_na_base():
             if res.status_code == 200:
                 resultado = res.json()
                 resultados = resultado.get("results", [])
-                if resultados:
-                    contato = resultados[0]
+
+                if not resultados:
+                    status = "Novo lead"
+                else:
+                    matches = []
+                    for contato in resultados:
+                        props = contato.get("properties", {})
+                        # Verifica se nome, sobrenome e empresa batem
+                        if (
+                            nome.lower() in props.get("firstname", "").lower()
+                            and sobrenome.lower() in props.get("lastname", "").lower()
+                            and empresa.lower() in props.get("company", "").lower()
+                        ):
+                            matches.append(contato)
+
+                    if email:
+                        status = "Match exato"
+                        contato = resultados[0]
+                    elif len(matches) == 1:
+                        status = "Match exato"
+                        contato = matches[0]
+                    elif len(matches) > 1:
+                        status = "Possível match"
+                        obs = "; ".join([
+                            f"Empresa: {c['properties'].get('company','')}, ID: {c['id']}, Email: {c['properties'].get('email','')}"
+                            for c in matches
+                        ])
+                        lead_id = ", ".join([c['id'] for c in matches])
+                        lifecycle = matches[0]['properties'].get("lifecyclestage", "")
+                        email_hubspot = matches[0]['properties'].get("email", "")
+                        aba.update(f"G{i+2}:K{i+2}", [[status, lead_id, lifecycle, obs, email_hubspot]])
+                        continue
+                    else:
+                        # Nenhum match 100% confiável
+                        contato = resultados[0]
+                        status = "Possível match"
+
                     props = contato.get("properties", {})
-                    status = "Lead encontrado"
                     lead_id = contato.get("id", "")
                     lifecycle = props.get("lifecyclestage", "")
                     email_hubspot = props.get("email", "")
                     obs = f"Empresa: {props.get('company', '')} | Cargo: {props.get('jobtitle', '')}"
-                else:
-                    status = "Novo lead"
+
             else:
                 status = "Erro na API"
                 obs = res.text
@@ -96,5 +125,5 @@ def buscar_leads_na_base():
             try:
                 aba.update(f"H{i+2}:L{i+2}", [["Erro", "", "", erro_msg[:500], ""]])
             except Exception as erro_interno:
-                print(f"Erro ao registrar falha na planilha: {erro_interno}")
+                print(f"Erro ao registrar falha: {erro_interno}")
             continue
