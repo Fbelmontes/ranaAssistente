@@ -6,9 +6,10 @@ def rocketreach_profile_lookup_component():
 
     nome = st.text_input("Nome completo (opcional)")
     email = st.text_input("E-mail (opcional)")
+    empresa = st.text_input("Empresa (obrigatória se buscar por nome)")
 
     if st.button("🔍 Buscar Perfil"):
-        resultado = buscar_perfil_rocketreach(nome, email)
+        resultado = buscar_perfil_rocketreach(nome, email, empresa)
 
         if "erro" in resultado:
             st.error(resultado["erro"])
