@@ -11,6 +11,7 @@ from components.linkedin_integration import linkedin_integration_component
 from components.consultar_eventos import consultar_eventos_component
 from components.trello_sync_component import trello_sync_component
 from services.verificar_leads_hubspot import buscar_leads_na_base
+from components.rocketreach_profile_lookup import rocketreach_profile_lookup_component
 
 # Configuração da página
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
@@ -233,5 +234,5 @@ with col_content:
         verificar_leads_component()
     
     elif escolha == "📚 Aprender sobre alguem":
-        print('nada')
+        rocketreach_profile_lookup_component()
         
