@@ -11,6 +11,7 @@ from components.linkedin_integration import linkedin_integration_component
 from components.consultar_eventos import consultar_eventos_component
 from components.trello_sync_component import trello_sync_component
 from services.verificar_leads_hubspot import buscar_leads_na_base
+from components.pdl_profile_lookup import pdl_profile_lookup_component
 
 # Configuração da página
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
@@ -80,7 +81,8 @@ with st.sidebar:
         "🔍 Pesquisa": [
             "🔍 Buscar Empresa ou Site",
             "📚 Aprender sobre um site",
-            "🌐 Pesquisar na Web"
+            "🌐 Pesquisar na Web",
+            "📚 Aprender sobre alguem"
         ],
         "⚙️ Automação de Marketing": [
             "📅 Criar Evento de Marketing",
@@ -230,3 +232,7 @@ with col_content:
                 st.success("Verificação concluída! Resultados atualizados na planilha.")
 
         verificar_leads_component()
+    
+    elif escolha == "📚 Aprender sobre alguem":
+        
+        pdl_profile_lookup_component()
