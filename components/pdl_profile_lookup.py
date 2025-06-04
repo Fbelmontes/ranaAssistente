@@ -8,44 +8,30 @@ def mostrar_dado(label, valor):
         st.write(f"{label} _não encontrado_ ❌")
 
 def pdl_profile_lookup_component():
-    st.subheader("🔍 Buscar Perfil com People Data Labs")
+    st.subheader("🔎 Busca Inteligente de Perfis com PDL")
 
-    nome = st.text_input("Nome completo")
-    email = st.text_input("Email (opcional)")
-    empresa = st.text_input("Empresa (opcional)")
+    nome = st.text_input("Nome completo (opcional)")
+    email = st.text_input("E-mail (opcional)")
 
-    if st.button("Buscar Perfil"):
-        if nome:
-            resultado = buscar_perfil_pdl(nome, email, empresa)
+    if st.button("🔍 Buscar Perfis"):
+        resultado = buscar_perfis_pdl(nome, email)
 
-            if "erro" in resultado:
-                st.error(f"❌ {resultado['erro']}")
-            else:
-                st.success("✅ Perfil encontrado!")
-
-                # Verifica se o perfil tem dados úteis
-                dados_principais = [
-                    resultado.get("full_name"),
-                    resultado.get("job_title"),
-                    resultado.get("job_company_name"),
-                    resultado.get("linkedin_url")
-                ]
-
-                if not any(dados_principais):
-                    st.warning("⚠️ Perfil encontrado, mas sem dados relevantes disponíveis.")
-
-                # Mostra os campos com fallback elegante
-                mostrar_dado("👤 Nome:", resultado.get("full_name"))
-                mostrar_dado("💼 Cargo:", resultado.get("job_title"))
-                mostrar_dado("🏢 Empresa:", resultado.get("job_company_name"))
-                mostrar_dado("📍 Localização:", resultado.get("location_city"))
-                mostrar_dado("🔗 LinkedIn:", resultado.get("linkedin_url"))
-                mostrar_dado("🎯 Interesses:", resultado.get("interests"))
-
-                # Espaço para evoluir com nova tentativa
-                st.markdown("---")
-                if st.button("🔁 Tentar com outra abordagem (ex: nome + empresa apenas)"):
-                    st.info("🚧 Essa funcionalidade ainda está em construção.")
-
+        if "erro" in resultado:
+            st.error(resultado["erro"])
+        elif not resultado.get("data"):
+            st.warning("😕 Nenhum perfil encontrado.")
         else:
-            st.warning("⚠️ Por favor, preencha o nome.")
+            st.success("✅ Perfis encontrados:")
+
+            for i, perfil in enumerate(resultado["data"][:3]):
+                with st.container():
+                    st.markdown(f"**{perfil.get('full_name', 'Sem nome')}**")
+                    st.write("💼", perfil.get("job_title", "Cargo não disponível"))
+                    st.write("🏢", perfil.get("job_company_name", "Empresa não disponível"))
+                    st.write("📍", perfil.get("location", "Localização não disponível"))
+                    linkedin = perfil.get("linkedin_url")
+                    if linkedin:
+                        st.markdown(f"[🔗 Ver LinkedIn]({linkedin})", unsafe_allow_html=True)
+
+                    if st.button(f"✅ Usar este perfil ({i+1})"):
+                        st.info(f"📌 Perfil selecionado: {perfil.get('full_name')} - {linkedin or 'sem link'}")

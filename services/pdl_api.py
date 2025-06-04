@@ -3,20 +3,28 @@ import streamlit as st
 
 PDL_API_KEY = st.secrets["KEY_PPD"]
 
-def buscar_perfil_pdl(nome, email=None, empresa=None):
-    url = "https://api.peopledatalabs.com/v5/person/enrich"
+def buscar_perfis_pdl(nome=None, email=None):
+    url = "https://api.peopledatalabs.com/v5/person/search"
     headers = {
         "X-api-key": PDL_API_KEY
     }
+
+    if not nome and not email:
+        return {"erro": "⚠️ Insira pelo menos o nome ou o e-mail."}
+
     params = {
-        "name": nome,
+        "size": 3,  # retorna os 3 melhores perfis
         "pretty": "true"
     }
 
+    # Criação da query no estilo PDL
+    query = {}
+    if nome:
+        query["full_name"] = nome
     if email:
-        params["email"] = email
-    if empresa:
-        params["company"] = empresa
+        query["email"] = email
+
+    params["query"] = str(query).replace("'", '"')  # formato JSON no param
 
     response = requests.get(url, headers=headers, params=params)
 
