@@ -1,31 +1,53 @@
 import requests
+from difflib import SequenceMatcher
 from services.google_sheets import conectar_sheets
 from services.hubspot_oauth import renovar_token_automaticamente
-from collections import defaultdict
 
 PLANILHA_ID = "1YnX5Lg7eW6AXwSdo73SIwvlxc4fITwUw5mTPHlspSqA"
 ABA_VERIFICAR = "Verificar_Leads"
 
-# Define pesos para cada campo usado na comparação
-PESOS = {
-    "firstname": 2,
-    "lastname": 2,
-    "company": 3,
-    "linkedin": 3,
-    "jobtitle": 1
-}
+def similaridade(a, b):
+    return SequenceMatcher(None, a.lower(), b.lower()).ratio()
+
+def pontuar_lead(lead, nome, sobrenome, empresa, cargo, linkedin):
+    props = lead.get("properties", {})
+    score = 0
+    detalhes = []
+
+    if nome and props.get("firstname") and similaridade(nome, props["firstname"]) > 0.8:
+        score += 1
+        detalhes.append("Nome")
+
+    if sobrenome and props.get("lastname") and similaridade(sobrenome, props["lastname"]) > 0.8:
+        score += 1
+        detalhes.append("Sobrenome")
+
+    if empresa and props.get("company") and similaridade(empresa, props["company"]) > 0.75:
+        score += 1
+        detalhes.append("Empresa")
+
+    if cargo and props.get("jobtitle") and similaridade(cargo, props["jobtitle"]) > 0.75:
+        score += 0.5
+        detalhes.append("Cargo")
+
+    if linkedin and props.get("linkedin") and linkedin.strip() == props["linkedin"].strip():
+        score += 2
+        detalhes.append("LinkedIn exato")
+
+    return score, ", ".join(detalhes)
 
 def buscar_leads_na_base():
-    access_token = renovar_token_automaticamente()
+    token = renovar_token_automaticamente()
     aba = conectar_sheets().worksheet(ABA_VERIFICAR)
     dados = aba.get_all_records()
 
+    updates = []
     for i, linha in enumerate(dados):
         nome = linha.get("Nome", "").strip()
         sobrenome = linha.get("Sobrenome", "").strip()
         empresa = linha.get("Empresa", "").strip()
-        linkedin = linha.get("Linkedin", "").strip()
         cargo = linha.get("Cargo", "").strip()
+        linkedin = linha.get("Linkedin", "").strip()
 
         filtros = []
         if nome:
@@ -34,54 +56,63 @@ def buscar_leads_na_base():
             filtros.append({"propertyName": "lastname", "operator": "CONTAINS_TOKEN", "value": sobrenome})
         if empresa:
             filtros.append({"propertyName": "company", "operator": "CONTAINS_TOKEN", "value": empresa})
-        if linkedin:
-            filtros.append({"propertyName": "linkedin", "operator": "CONTAINS_TOKEN", "value": linkedin})
-        if cargo:
-            filtros.append({"propertyName": "jobtitle", "operator": "CONTAINS_TOKEN", "value": cargo})
 
         payload = {
             "filterGroups": [{"filters": filtros}],
-            "properties": ["firstname", "lastname", "company", "email", "jobtitle", "linkedin"],
+            "properties": ["firstname", "lastname", "email", "company", "lifecyclestage", "linkedin", "jobtitle"],
             "limit": 10
         }
 
-        url = "https://api.hubapi.com/crm/v3/objects/contacts/search"
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json"
-        }
-
-        res = requests.post(url, headers=headers, json=payload)
+        res = requests.post(
+            "https://api.hubapi.com/crm/v3/objects/contacts/search",
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+            json=payload
+        )
 
         if res.status_code != 200:
-            aba.update_cell(i+2, 7, "Erro na API")
-            aba.update_cell(i+2, 10, res.text)
+            updates.append([i + 2, "Erro API", "", "", res.text])
             continue
 
-        resultados = res.json().get("results", [])
-        if not resultados:
-            aba.update_cell(i+2, 7, "Novo lead")
-            aba.update_cell(i+2, 10, "Nenhum contato encontrado")
+        resultado = res.json().get("results", [])
+        if not resultado:
+            updates.append([i + 2, "Novo Lead", "", "", "Nenhum resultado"])
             continue
 
-        # Avaliar todos os resultados e atribuir scores
-        scores = []
-        for contato in resultados:
-            props = contato.get("properties", {})
-            score = 0
-            for campo in ["firstname", "lastname", "company", "linkedin", "jobtitle"]:
-                valor = linha.get(campo.capitalize(), "").strip().lower()
-                if valor and valor in props.get(campo, "").lower():
-                    score += PESOS[campo]
-            scores.append({"score": score, "id": contato.get("id"), "email": props.get("email"), "company": props.get("company"), "nome": props.get("firstname"), "sobrenome": props.get("lastname")})
+        melhores = []
+        melhor_score = 0
 
-        # Ordenar pelo score
-        scores.sort(key=lambda x: x["score"], reverse=True)
-        melhor = scores[0] if scores else {}
+        for lead in resultado:
+            score, detalhes = pontuar_lead(lead, nome, sobrenome, empresa, cargo, linkedin)
+            if score > melhor_score:
+                melhores = [(lead, score, detalhes)]
+                melhor_score = score
+            elif score == melhor_score:
+                melhores.append((lead, score, detalhes))
 
-        status = "Match exato" if melhor.get("score", 0) >= 6 else "Possível match"
+        if melhor_score == 0:
+            updates.append([i + 2, "Novo Lead", "", "", "Sem correspondência relevante"])
+        elif len(melhores) > 1:
+            obs_text = "; ".join([f"ID: {m[0]['id']} ({m[2]})" for m in melhores])
+            updates.append([i + 2, "Possível duplicata", "", "", obs_text])
+        else:
+            lead = melhores[0][0]
+            props = lead.get("properties", {})
+            status = "Match exato" if melhor_score >= 3 else "Possível match"
+            updates.append([
+                i + 2,
+                status,
+                lead.get("id", ""),
+                props.get("lifecyclestage", ""),
+                f"Empresa: {props.get('company','')} | Email: {props.get('email','')} | {melhores[0][2]}"
+            ])
 
-        aba.update_cell(i+2, 7, status)
-        aba.update_cell(i+2, 8, melhor.get("id", ""))
-        aba.update_cell(i+2, 9, melhor.get("email", ""))
-        aba.update_cell(i+2, 10, f"Empresa: {melhor.get('company', '')} | Nome: {melhor.get('nome', '')} {melhor.get('sobrenome', '')}")
+    # Atualizar em lote
+    for update in updates:
+        linha, status, lead_id, lifecycle, obs = update
+        try:
+            aba.batch_update([{
+                "range": f"H{linha}:L{linha}",
+                "values": [[status, lead_id, lifecycle, obs]]
+            }])
+        except Exception as e:
+            print(f"Erro ao atualizar linha {linha}: {e}")
