@@ -1,45 +1,43 @@
 import streamlit as st
+from services.rocketreach_api import buscar_perfil_rocketreach
 
 def rocketreach_profile_lookup_component():
-    st.subheader("🚀 Resultados da Busca de Perfis (Mock)")
+    st.subheader("🚀 Buscar Perfil via RocketReach")
 
-    resultados = [
-        {
-            "nome": "Felipe Silva",
-            "cargo": "Technology Vice President",
-            "empresa": "Goldman Sachs",
-            "localizacao": "London, GB",
-            "email": "felipe.silva@gmail.com",
-            "empresa_email": "gs.com",
-            "linkedin": "https://linkedin.com/in/felipe-silva-goldman",
-            "imagem": "https://randomuser.me/api/portraits/men/44.jpg"
-        },
-        {
-            "nome": "Felipe Silva",
-            "cargo": "IT Director",
-            "empresa": "Grupo Casas Bahia",
-            "localizacao": "São Paulo, BR",
-            "email": "felipe@yahoo.com.br",
-            "empresa_email": "casasbahia.com.br",
-            "linkedin": "https://linkedin.com/in/felipe-silva-casasbahia",
-            "imagem": "https://randomuser.me/api/portraits/men/88.jpg"
-        }
-    ]
+    nome = st.text_input("Digite o nome completo da pessoa (opcional)")
+    email = st.text_input("Digite o e-mail da pessoa (opcional)")
 
-    for i, perfil in enumerate(resultados):
-        with st.container():
+    if st.button("🔍 Buscar Perfil"):
+        with st.spinner("Consultando RocketReach..."):
+            data, erro = buscar_perfil_rocketreach(nome=nome if nome else None, email=email if email else None)
+
+            if erro:
+                st.error(erro)
+                return
+
+            if not data:
+                st.warning("Nenhum perfil encontrado.")
+                return
+
+            st.success("✅ Perfil encontrado!")
+
+            # Tratamento seguro
+            nome = data.get("name") or "Não disponível"
+            cargo = data.get("current_title") or "Não disponível"
+            empresa = data.get("current_employer") or "Não disponível"
+            local = data.get("location") or "Não disponível"
+            linkedin = data.get("linkedin_url") or "Não disponível"
+            imagem = data.get("img") or "https://via.placeholder.com/100"
+
             col1, col2 = st.columns([1, 6])
             with col1:
-                st.image(perfil["imagem"], width=100)
+                st.image(imagem, width=100)
             with col2:
-                st.markdown(f"### {perfil['nome']}")
-                st.write("💼", perfil["cargo"])
-                st.write("🏢", perfil["empresa"])
-                st.write("📍", perfil["localizacao"])
-                st.write("📧", perfil["email"], " | 🏢", perfil["empresa_email"])
-                st.markdown(f"[🔗 Ver LinkedIn]({perfil['linkedin']})", unsafe_allow_html=True)
+                st.markdown(f"### {nome}")
+                st.write("💼", cargo)
+                st.write("🏢", empresa)
+                st.write("📍", local)
+                st.markdown(f"[🔗 Ver LinkedIn]({linkedin})", unsafe_allow_html=True)
 
-                if st.button(f"✅ Usar este perfil {i+1}"):
-                    st.success(f"Perfil selecionado: {perfil['nome']} ({perfil['linkedin']})")
-
-            st.markdown("---")
+                if st.button("✅ Usar este perfil"):
+                    st.success(f"Perfil selecionado: {nome} ({linkedin})")

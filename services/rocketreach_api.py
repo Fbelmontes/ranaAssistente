@@ -1,23 +1,25 @@
 import requests
 import streamlit as st
 
-ROCKETREACH_API_KEY = st.secrets["ROCK_API"]  # Substitua aqui
+ROCKETREACH_API_KEY = st.secrets["ROCKETREACH_API_KEY"]
+BASE_URL = "https://api.rocketreach.co/v1/api/lookupProfile"
 
-def buscar_perfil_rocketreach(nome=None, email=None, empresa=None):
-    url = "https://api.rocketreach.co/v1/api/lookupProfile"
-    params = {"api_key": ROCKETREACH_API_KEY}
+def buscar_perfil_rocketreach(nome=None, email=None):
+    headers = {
+        "Authorization": f"Bearer {ROCKETREACH_API_KEY}"
+    }
 
     if email:
-        params["email"] = email
-    elif nome and empresa:
-        params["name"] = nome
-        params["current_employer"] = empresa
+        payload = {"email": email}
+    elif nome:
+        payload = {"name": nome}
     else:
-        return {"erro": "❌ Para buscar por nome, você deve informar também a empresa."}
+        return None, "⚠️ Forneça um nome ou e-mail."
 
-    response = requests.get(url, params=params)
+    response = requests.get(BASE_URL, params=payload, headers=headers)
 
     if response.status_code == 200:
-        return response.json()
+        data = response.json()
+        return data, None
     else:
-        return {"erro": f"Status {response.status_code}: {response.text}"}
+        return None, f"❌ Status {response.status_code}: {response.text}"
