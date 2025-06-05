@@ -1,6 +1,6 @@
 import streamlit as st
 
-def rocketreach_mock_profiles_component():
+def rocketreach_profile_lookup_component():
     st.subheader("🚀 Resultados da Busca de Perfis (Mock)")
 
     resultados = [
