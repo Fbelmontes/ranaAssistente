@@ -17,13 +17,16 @@ LISTAS_TRELLO = {
 
 # Mapeamento das cores da planilha para as etiquetas do Trello
 MAPA_CORES_TRELLO = {
-    "#9fc5e8": "67a2899a3eccd70031a43a54",  # azul → Post Redes Sociais
-    "#fff2cc": "67a2899a3eccd70031a43a50",  # amarelo → Ebooks e Reports
-    "#b6d7a8": "67a2899a3eccd70031a43a4f",  # verde → (sem nome)
-    "#f9cb9c": "67a2899a3eccd70031a43a51",  # laranja → Pronto para produção
-    "#d9d2e9": "67a2899a3eccd70031a43a53",  # roxo → (sem nome)
-    "#e06666": "67a2899a3eccd70031a43a52",  # vermelho → REVISÃO
-    "#ffff00": "67a2899a3eccd70031a43a52",  # vermelho → REVISÃO (duplicado)
+    "#9fc5e8": "64f78b58415ea65cb19073bd",  # azul → Social Media
+    "#f4cccc": "64f78b58415ea65cb19073c7",  # rosa escuro → Outros
+    "#f9cb9c": "650c74cb44b8f5425212ae44",  # laranja escuro → Eventos
+    "#d9d2e9": "64f78b58415ea65cb19073c5",  # roxo → E-book, Report, etc
+    "#b6d7a8": "66f5c1b036179ec660ac6359",  # verde claro → Eventos (duplicado)
+    "#cfe2f3": "64f78b58415ea65cb19073b8",  # rosa → E-mail/Newsletter
+    "#ead1dc": "64f78b58415ea65cb19073b4",  # roxo claro → BP
+    "#fff2cc": "662ff6690be24230a18f8626",  # amarelo claro → [HS] Atendimento: Reunião
+    "#f6b26b": "67a66cb0c3d74274d6e0bd10",  # vermelho escuro → REVISÃO
+    "#f3f3f3": "67a66c956376c9941b825a97",  # laranja → Pronto para produção
 }
 
 # Credenciais do Trello
