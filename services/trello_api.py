@@ -17,17 +17,23 @@ LISTAS_TRELLO = {
 
 # Mapeamento das cores da planilha para as etiquetas do Trello
 MAPA_CORES_TRELLO = {
-    "#9fc5e8": "64f78b58415ea65cb19073bd",  # azul → Social Media
-    "#f4cccc": "64f78b58415ea65cb19073c7",  # rosa escuro → Outros
-    "#f9cb9c": "650c74cb44b8f5425212ae44",  # laranja escuro → Eventos
-    "#d9d2e9": "64f78b58415ea65cb19073c5",  # roxo → E-book, Report, etc
-    "#b6d7a8": "66f5c1b036179ec660ac6359",  # verde claro → Eventos (duplicado)
-    "#cfe2f3": "64f78b58415ea65cb19073b8",  # rosa → E-mail/Newsletter
-    "#ead1dc": "64f78b58415ea65cb19073b4",  # roxo claro → BP
-    "#fff2cc": "662ff6690be24230a18f8626",  # amarelo claro → [HS] Atendimento: Reunião
-    "#f6b26b": "67a66cb0c3d74274d6e0bd10",  # vermelho escuro → REVISÃO
-    "#f3f3f3": "67a66c956376c9941b825a97",  # laranja → Pronto para produção
+    "#9fc5e8": "64f78b58415ea65cb19073bd",  # Azul → Social Media
+    "#f4cccc": "64f78b58415ea65cb19073b8",  # Rosa claro → Email/Newsletter
+    "#f9cb9c": "67a66c956376c9941b825a97",  # Laranja → Pronto para produção
+    "#d9d2e9": "64f78b58415ea65cb19073c5",  # Roxo claro → E-book, Report, etc.
+    "#ead1dc": "64f78b58415ea65cb19073c7",  # Rosa escuro → Outros
+    "#cfe2f3": "64fb7df6b0fe23614739456c",  # Azul céu → Ads
+    "#b6d7a8": "66f5c1b036179ec660ac6359",  # Verde claro → Eventos
+    "#ffe599": "66f5c1b036179ec660ac6365",  # Amarelo claro → Material de Conversão
+    "#f6b26b": "68345669acf396379018804c",  # Laranja médio → Podcast
+    "#c9daf8": "64fb900abb77971554145a62",  # Verde limão claro → Site
+    "#a4c2f4": "67f9479df5d76c543a67c72e",  # Roxo médio → E-book
+    "#6fa8dc": "64f78b58415ea65cb19073c0",  # Azul escuro → Analytics
+    "#e06666": "66197f6c5b237211e70c8159",  # Vermelho claro → ABM
+    "#cc0000": "6645259a8ebe198fbc0f8c59",  # Vermelho → Santander
+    "#674ea7": "65044ce03ea504f11c5b55cb",  # Roxo escuro → Cases
 }
+
 
 # Credenciais do Trello
 API_KEY = st.secrets["API_TRELLO"]
