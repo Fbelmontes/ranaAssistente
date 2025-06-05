@@ -1,7 +1,7 @@
 import requests
 import streamlit as st
 
-ROCKETREACH_API_KEY = st.secrets["ROCKETREACH_API_KEY"]
+ROCKETREACH_API_KEY = "197c58ck5cf775e09dfdd12eccb7423a66d2741d"
 BASE_URL = "https://api.rocketreach.co/v1/api/lookupProfile"
 
 def buscar_perfil_rocketreach(nome=None, email=None):
