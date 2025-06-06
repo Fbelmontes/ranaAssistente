@@ -70,12 +70,12 @@ def buscar_leads_na_base():
         )
 
         if res.status_code != 200:
-            updates.append([i + 2, "Erro API", "", "", res.text])
+            updates.append([i + 2, "Erro API", "", "", "", res.text])
             continue
 
         resultado = res.json().get("results", [])
         if not resultado:
-            updates.append([i + 2, "Novo Lead", "", "", "Nenhum resultado"])
+            updates.append([i + 2, "Novo Lead", "", "", "", "Nenhum resultado"])
             continue
 
         melhores = []
@@ -90,29 +90,32 @@ def buscar_leads_na_base():
                 melhores.append((lead, score, detalhes))
 
         if melhor_score == 0:
-            updates.append([i + 2, "Novo Lead", "", "", "Sem correspondência relevante"])
+            updates.append([i + 2, "Novo Lead", "", "", "", "Sem correspondência relevante"])
         elif len(melhores) > 1:
             obs_text = "; ".join([f"ID: {m[0]['id']} ({m[2]})" for m in melhores])
-            updates.append([i + 2, "Possível duplicata", "", "", obs_text])
+            emails = "; ".join([m[0]['properties'].get("email", "") for m in melhores])
+            updates.append([i + 2, "Possível duplicata", "", "", emails, obs_text])
         else:
             lead = melhores[0][0]
             props = lead.get("properties", {})
             status = "Match exato" if melhor_score >= 3 else "Possível match"
+            obs = f"Empresa: {props.get('company','')} | Cargo: {props.get('jobtitle','')} | {melhores[0][2]}"
             updates.append([
                 i + 2,
                 status,
                 lead.get("id", ""),
                 props.get("lifecyclestage", ""),
-                f"Empresa: {props.get('company','')} | Email: {props.get('email','')} | {melhores[0][2]}"
+                props.get("email", ""),
+                obs
             ])
 
-    # Atualizar em lote
+    # Atualizar em lote: colunas H (status), I (ID), J (lifecycle), K (obs), L (email)
     for update in updates:
-        linha, status, lead_id, lifecycle, obs = update
+        linha, status, lead_id, lifecycle, email, obs = update
         try:
             aba.batch_update([{
                 "range": f"H{linha}:L{linha}",
-                "values": [[status, lead_id, lifecycle, obs]]
+                "values": [[status, lead_id, lifecycle, obs, email]]
             }])
         except Exception as e:
             print(f"Erro ao atualizar linha {linha}: {e}")
