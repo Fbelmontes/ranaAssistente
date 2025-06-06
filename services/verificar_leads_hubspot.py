@@ -3,7 +3,6 @@ from difflib import SequenceMatcher
 from services.google_sheets import conectar_sheets
 from services.hubspot_oauth import renovar_token_automaticamente
 
-PLANILHA_ID = "1YnX5Lg7eW6AXwSdo73SIwvlxc4fITwUw5mTPHlspSqA"
 ABA_VERIFICAR = "Verificar_Leads"
 
 def similaridade(a, b):
@@ -17,19 +16,15 @@ def pontuar_lead(lead, nome, sobrenome, empresa, cargo, linkedin):
     if nome and props.get("firstname") and similaridade(nome, props["firstname"]) > 0.8:
         score += 1
         detalhes.append("Nome")
-
     if sobrenome and props.get("lastname") and similaridade(sobrenome, props["lastname"]) > 0.8:
         score += 1
         detalhes.append("Sobrenome")
-
     if empresa and props.get("company") and similaridade(empresa, props["company"]) > 0.75:
         score += 1
         detalhes.append("Empresa")
-
     if cargo and props.get("jobtitle") and similaridade(cargo, props["jobtitle"]) > 0.75:
         score += 0.5
         detalhes.append("Cargo")
-
     if linkedin and props.get("linkedin") and linkedin.strip() == props["linkedin"].strip():
         score += 2
         detalhes.append("LinkedIn exato")
@@ -70,12 +65,12 @@ def buscar_leads_na_base():
         )
 
         if res.status_code != 200:
-            updates.append([i + 2, "Erro API", "", "", res.text])
+            updates.append([i + 2, "Erro API", "", "", res.text, ""])
             continue
 
         resultado = res.json().get("results", [])
         if not resultado:
-            updates.append([i + 2, "Novo Lead", "", "", "Nenhum resultado"])
+            updates.append([i + 2, "Novo Lead", "", "", "Nenhum resultado", ""])
             continue
 
         melhores = []
@@ -90,10 +85,11 @@ def buscar_leads_na_base():
                 melhores.append((lead, score, detalhes))
 
         if melhor_score == 0:
-            updates.append([i + 2, "Novo Lead", "", "", "Sem correspondência relevante"])
+            updates.append([i + 2, "Novo Lead", "", "", "Sem correspondência relevante", ""])
         elif len(melhores) > 1:
             obs_text = "; ".join([f"ID: {m[0]['id']} ({m[2]})" for m in melhores])
-            updates.append([i + 2, "Possível duplicata", "", "", obs_text])
+            emails = "; ".join([m[0].get("properties", {}).get("email", "") for m in melhores])
+            updates.append([i + 2, "Possível duplicata", "", "", obs_text, emails])
         else:
             lead = melhores[0][0]
             props = lead.get("properties", {})
@@ -103,16 +99,17 @@ def buscar_leads_na_base():
                 status,
                 lead.get("id", ""),
                 props.get("lifecyclestage", ""),
-                f"Empresa: {props.get('company','')} | Email: {props.get('email','')} | {melhores[0][2]}"
+                f"Empresa: {props.get('company','')} | {melhores[0][2]}",
+                props.get("email", "")
             ])
 
-    # Atualizar colunas H (status), I (ID), J (lifecycle), K (observações), L (email HubSpot)
-        for update in updates:
-            linha, status, lead_id, lifecycle, obs, email = update
-            try:
-                aba.batch_update([{
-                    "range": f"H{linha}:L{linha}",
-                    "values": [[status, lead_id, lifecycle, obs, email]]
-                }])
-            except Exception as e:
-                print(f"Erro ao atualizar linha {linha}: {e}")
+    # Atualiza colunas H a L (5 colunas): Status, ID, Lifecycle, Observações, E-mail HubSpot
+    for update in updates:
+        linha, status, lead_id, lifecycle, obs, email = update
+        try:
+            aba.batch_update([{
+                "range": f"H{linha}:L{linha}",
+                "values": [[status, lead_id, lifecycle, obs, email]]
+            }])
+        except Exception as e:
+            print(f"Erro ao atualizar linha {linha}: {e}")
