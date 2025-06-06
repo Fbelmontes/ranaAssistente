@@ -108,11 +108,11 @@ def buscar_leads_na_base():
 
     # Atualizar em lote
     for update in updates:
-        linha, status, lead_id, lifecycle, obs, props.get('email','') = update
+        linha, status, lead_id, lifecycle, obs = update
         try:
             aba.batch_update([{
                 "range": f"H{linha}:L{linha}",
-                "values": [[status, lead_id, lifecycle, obs, props.get('email','')]]
+                "values": [[status, lead_id, lifecycle, obs]]
             }])
         except Exception as e:
             print(f"Erro ao atualizar linha {linha}: {e}")
