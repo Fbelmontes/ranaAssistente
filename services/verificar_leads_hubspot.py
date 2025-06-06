@@ -98,8 +98,8 @@ def buscar_leads_na_base():
         elif len(melhores) > 1:
             obs_text = "; ".join([f"ID: {m[0]['id']} ({m[2]})" for m in melhores])
             emails = "; ".join([
-                m[0].get("properties", {}).get("email", "")
-                for m in melhores if isinstance(m, tuple) and isinstance(m[0], dict)
+                lead.get("properties", {}).get("email", "")
+                for lead, _, _ in melhores if isinstance(lead, dict)
             ])
             updates.append([i + 2, "Possível duplicata", "", "", emails, obs_text])
         else:
