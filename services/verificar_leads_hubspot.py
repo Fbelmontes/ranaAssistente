@@ -70,12 +70,12 @@ def buscar_leads_na_base():
         )
 
         if res.status_code != 200:
-            updates.append([i + 2, "Erro API", "", "", res.text])
+            updates.append([i + 2, "Erro API", "", "", res.text, ""])
             continue
 
         resultado = res.json().get("results", [])
         if not resultado:
-            updates.append([i + 2, "Novo Lead", "", "", "Nenhum resultado"])
+            updates.append([i + 2, "Novo Lead", "", "", "Nenhum resultado", ""])
             continue
 
         melhores = []
@@ -90,29 +90,11 @@ def buscar_leads_na_base():
                 melhores.append((lead, score, detalhes))
 
         if melhor_score == 0:
-            updates.append([i + 2, "Novo Lead", "", "", "Sem correspondência relevante"])
+            updates.append([i + 2, "Novo Lead", "", "", "Sem correspondência relevante", ""])
         elif len(melhores) > 1:
             obs_text = "; ".join([f"ID: {m[0]['id']} ({m[2]})" for m in melhores])
-            updates.append([i + 2, "Possível duplicata", "", "", obs_text])
+            emails = "; ".join([m[0].get("properties", {}).get("email", "") for m in melhores])
+            updates.append([i + 2, "Possível duplicata", "", "", obs_text, emails])
         else:
             lead = melhores[0][0]
             props = lead.get("properties", {})
-            status = "Match exato" if melhor_score >= 3 else "Possível match"
-            updates.append([
-                i + 2,
-                status,
-                lead.get("id", ""),
-                props.get("lifecyclestage", ""),
-                f"Empresa: {props.get('company','')} | Email: {props.get('email','')} | {melhores[0][2]}"
-            ])
-
-    # Atualizar em lote
-    for update in updates:
-        linha, status, lead_id, lifecycle, obs = update
-        try:
-            aba.batch_update([{
-                "range": f"G{linha}:J{linha}",
-                "values": [[status, lead_id, lifecycle, obs]]
-            }])
-        except Exception as e:
-            print(f"Erro ao atualizar linha {linha}: {e}")
