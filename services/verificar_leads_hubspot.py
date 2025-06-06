@@ -90,14 +90,17 @@ def buscar_leads_na_base():
                 melhores.append((lead, score, detalhes))
 
         if not melhores:
-            updates.append([i + 2, "Erro processamento", "", "", "", "Nenhum lead válido para comparação"])
+            updates.append([i + 2, "Erro processamento", "", "", "", "Leads encontrados mas nenhum válido para comparação"])
             continue
 
         if melhor_score == 0:
             updates.append([i + 2, "Novo Lead", "", "", "", "Sem correspondência relevante"])
         elif len(melhores) > 1:
             obs_text = "; ".join([f"ID: {m[0]['id']} ({m[2]})" for m in melhores])
-            emails = "; ".join([m[0]['properties'].get("email", "") for m in melhores if m[0].get("properties")])
+            emails = "; ".join([
+                m[0].get("properties", {}).get("email", "")
+                for m in melhores if isinstance(m, tuple) and isinstance(m[0], dict)
+            ])
             updates.append([i + 2, "Possível duplicata", "", "", emails, obs_text])
         else:
             lead = melhores[0][0]
@@ -109,7 +112,7 @@ def buscar_leads_na_base():
                 lead.get("id", ""),
                 props.get("lifecyclestage", ""),
                 props.get("email", ""),
-                f"Empresa: {props.get('company','')} | Cargo: {props.get('jobtitle','')} | {melhores[0][2]}"
+                f"Empresa: {props.get('company','')} | {melhores[0][2]}"
             ])
 
     for update in updates:
