@@ -106,13 +106,13 @@ def buscar_leads_na_base():
                 f"Empresa: {props.get('company','')} | Email: {props.get('email','')} | {melhores[0][2]}"
             ])
 
-    # Atualizar em lote
-    for update in updates:
-        linha, status, lead_id, lifecycle, obs = update
-        try:
-            aba.batch_update([{
-                "range": f"H{linha}:L{linha}",
-                "values": [[status, lead_id, lifecycle, obs]]
-            }])
-        except Exception as e:
-            print(f"Erro ao atualizar linha {linha}: {e}")
+    # Atualizar colunas H (status), I (ID), J (lifecycle), K (observações), L (email HubSpot)
+        for update in updates:
+            linha, status, lead_id, lifecycle, obs, email = update
+            try:
+                aba.batch_update([{
+                    "range": f"H{linha}:L{linha}",
+                    "values": [[status, lead_id, lifecycle, obs, email]]
+                }])
+            except Exception as e:
+                print(f"Erro ao atualizar linha {linha}: {e}")
