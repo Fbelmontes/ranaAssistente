@@ -89,33 +89,35 @@ def buscar_leads_na_base():
             elif score == melhor_score:
                 melhores.append((lead, score, detalhes))
 
+        if not melhores:
+            updates.append([i + 2, "Erro processamento", "", "", "", "Nenhum lead válido para comparação"])
+            continue
+
         if melhor_score == 0:
             updates.append([i + 2, "Novo Lead", "", "", "", "Sem correspondência relevante"])
         elif len(melhores) > 1:
             obs_text = "; ".join([f"ID: {m[0]['id']} ({m[2]})" for m in melhores])
-            emails = "; ".join([m[0]['properties'].get("email", "") for m in melhores])
+            emails = "; ".join([m[0]['properties'].get("email", "") for m in melhores if m[0].get("properties")])
             updates.append([i + 2, "Possível duplicata", "", "", emails, obs_text])
         else:
             lead = melhores[0][0]
             props = lead.get("properties", {})
             status = "Match exato" if melhor_score >= 3 else "Possível match"
-            obs = f"Empresa: {props.get('company','')} | Cargo: {props.get('jobtitle','')} | {melhores[0][2]}"
             updates.append([
                 i + 2,
                 status,
                 lead.get("id", ""),
                 props.get("lifecyclestage", ""),
                 props.get("email", ""),
-                obs
+                f"Empresa: {props.get('company','')} | Cargo: {props.get('jobtitle','')} | {melhores[0][2]}"
             ])
 
-    # Atualizar em lote: colunas H (status), I (ID), J (lifecycle), K (obs), L (email)
     for update in updates:
         linha, status, lead_id, lifecycle, email, obs = update
         try:
             aba.batch_update([{
                 "range": f"H{linha}:L{linha}",
-                "values": [[status, lead_id, lifecycle, obs, email]]
+                "values": [[status, lead_id, lifecycle, email, obs]]
             }])
         except Exception as e:
             print(f"Erro ao atualizar linha {linha}: {e}")
