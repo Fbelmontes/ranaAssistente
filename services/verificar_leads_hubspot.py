@@ -9,7 +9,7 @@ ABA_VERIFICAR = "Verificar_Leads"
 def similaridade(a, b):
     return SequenceMatcher(None, a.lower(), b.lower()).ratio()
 
-def comparar_lead(lead, nome, sobrenome, empresa, cargo, linkedin):
+def pontuar_lead(lead, nome, sobrenome, empresa, cargo, linkedin):
     props = lead.get("properties", {})
     score = 0
     detalhes = []
@@ -17,15 +17,19 @@ def comparar_lead(lead, nome, sobrenome, empresa, cargo, linkedin):
     if nome and props.get("firstname") and similaridade(nome, props["firstname"]) > 0.8:
         score += 1
         detalhes.append("Nome")
+
     if sobrenome and props.get("lastname") and similaridade(sobrenome, props["lastname"]) > 0.8:
         score += 1
         detalhes.append("Sobrenome")
+
     if empresa and props.get("company") and similaridade(empresa, props["company"]) > 0.75:
         score += 1
         detalhes.append("Empresa")
+
     if cargo and props.get("jobtitle") and similaridade(cargo, props["jobtitle"]) > 0.75:
         score += 0.5
         detalhes.append("Cargo")
+
     if linkedin and props.get("linkedin") and linkedin.strip() == props["linkedin"].strip():
         score += 2
         detalhes.append("LinkedIn exato")
@@ -66,48 +70,49 @@ def buscar_leads_na_base():
         )
 
         if res.status_code != 200:
-            updates.append([i + 2, "Erro API", "", "", "", res.text])
+            updates.append([i + 2, "Erro API", "", "", res.text])
             continue
 
         resultado = res.json().get("results", [])
         if not resultado:
-            updates.append([i + 2, "Novo Lead", "", "", "", "Nenhum resultado"])
+            updates.append([i + 2, "Novo Lead", "", "", "Nenhum resultado"])
             continue
 
         melhores = []
+        melhor_score = 0
+
         for lead in resultado:
-            score, detalhes = comparar_lead(lead, nome, sobrenome, empresa, cargo, linkedin)
-            melhores.append((lead, score, detalhes))
+            score, detalhes = pontuar_lead(lead, nome, sobrenome, empresa, cargo, linkedin)
+            if score > melhor_score:
+                melhores = [(lead, score, detalhes)]
+                melhor_score = score
+            elif score == melhor_score:
+                melhores.append((lead, score, detalhes))
 
-        melhores = sorted(melhores, key=lambda x: x[1], reverse=True)
-
-        if not melhores or melhores[0][1] == 0:
-            updates.append([i + 2, "Novo Lead", "", "", "", "Sem correspondência relevante"])
-        elif len(melhores) > 1 and melhores[0][1] == melhores[1][1]:
+        if melhor_score == 0:
+            updates.append([i + 2, "Novo Lead", "", "", "Sem correspondência relevante"])
+        elif len(melhores) > 1:
             obs_text = "; ".join([f"ID: {m[0]['id']} ({m[2]})" for m in melhores])
-            emails = "; ".join([
-                m[0].get("properties", {}).get("email", "")
-                for m in melhores if isinstance(m[0], dict)
-            ])
-            updates.append([i + 2, "Possível duplicata", "", "", emails, obs_text])
+            updates.append([i + 2, "Possível duplicata", "", "", obs_text])
         else:
             lead = melhores[0][0]
             props = lead.get("properties", {})
+            status = "Match exato" if melhor_score >= 3 else "Possível match"
             updates.append([
                 i + 2,
-                "Lead encontrado",
+                status,
                 lead.get("id", ""),
                 props.get("lifecyclestage", ""),
-                props.get("email", ""),
-                f"Empresa: {props.get('company', '')} | {melhores[0][2]}"
+                f"Empresa: {props.get('company','')} | Email: {props.get('email','')} | {melhores[0][2]}"
             ])
 
+    # Atualizar em lote
     for update in updates:
-        linha, status, lead_id, lifecycle, email, obs = update
+        linha, status, lead_id, lifecycle, obs = update
         try:
             aba.batch_update([{
-                "range": f"H{linha}:L{linha}",
-                "values": [[status, lead_id, lifecycle, email, obs]]
+                "range": f"G{linha}:J{linha}",
+                "values": [[status, lead_id, lifecycle, obs]]
             }])
         except Exception as e:
             print(f"Erro ao atualizar linha {linha}: {e}")
