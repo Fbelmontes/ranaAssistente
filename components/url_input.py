@@ -5,7 +5,7 @@ def url_input_component():
     st.subheader("🔗 Enviar URL para análise")
 
     url = st.text_input("Cole aqui a URL que deseja enviar:")
-    webhook_url = "https://fbelmonte95.app.n8n.cloud/webhook-test/209e02d6-8def-4ce5-9e49-6029d4a84f22"  # Substitua pelo seu
+    webhook_url = "https://fbelmonte95.app.n8n.cloud/webhook/209e02d6-8def-4ce5-9e49-6029d4a84f22"  # Substitua pelo seu
 
     if st.button("🚀 Enviar para o n8n"):
         if url.strip() != "":
