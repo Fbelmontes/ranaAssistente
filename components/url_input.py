@@ -7,7 +7,7 @@ def url_input_component():
     url = st.text_input("Cole aqui a URL que deseja enviar:")
 
     # ⚠️ Substitua aqui pelo SEU Webhook de produção do n8n
-    webhook_url = "https://fbelmonte95.app.n8n.cloud/webhook-test/209e02d6-8def-4ce5-9e49-6029d4a84f22"
+    webhook_url = "https://fbelmonte95.app.n8n.cloud/webhook/rana_url"
 
     if st.button("🚀 Enviar para o n8n"):
         if url.strip():
