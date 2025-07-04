@@ -94,9 +94,9 @@ with st.sidebar:
             "✅ Atualizar Tarefas no Trello"
         ],
         "📚 Aprendizado / 🤖 Memória": [
-            "📚 Enviar Material para Aprendizado",
-            "🤖 Perguntar com base nos Aprendizados",
-            "📝 Gerar Conteúdo para Blog",
+            #"📚 Enviar Material para Aprendizado",
+            #"🤖 Perguntar com base nos Aprendizados",
+            #"📝 Gerar Conteúdo para Blog",
             "🤖 Conteudo / Perguntas"
         ],
         "🌍 Web Scraping": [
