@@ -12,6 +12,7 @@ from components.consultar_eventos import consultar_eventos_component
 from components.trello_sync_component import trello_sync_component
 from services.verificar_leads_hubspot import buscar_leads_na_base
 from components.rocketreach_profile_lookup import rocketreach_profile_lookup_component
+from components.url_input import url_input_component #WebHook N8N
 
 # Configuração da página
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
@@ -95,7 +96,8 @@ with st.sidebar:
         "📚 Aprendizado / 🤖 Memória": [
             "📚 Enviar Material para Aprendizado",
             "🤖 Perguntar com base nos Aprendizados",
-            "📝 Gerar Conteúdo para Blog"
+            "📝 Gerar Conteúdo para Blog",
+            "🤖 Conteudo / Perguntas"
         ],
         "🌍 Web Scraping": [
             "🌍 Web Scraping Web Summit",
@@ -235,4 +237,8 @@ with col_content:
     
     elif escolha == "📚 Aprender sobre alguem":
         rocketreach_profile_lookup_component()
+    
+    elif escolha == "🤖 Conteudo / Perguntas":
+        url_input_component()
+
         
