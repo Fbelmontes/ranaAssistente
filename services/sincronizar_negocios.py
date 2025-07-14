@@ -1,7 +1,8 @@
 import requests
 from .hubspot_oauth import renovar_token_automaticamente
+from .hubspot_pipelines import buscar_id_pipeline_por_nome
 
-PIPELINE_ID_TAP = "750889331"
+
 STAGE_ID_REQUERIDO = "1105086127"
 
 CAMPOS_REVERSO = [
@@ -15,6 +16,11 @@ def buscar_negocios_tap():
         "Authorization": f"Bearer {token}"
     }
 
+    pipeline_id_tap = buscar_id_pipeline_por_nome("TAP & Kickoff")
+    if not pipeline_id_tap:
+        print("❌ Pipeline 'TAP & Kickoff' não encontrada.")
+        return []
+
     url = "https://api.hubapi.com/crm/v3/objects/deals"
     params = {
         "limit": 100,
@@ -22,18 +28,17 @@ def buscar_negocios_tap():
     }
 
     response = requests.get(url, headers=headers, params=params)
-
     if response.status_code != 200:
-        print("Erro ao buscar negócios TAP:", response.status_code, response.text)
+        print("❌ Erro ao buscar negócios:", response.text)
         return []
 
     resultados = response.json().get("results", [])
-
     filtrados = []
+
     for d in resultados:
         props = d["properties"]
         if (
-            props.get("pipeline") == PIPELINE_ID_TAP and
+            props.get("pipeline") == pipeline_id_tap and
             props.get("dealstage") == STAGE_ID_REQUERIDO and
             props.get("id_de_origem")
         ):
