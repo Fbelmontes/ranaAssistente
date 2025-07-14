@@ -86,8 +86,8 @@ with st.sidebar:
             "📚 Aprender sobre alguem"
         ],
         "⚙️ Automação de Marketing": [
-            "📅 Criar Evento de Marketing",
-            "📤 Importar Leads",
+            #"📅 Criar Evento de Marketing",
+            #"📤 Importar Leads",
             #"🔎 Verificar Leads no HubSpot",
             #"💬 Curtir e comentar post",
             #"📅 Consultar Eventos e Participantes LinkedIn",
