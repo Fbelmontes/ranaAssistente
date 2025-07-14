@@ -114,7 +114,8 @@ with st.sidebar:
         ],
         "🔧 HubSpot Dev": [
             "🔎 Explorar Pipelines e Negócios",
-            "📊 Painel de Negócios (Editável)"
+            "📊 Painel de Negócios (Editável)",
+            "🔄 Atualizar valores de TAP para Origem"
         ]
 
     }
@@ -258,3 +259,7 @@ with col_content:
     elif escolha == "📊 Painel de Negócios (Editável)":
         from components.painel_dinamico_negocios import painel_dinamico_negocios_component
         painel_dinamico_negocios_component()
+
+    elif escolha == "🔄 Atualizar valores de TAP para Origem":
+        from components.sincronizar_reverso_manual import sincronizar_reverso_manual_component
+        sincronizar_reverso_manual_component()
