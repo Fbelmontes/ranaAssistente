@@ -1,9 +1,10 @@
+
 import streamlit as st
 import requests
 from services.hubspot_oauth import renovar_token_automaticamente
 
 def explorar_negocios_component():
-    st.subheader("🔎 Explorar Pipelines e Negócios")
+    st.subheader("馃攷 Explorar Pipelines e Neg贸cios")
 
     token = renovar_token_automaticamente()
     headers = {"Authorization": f"Bearer {token}"}
@@ -20,7 +21,7 @@ def explorar_negocios_component():
     pipeline_nome = st.selectbox("Escolha uma pipeline", list(pipeline_opcoes.keys()))
     pipeline_id = pipeline_opcoes[pipeline_nome]
 
-    # 2. Buscar negócios da pipeline
+    # 2. Buscar neg贸cios da pipeline
     deals_url = f"https://api.hubapi.com/crm/v3/objects/deals"
     deals_params = {"limit": 100, "properties": "dealname,pipeline", "pipeline": pipeline_id}
     deals_resp = requests.get(deals_url, headers=headers, params=deals_params)
@@ -28,20 +29,32 @@ def explorar_negocios_component():
 
     if deals:
         opcoes_deals = {d['properties'].get('dealname', f"Sem nome ({d['id']})"): d['id'] for d in deals}
-        deal_nome = st.selectbox("Escolha um negócio", list(opcoes_deals.keys()))
+        deal_nome = st.selectbox("Escolha um neg贸cio", list(opcoes_deals.keys()))
         deal_id = opcoes_deals[deal_nome]
 
-        # 3. Buscar propriedades de negócio
+        # 3. Buscar propriedades de neg贸cio
         props_resp = requests.get("https://api.hubapi.com/crm/v3/properties/deals", headers=headers)
         propriedades = props_resp.json().get("results", [])
         nomes_props = [p["name"] for p in propriedades]
 
-        # 4. Buscar dados do negócio selecionado
-        deal_resp = requests.get(f"https://api.hubapi.com/crm/v3/objects/deals/{deal_id}", headers=headers, params={"properties": ",".join(nomes_props)})
-        dados = deal_resp.json().get("properties", {})
+        # 4. Buscar dados do neg贸cio selecionado
+        st.markdown("### 馃搫 Propriedades do neg贸cio")
 
-        st.markdown("### 📄 Propriedades do negócio")
-        for k, v in dados.items():
-            st.write(f"**{k}**: {v}")
+        deal_resp = requests.get(
+            f"https://api.hubapi.com/crm/v3/objects/deals/{deal_id}",
+            headers=headers,
+            params={"properties": ",".join(nomes_props)}
+        )
+
+        if deal_resp.status_code == 200:
+            dados = deal_resp.json().get("properties", {})
+            if dados:
+                for k, v in dados.items():
+                    st.write(f"馃敼 **{k}**: `{v}`")
+            else:
+                st.info("Nenhuma vari谩vel dispon铆vel para este neg贸cio.")
+        else:
+            st.error(f"Erro ao buscar o neg贸cio: {deal_resp.status_code}")
+            st.text(deal_resp.text)
     else:
-        st.info("Nenhum negócio encontrado nessa pipeline.")
+        st.info("Nenhum neg贸cio encontrado nessa pipeline.")
