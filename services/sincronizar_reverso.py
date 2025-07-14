@@ -2,6 +2,9 @@
 import requests
 from .hubspot_oauth import renovar_token_automaticamente
 
+PIPELINE_ID_TAP = "750889331"
+STAGE_ID_REQUERIDO = "1105086127"
+
 CAMPOS_REVERSO = [
     "valor_faturado_ano_atual",
     "valor_faturado_proximos_anos"
@@ -16,7 +19,7 @@ def buscar_negocios_tap():
     url = "https://api.hubapi.com/crm/v3/objects/deals"
     params = {
         "limit": 100,
-        "properties": f"id_de_origem,{','.join(CAMPOS_REVERSO)}"
+        "properties": f"id_de_origem,dealstage,pipeline,{','.join(CAMPOS_REVERSO)}"
     }
 
     response = requests.get(url, headers=headers, params=params)
@@ -24,7 +27,18 @@ def buscar_negocios_tap():
         return []
 
     resultados = response.json().get("results", [])
-    return [d for d in resultados if d["properties"].get("id_de_origem")]
+
+    filtrados = []
+    for d in resultados:
+        props = d["properties"]
+        if (
+            props.get("pipeline") == PIPELINE_ID_TAP and
+            props.get("dealstage") == STAGE_ID_REQUERIDO and
+            props.get("id_de_origem")
+        ):
+            filtrados.append(d)
+
+    return filtrados
 
 def sincronizar_para_origem(deal_tap):
     token = renovar_token_automaticamente()
