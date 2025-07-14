@@ -9,7 +9,7 @@ CAMPOS_REVERSO = [
     "valor_faturado_proximos_anos"
 ]
 
-def buscar_negocios_tap():
+def buscar_negocios_tap_teste():
     token = renovar_token_automaticamente()
     headers = {
         "Authorization": f"Bearer {token}",
@@ -22,30 +22,25 @@ def buscar_negocios_tap():
         "filterGroups": [
             {
                 "filters": [
-                    {"propertyName": "pipeline", "operator": "EQ", "value": PIPELINE_ID_TAP},
-                    {"propertyName": "dealstage", "operator": "EQ", "value": STAGE_ID_REQUERIDO},
-                    {"propertyName": "id_de_origem", "operator": "HAS_PROPERTY"}
+                    {"propertyName": "pipeline", "operator": "EQ", "value": PIPELINE_ID_TAP}
                 ]
             }
         ],
-        "properties": ["id_de_origem", "dealstage", "pipeline"] + CAMPOS_REVERSO,
+        "properties": ["dealname", "pipeline", "dealstage", "id_de_origem"] + CAMPOS_REVERSO,
         "limit": 100
     }
 
     response = requests.post(url, headers=headers, json=payload)
 
-    if response.status_code != 200:
-        print("❌ Erro ao buscar negócios com filtro:", response.text)
-        return []
-
     resultados = response.json().get("results", [])
 
-    print(f"🔎 Total encontrados: {len(resultados)}")
+    print(f"\n🌐 TESTE DE BUSCA SIMPLES")
     for d in resultados:
         props = d["properties"]
-        print(f"→ Negócio ID: {d['id']} | pipeline: {props.get('pipeline')} | stage: {props.get('dealstage')} | origem: {props.get('id_de_origem')}")
+        print(f"→ {d['id']} | stage: {props.get('dealstage')} | origem: {props.get('id_de_origem')}")
 
     return resultados
+
 
 
 
