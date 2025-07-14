@@ -28,6 +28,11 @@ def buscar_negocios_tap():
 
     resultados = response.json().get("results", [])
 
+    print("🔍 Negócios retornados pela API:")
+    for d in resultados:
+        props = d["properties"]
+        print(f"- ID: {d['id']}, pipeline: {props.get('pipeline')}, stage: {props.get('dealstage')}, id_origem: {props.get('id_de_origem')}")
+
     filtrados = []
     for d in resultados:
         props = d["properties"]
@@ -38,7 +43,9 @@ def buscar_negocios_tap():
         ):
             filtrados.append(d)
 
+    print(f"✅ Total de negócios elegíveis encontrados: {len(filtrados)}")
     return filtrados
+
 
 
 def sincronizar_para_origem(deal_tap):
