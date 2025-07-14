@@ -91,7 +91,8 @@ with st.sidebar:
             "🔎 Verificar Leads no HubSpot",
             #"💬 Curtir e comentar post",
             #"📅 Consultar Eventos e Participantes LinkedIn",
-            "✅ Atualizar Tarefas no Trello"
+            "✅ Atualizar Tarefas no Trello",
+            "🔄 Atualizar Negócios Clonados"
         ],
         "📚 Aprendizado / 🤖 Memória": [
             #"📚 Enviar Material para Aprendizado",
@@ -241,4 +242,6 @@ with col_content:
     elif escolha == "🤖 Conteudo / Perguntas":
         url_input_component()
 
-        
+    elif escolha == "🔄 Atualizar Negócios Clonados":
+        from components.sincronizar_manual import sincronizar_manual_component
+        sincronizar_manual_component()   
