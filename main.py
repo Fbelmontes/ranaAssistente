@@ -88,7 +88,7 @@ with st.sidebar:
         "⚙️ Automação de Marketing": [
             "📅 Criar Evento de Marketing",
             "📤 Importar Leads",
-            "🔎 Verificar Leads no HubSpot",
+            #"🔎 Verificar Leads no HubSpot",
             #"💬 Curtir e comentar post",
             #"📅 Consultar Eventos e Participantes LinkedIn",
             "✅ Atualizar Tarefas no Trello",
