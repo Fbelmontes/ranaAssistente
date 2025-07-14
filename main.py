@@ -14,22 +14,6 @@ from services.verificar_leads_hubspot import buscar_leads_na_base
 from components.rocketreach_profile_lookup import rocketreach_profile_lookup_component
 from components.url_input import url_input_component #WebHook N8N
 
-import shutil
-import os
-
-def limpar_cache_py():
-    for root, dirs, files in os.walk("components"):
-        for dir in dirs:
-            if dir == "__pycache__":
-                shutil.rmtree(os.path.join(root, dir))
-
-    for root, dirs, files in os.walk("services"):
-        for dir in dirs:
-            if dir == "__pycache__":
-                shutil.rmtree(os.path.join(root, dir))
-
-limpar_cache_py()
-
 
 # Configuração da página
 st.set_page_config(page_title="RANA - Assistente", page_icon="🤖", layout="wide")
