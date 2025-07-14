@@ -34,6 +34,7 @@ def trello_sync_component():
         cards_atualizados = []
         cards_criados = []
         cards_ignorados = []
+        atualizacoes = []  # (linha, ID do Card, status)
 
         for i, row in df.iterrows():
             titulo = str(row.get("Título da Tarefa", "")).strip()
@@ -74,8 +75,7 @@ def trello_sync_component():
                         lista_id=card_encontrado.get("idList", id_lista),
                         cor_hex=cor_hex
                     )
-                    aba.update_cell(i + 2, 5, card_encontrado["id"])
-                    aba.update_cell(i + 2, 6, "sincronizado")
+                    atualizacoes.append((i + 2, card_encontrado["id"], "sincronizado"))
                     cards_atualizados.append(titulo)
                 else:
                     novo_id = criar_card(
@@ -85,13 +85,21 @@ def trello_sync_component():
                         lista_id=id_lista,
                         cor_hex=cor_hex
                     )
-                    aba.update_cell(i + 2, 5, novo_id)
-                    aba.update_cell(i + 2, 6, "sincronizado")
+                    atualizacoes.append((i + 2, novo_id, "sincronizado"))
                     cards_criados.append(titulo)
 
             except Exception as e:
                 st.error(f"Erro com '{titulo}': {e}")
                 cards_ignorados.append(titulo)
+
+        # Atualização em lote das colunas E e F
+        if atualizacoes:
+            range_update = f"E2:F{len(df) + 1}"
+            valores = [["", ""] for _ in range(len(df))]
+            for linha, id_card, status in atualizacoes:
+                idx = linha - 2
+                valores[idx] = [id_card, status]
+            aba.update(range_update, valores)
 
         st.markdown("---")
         st.success(f"✅ Atualizados: {len(cards_atualizados)}")
@@ -99,8 +107,7 @@ def trello_sync_component():
         if cards_ignorados:
             st.warning(f"⚠️ Ignorados: {len(cards_ignorados)}")
 
-    
-        # ========== BOTÃO 2: Anexar Briefings ==========  
+    # ========== BOTÃO 2: Anexar Briefings ==========  
     if st.button("📎 Anexar Briefing aos Cards"):
         st.info("🔍 Lendo dados da memória da RANA...")
 
@@ -120,7 +127,6 @@ def trello_sync_component():
                 if not card_id:
                     continue
 
-                # Match pelo nome do projeto
                 dados_briefing = df_briefings[
                     df_briefings["📑 Nome do Projeto/Evento:"].str.strip().str.casefold() == titulo_card.casefold()
                 ]
@@ -132,7 +138,6 @@ def trello_sync_component():
                             if valor:
                                 texto_final += f"- {coluna.strip()}: {str(valor).strip()}\n"
 
-                    from services.trello_api import anexar_texto_na_descricao
                     anexar_texto_na_descricao(card_id, texto_final)
                     cards_anexados += 1
 
@@ -140,4 +145,3 @@ def trello_sync_component():
 
         except Exception as e:
             st.error(f"❌ Erro ao anexar briefings: {e}")
-
