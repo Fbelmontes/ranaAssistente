@@ -40,12 +40,13 @@ def buscar_negocios_tap():
 
     resultados = response.json().get("results", [])
 
-    print("🔍 Negócios encontrados com filtro avançado:")
+    print(f"🔎 Total encontrados: {len(resultados)}")
     for d in resultados:
         props = d["properties"]
-        print(f"- ID: {d['id']} | pipeline: {props.get('pipeline')} | stage: {props.get('dealstage')} | origem: {props.get('id_de_origem')}")
+        print(f"→ Negócio ID: {d['id']} | pipeline: {props.get('pipeline')} | stage: {props.get('dealstage')} | origem: {props.get('id_de_origem')}")
 
     return resultados
+
 
 
 
