@@ -111,7 +111,11 @@ with st.sidebar:
         ],
         "📊 Analise":[
             "📊 Relatórios de Tráfego e Comportamento"
+        ],
+        "🔧 HubSpot Dev": [
+            "🔎 Explorar Pipelines e Negócios"
         ]
+
     }
 
     categoria = st.radio("Escolha uma categoria", list(menu_opcoes.keys()))
@@ -245,3 +249,7 @@ with col_content:
     elif escolha == "🔄 Atualizar Negócios Clonados":
         from components.sincronizar_manual import sincronizar_manual_component
         sincronizar_manual_component()   
+    
+    elif escolha == "🔎 Explorar Pipelines e Negócios":
+        from components.explorar_negocios import explorar_negocios_component
+        explorar_negocios_component()
