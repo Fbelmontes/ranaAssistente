@@ -12,39 +12,41 @@ CAMPOS_REVERSO = [
 def buscar_negocios_tap():
     token = renovar_token_automaticamente()
     headers = {
-        "Authorization": f"Bearer {token}"
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
     }
 
-    url = "https://api.hubapi.com/crm/v3/objects/deals"
-    params = {
-        "limit": 100,
-        "properties": f"id_de_origem,dealstage,pipeline,{','.join(CAMPOS_REVERSO)}"
+    url = "https://api.hubapi.com/crm/v3/objects/deals/search"
+
+    payload = {
+        "filterGroups": [
+            {
+                "filters": [
+                    {"propertyName": "pipeline", "operator": "EQ", "value": PIPELINE_ID_TAP},
+                    {"propertyName": "dealstage", "operator": "EQ", "value": STAGE_ID_REQUERIDO},
+                    {"propertyName": "id_de_origem", "operator": "HAS_PROPERTY"}
+                ]
+            }
+        ],
+        "properties": ["id_de_origem", "dealstage", "pipeline"] + CAMPOS_REVERSO,
+        "limit": 100
     }
 
-    response = requests.get(url, headers=headers, params=params)
+    response = requests.post(url, headers=headers, json=payload)
+
     if response.status_code != 200:
-        print("❌ Erro ao buscar negócios:", response.text)
+        print("❌ Erro ao buscar negócios com filtro:", response.text)
         return []
 
     resultados = response.json().get("results", [])
 
-    print("🔍 Negócios retornados pela API:")
+    print("🔍 Negócios encontrados com filtro avançado:")
     for d in resultados:
         props = d["properties"]
-        print(f"- ID: {d['id']}, pipeline: {props.get('pipeline')}, stage: {props.get('dealstage')}, id_origem: {props.get('id_de_origem')}")
+        print(f"- ID: {d['id']} | pipeline: {props.get('pipeline')} | stage: {props.get('dealstage')} | origem: {props.get('id_de_origem')}")
 
-    filtrados = []
-    for d in resultados:
-        props = d["properties"]
-        if (
-            props.get("pipeline") == PIPELINE_ID_TAP and
-            props.get("dealstage") == STAGE_ID_REQUERIDO and
-            props.get("id_de_origem")
-        ):
-            filtrados.append(d)
+    return resultados
 
-    print(f"✅ Total de negócios elegíveis encontrados: {len(filtrados)}")
-    return filtrados
 
 
 
