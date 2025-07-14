@@ -113,8 +113,8 @@ with st.sidebar:
             "📊 Relatórios de Tráfego e Comportamento"
         ],
         "🔧 HubSpot Dev": [
-            "🔎 Explorar Pipelines e Negócios",
-            "📊 Painel de Negócios (Editável)",
+            #"🔎 Explorar Pipelines e Negócios",
+            #"📊 Painel de Negócios (Editável)",
             "🔄 Atualizar valores de TAP para Origem"
         ]
 
