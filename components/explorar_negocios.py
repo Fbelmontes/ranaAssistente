@@ -46,15 +46,20 @@ def explorar_negocios_component():
             params={"properties": ",".join(nomes_props)}
         )
 
-        if deal_resp.status_code == 200:
-            dados = deal_resp.json().get("properties", {})
-            if dados:
-                for k, v in dados.items():
-                    st.write(f"馃敼 **{k}**: `{v}`")
-            else:
-                st.info("Nenhuma vari谩vel dispon铆vel para este neg贸cio.")
+        if deal_resp.status_code == 200 and "application/json" in deal_resp.headers.get("Content-Type", ""):
+            try:
+                dados = deal_resp.json().get("properties", {})
+                if dados:
+                    for k, v in dados.items():
+                        st.write(f"🔹 **{k}**: `{v}`")
+                else:
+                    st.info("Nenhuma variável disponível para este negócio.")
+            except Exception as e:
+                st.error("Erro ao processar o conteúdo JSON.")
+                st.text(deal_resp.text)
         else:
-            st.error(f"Erro ao buscar o neg贸cio: {deal_resp.status_code}")
+            st.error(f"Erro ao buscar o negócio: {deal_resp.status_code}")
             st.text(deal_resp.text)
+
     else:
         st.info("Nenhum neg贸cio encontrado nessa pipeline.")
