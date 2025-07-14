@@ -113,7 +113,8 @@ with st.sidebar:
             "📊 Relatórios de Tráfego e Comportamento"
         ],
         "🔧 HubSpot Dev": [
-            "🔎 Explorar Pipelines e Negócios"
+            "🔎 Explorar Pipelines e Negócios",
+            "📊 Painel de Negócios (Editável)"
         ]
 
     }
@@ -253,3 +254,7 @@ with col_content:
     elif escolha == "🔎 Explorar Pipelines e Negócios":
         from components.explorar_negocios import explorar_negocios_component
         explorar_negocios_component()
+
+    elif escolha == "📊 Painel de Negócios (Editável)":
+        from components.painel_dinamico_negocios import painel_dinamico_negocios_component
+        painel_dinamico_negocios_component()
